@@ -1,5 +1,6 @@
 package com.pinguinera.provider.models.DTOS;
 
+import com.pinguinera.provider.models.enums.TextType;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
@@ -9,19 +10,15 @@ public class RetailSaleDTO {
     @NotBlank
     public String title;
     @NotNull
-    @NotBlank
-    public String type;
+    public TextType type;
     @NotNull
-    @NotBlank
     @DecimalMin(value = "1", inclusive = false)
     public float basePrice;
     @NotNull
     public LocalDate clientEntryDate;
 
-    public RetailSaleDTO() {
-    }
 
-    public RetailSaleDTO(String title, String type, float basePrice, LocalDate clientEntryDate) {
+    public RetailSaleDTO(String title, TextType type, float basePrice, LocalDate clientEntryDate) {
         this.title = title;
         this.type = type;
         this.basePrice = basePrice;
@@ -36,11 +33,11 @@ public class RetailSaleDTO {
         this.title = title;
     }
 
-    public String getType() {
+    public TextType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(TextType type) {
         this.type = type;
     }
 

@@ -4,17 +4,13 @@ package com.pinguinera.provider.models.entities.text;
 public abstract class Text {
     protected String title;
     protected float basePrice;
-    protected boolean isRetail;
+    protected float price;
+    protected boolean isRetail = false;
     protected float totalPrice;
 
-    public Text() {
-    }
-
-    public Text(String title, float basePrice, boolean isRetail) {
+    public Text(String title, float basePrice) {
         this.title = title;
         this.basePrice = basePrice;
-        this.isRetail = isRetail;
-
     }
 
     public String getTitle() {
@@ -37,7 +33,7 @@ public abstract class Text {
         return isRetail;
     }
 
-    public void setRetail(boolean retail) {
+    public void setIsRetail(boolean retail) {
         isRetail = retail;
     }
 
@@ -47,5 +43,13 @@ public abstract class Text {
 
     public void setTotalPrice(float totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    public float getPrice() {
+        return price;
+    }
+
+    public void setPrice(float price) {
+        this.price = price;
     }
 }
