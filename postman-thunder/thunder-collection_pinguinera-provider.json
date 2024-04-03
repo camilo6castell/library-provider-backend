@@ -1,0 +1,66 @@
+{
+    "client": "Thunder Client",
+    "collectionName": "pinguinera-provider",
+    "dateExported": "2024-04-03T03:37:37.419Z",
+    "version": "1.1",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "552ac105-df23-4027-a558-2fd968ed72dc",
+            "colId": "be360734-c924-478e-b4c4-a5420b0c1ecb",
+            "containerId": "",
+            "name": "CalculateRetailSaleQuote",
+            "url": "http://localhost:8080/CalculateRetailSaleQuote",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2024-04-02T19:42:19.207Z",
+            "modified": "2024-04-02T19:49:26.476Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"title\": \"1884\",\n  \"type\": 0,\n  \"basePrice\": 100,\n  \"clientEntryDate\": \"2006-01-01\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "29f50851-5276-4d92-b473-e49daf176578",
+            "colId": "be360734-c924-478e-b4c4-a5420b0c1ecb",
+            "containerId": "",
+            "name": "CalculateWholesaleQuote",
+            "url": "http://localhost:8080/CalculateWholesaleQuote",
+            "method": "POST",
+            "sortNum": 30000,
+            "created": "2024-04-02T20:34:57.869Z",
+            "modified": "2024-04-02T20:37:44.772Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"bookList\": [\n    {\n      \"title\": \"libro1\",\n      \"type\": 0,\n      \"basePrice\": 10000\n    },\n    {\n      \"title\": \"libro2\",\n      \"type\": 0,\n      \"basePrice\": 200\n    },\n    {\n      \"title\": \"libro3\",\n      \"type\": 0,\n      \"basePrice\": 4000\n    },\n    {\n      \"title\": \"1ibro4\",\n      \"type\": 0,\n      \"basePrice\": 4\n    },\n    {\n      \"title\": \"1ibro5\",\n      \"type\": 0,\n      \"basePrice\": 750\n    }\n  ],\n  \"novelList\": [\n    {\n      \"title\": \"novela1\",\n      \"type\": 1,\n      \"basePrice\": 10\n    },\n    {\n      \"title\": \"novela2\",\n      \"type\": 1,\n      \"basePrice\": 2000\n    },\n    {\n      \"title\": \"novela3\",\n      \"type\": 1,\n      \"basePrice\": 4000\n    },\n    {\n      \"title\": \"novela4\",\n      \"type\": 1,\n      \"basePrice\": 200\n    },\n    {\n      \"title\": \"novela5\",\n      \"type\": 1,\n      \"basePrice\": 200\n    },\n    {\n      \"title\": \"novela6\",\n      \"type\": 1,\n      \"basePrice\": 2\n    },\n    {\n      \"title\": \"novela7\",\n      \"type\": 1,\n      \"basePrice\": 2000\n    }\n    ],\n  \"clientEntryDate\": \"2006-01-01\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "de8560fb-d5ac-495c-adf3-e80feefed05e",
+            "colId": "be360734-c924-478e-b4c4-a5420b0c1ecb",
+            "containerId": "",
+            "name": "CalculateBudgetSaleQuote",
+            "url": "http://localhost:8080/CalculateBudgetSaleQuote",
+            "method": "POST",
+            "sortNum": 40000,
+            "created": "2024-04-02T21:01:51.828Z",
+            "modified": "2024-04-03T03:32:42.829Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"textList\": [\n    {\n      \"title\": \"1886\",\n      \"type\": 1,\n      \"basePrice\": 10000\n    },\n    {\n      \"title\": \"1885\",\n      \"type\": 1,\n      \"basePrice\": 200\n    },\n    {\n      \"title\": \"1884\",\n      \"type\": 0,\n      \"basePrice\": 400\n    },\n    {\n      \"title\": \"1883\",\n      \"type\": 1,\n      \"basePrice\": 400\n    },\n    {\n      \"title\": \"1886\",\n      \"type\": 0,\n      \"basePrice\": 10000\n    },\n    {\n      \"title\": \"1885\",\n      \"type\": 0,\n      \"basePrice\": 200\n    },\n    {\n      \"title\": \"1884\",\n      \"type\": 0,\n      \"basePrice\": 400\n    },\n    {\n      \"title\": \"1883\",\n      \"type\": 0,\n      \"basePrice\": 400\n    },\n    {\n      \"title\": \"1886\",\n      \"type\": 1,\n      \"basePrice\": 10000\n    },\n    {\n      \"title\": \"1885\",\n      \"type\": 1,\n      \"basePrice\": 200\n    },\n    {\n      \"title\": \"1884\",\n      \"type\": 0,\n      \"basePrice\": 400\n    },\n    {\n      \"title\": \"1883\",\n      \"type\": 0,\n      \"basePrice\": 400\n    }\n    ],\n    \"budget\": 4900,\n    \"clientEntryDate\": \"2006-01-01\"\n}",
+                "form": []
+            },
+            "tests": []
+        }
+    ]
+}

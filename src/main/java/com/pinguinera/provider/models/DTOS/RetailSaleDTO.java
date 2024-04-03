@@ -12,7 +12,7 @@ public class RetailSaleDTO {
     @NotNull
     public TextType type;
     @NotNull
-    @DecimalMin(value = "1", inclusive = false)
+    @DecimalMin(value = "0", inclusive = false)
     public float basePrice;
     @NotNull
     public LocalDate clientEntryDate;

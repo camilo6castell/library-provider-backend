@@ -1,12 +1,15 @@
 
 package com.pinguinera.provider.models.entities.text;
 
-public abstract class Text {
+public class Text {
     protected String title;
     protected float basePrice;
     protected float price;
     protected boolean isRetail = false;
     protected float totalPrice;
+
+    public Text() {
+    }
 
     public Text(String title, float basePrice) {
         this.title = title;
