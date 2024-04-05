@@ -2,14 +2,14 @@ package com.pinguinera.provider.models.DTOS;
 
 import jakarta.validation.constraints.NotNull;
 
-public class FillDataBaseDTO {
+public class CreateStockDTO {
     @NotNull
     public boolean fillDataBase;
 
-    public FillDataBaseDTO() {
+    public CreateStockDTO() {
     }
 
-    public FillDataBaseDTO(boolean fillDataBase) {
+    public CreateStockDTO(boolean fillDataBase) {
         this.fillDataBase = fillDataBase;
     }
 

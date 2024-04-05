@@ -8,24 +8,24 @@ import java.util.ArrayList;
 
 public class BudgetSaleDTO {
     @NotNull
-    public ArrayList<RetailSaleDTO> textList;
+    public ArrayList<SaveTextDTO> textList;
     @NotNull
     @DecimalMin(value = "0", inclusive = false)
     public float budget;
     @NotNull
     public LocalDate clientEntryDate;
 
-    public BudgetSaleDTO(ArrayList<RetailSaleDTO> textList, float budget, LocalDate clientEntryDate) {
+    public BudgetSaleDTO(ArrayList<SaveTextDTO> textList, float budget, LocalDate clientEntryDate) {
         this.textList = textList;
         this.budget = budget;
         this.clientEntryDate = clientEntryDate;
     }
 
-    public ArrayList<RetailSaleDTO> getTextList() {
+    public ArrayList<SaveTextDTO> getTextList() {
         return textList;
     }
 
-    public void setTextList(ArrayList<RetailSaleDTO> textList) {
+    public void setTextList(ArrayList<SaveTextDTO> textList) {
         this.textList = textList;
     }
 

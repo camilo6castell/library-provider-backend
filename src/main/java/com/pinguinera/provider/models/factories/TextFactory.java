@@ -1,6 +1,6 @@
 package com.pinguinera.provider.models.factories;
 
-import com.pinguinera.provider.models.DTOS.RetailSaleDTO;
+import com.pinguinera.provider.models.DTOS.SaveTextDTO;
 import com.pinguinera.provider.models.objects.text.BookObject;
 import com.pinguinera.provider.models.objects.text.NovelObject;
 import com.pinguinera.provider.models.objects.text.TextObject;
@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Component
 public class TextFactory {
-    public TextObject create(RetailSaleDTO payload, boolean isRetail) {
+    public TextObject create(SaveTextDTO payload, boolean isRetail) {
         Map<TextType, TextObject> textFilter = new HashMap<>();
         textFilter.put(TextType.BOOK, new BookObject(payload.getTitle(), payload.getBasePrice()));
         textFilter.put(TextType.NOVEL, new NovelObject(payload.getTitle(), payload.getBasePrice()));

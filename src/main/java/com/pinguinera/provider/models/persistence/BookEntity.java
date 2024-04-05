@@ -9,7 +9,11 @@ public class BookEntity extends TextEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    public BookEntity() {
+    }
+
     public BookEntity(String title, float basePrice) {
         super(title, basePrice);
     }
+
 }

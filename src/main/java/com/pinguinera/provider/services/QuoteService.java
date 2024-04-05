@@ -1,11 +1,11 @@
 package com.pinguinera.provider.services;
 
 import com.pinguinera.provider.models.DTOS.BudgetSaleDTO;
-import com.pinguinera.provider.models.DTOS.FillDataBaseDTO;
-import com.pinguinera.provider.models.DTOS.RetailSaleDTO;
+import com.pinguinera.provider.models.DTOS.CreateStockDTO;
+import com.pinguinera.provider.models.DTOS.SaveTextDTO;
 import com.pinguinera.provider.models.DTOS.WholeSaleDTO;
+import com.pinguinera.provider.models.enums.TextType;
 import com.pinguinera.provider.models.objects.quote.BudgetSaleQuoteObject;
-import com.pinguinera.provider.models.objects.quote.RetailSaleQuoteObject;
 import com.pinguinera.provider.models.objects.quote.WholesaleQuoteObject;
 import com.pinguinera.provider.models.objects.response.ResponseObject;
 import com.pinguinera.provider.models.objects.text.BookObject;
@@ -14,8 +14,10 @@ import com.pinguinera.provider.models.objects.text.TextObject;
 import com.pinguinera.provider.models.factories.TextFactory;
 import com.pinguinera.provider.models.persistence.BookEntity;
 import com.pinguinera.provider.models.persistence.NovelEntity;
+import com.pinguinera.provider.models.persistence.TextEntity;
 import com.pinguinera.provider.repositories.BookRepository;
 import com.pinguinera.provider.repositories.NovelRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,6 +25,7 @@ import java.time.Period;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -30,7 +33,7 @@ public class QuoteService {
 
     private final LocalDate today = LocalDate.now();
     private List<TextObject> textsSortedAndCombined = new ArrayList<>();
-    private List<RetailSaleDTO> rawTexts = new ArrayList<>();
+    private List<SaveTextDTO> rawTexts = new ArrayList<>();
     private List<String> booksQuote = new ArrayList<>();
     private List<String> novelsQuote = new ArrayList<>();
     private BookObject cheapestBookObject;
@@ -51,7 +54,7 @@ public class QuoteService {
         this.textFactory = textFactory;
     }
 
-    public ResponseObject createStock(FillDataBaseDTO payload){
+    public ResponseObject createStock(CreateStockDTO payload){
         if (payload.isFillDataBase()){
             ArrayList<BookEntity> bookEntityStock = new ArrayList<>();
             ArrayList<NovelEntity> novelEntityStock = new ArrayList<>();
@@ -76,17 +79,23 @@ public class QuoteService {
         }
     }
 
-    public RetailSaleQuoteObject calculateRetailSaleQuote(RetailSaleDTO payload) {
-        TextObject textObject = textFactory.create(payload, true);
-        calculateSeniorityDiscount(payload.getClientEntryDate());
-        total = textObject.getTotalPrice() * seniorityDiscount;
-        return new RetailSaleQuoteObject(textObject.getTitle(), textObject.getClass().getSimpleName(), total);
+    public ResponseObject saveText(SaveTextDTO payload) {
+        bookRepository.save(new BookEntity(payload.title, payload.basePrice));
+        return new ResponseObject("El título " + payload.title + " con el precio base de " + payload.basePrice + "ha sido guardado con éxito.");
     }
 
     public WholesaleQuoteObject calculateWholesaleQuote(WholeSaleDTO payload) {
-        getTextsSortedAndCombined(payload.bookObjectList, payload.novelObjectList);
+
+        List<BookEntity> bookList = createBooksEntitiesFromIndices(payload.bookIndices);
+        List<NovelEntity> novelList = createNovelsEntitiesFromIndices(payload.novelIndices);
+
+        List<TextObject> bookObjectList =  createBookObjectList(bookList);
+        List<TextObject> novelObjectList =  createNovelObjectList(novelList);
+
+        getTextsSortedAndCombined(bookObjectList, novelObjectList);
         setQuotes();
         calculateSeniorityDiscount(payload.getClientEntryDate());
+
         float nonSeniorityTotal = total;
         total *= seniorityDiscount;
         return new WholesaleQuoteObject(booksQuote, novelsQuote, "Subtotal: " + nonSeniorityTotal + " Descuentos: [ Descuento por antigüedad: " + ((seniorityDiscount * 100) - 100) + "% ] Total: " + total);
@@ -132,8 +141,24 @@ public class QuoteService {
 
     // PRIVATE METHODS
 
+    public List<BookEntity> createBooksEntitiesFromIndices(List<Long> indices) {
+        List<BookEntity> booksEntities = new ArrayList<>();
+        for (Long index : indices) {
+            Optional<BookEntity> optionalProduct = bookRepository.findById(index);
+            optionalProduct.ifPresent(booksEntities::add);
+        }
+        return booksEntities;
+    }
+    public List<NovelEntity> createNovelsEntitiesFromIndices(List<Long> indices) {
+        List<NovelEntity> novelsEntities = new ArrayList<>();
+        for (Long index : indices) {
+            Optional<NovelEntity> optionalProduct = novelRepository.findById(index);
+            optionalProduct.ifPresent(novelsEntities::add);
+        }
+        return novelsEntities;
+    }
     private void getCheapestTexts() {
-        for (RetailSaleDTO text : rawTexts) {
+        for (SaveTextDTO text : rawTexts) {
             textsSortedAndCombined.add(textFactory.create( text, true));
         }
 
@@ -162,7 +187,7 @@ public class QuoteService {
 
     private void setTextsQuote(TextObject textObject, boolean isRetail) {
         textObject.setIsRetail(isRetail);
-        if (textObject.getClass().getSimpleName().equals("Book")) {
+        if (textObject instanceof BookObject) {
             booksQuote.add("Título: " + textObject.getTitle() + " - Subtotal : " + textObject.getPrice() + " - Descuentos: [ Porcentaje venta al por mayor: " + (isRetail ? "0" : "0.15%") + " ] -  Precio Final: " + textObject.getTotalPrice());
             total += textObject.getTotalPrice();
         } else {
@@ -182,10 +207,26 @@ public class QuoteService {
         }
     }
 
-    private void getTextsSortedAndCombined(List<BookObject> bookObjects, List<NovelObject> novelObjects) {
-        textsSortedAndCombined.addAll(bookObjects);
-        textsSortedAndCombined.addAll(novelObjects);
+    private void getTextsSortedAndCombined(List<TextObject> bookObjectList, List<TextObject> novelObjectList) {
+        textsSortedAndCombined.addAll(bookObjectList);
+        textsSortedAndCombined.addAll(novelObjectList);
         textsSortedAndCombined.sort((a, b) -> Float.compare(b.getBasePrice(), a.getBasePrice()));
+    }
+
+    private List<TextObject> createBookObjectList(List<BookEntity> textEntities){
+        List<TextObject> textObjects = new ArrayList<>();
+        for (TextEntity text : textEntities){
+            textObjects.add(textFactory.create(new SaveTextDTO(text.getTitle(), TextType.BOOK, text.getBasePrice()), false));
+        }
+        return textObjects;
+    }
+
+    private List<TextObject> createNovelObjectList(List<NovelEntity> textEntities){
+        List<TextObject> textObjects = new ArrayList<>();
+        for (TextEntity text : textEntities){
+            textObjects.add(textFactory.create(new SaveTextDTO(text.getTitle(), TextType.NOVEL, text.getBasePrice()), false));
+        }
+        return textObjects;
     }
 
 }

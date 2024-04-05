@@ -1,10 +1,9 @@
 package com.pinguinera.provider.controllers;
 
 import com.pinguinera.provider.models.DTOS.BudgetSaleDTO;
-import com.pinguinera.provider.models.DTOS.FillDataBaseDTO;
-import com.pinguinera.provider.models.DTOS.RetailSaleDTO;
+import com.pinguinera.provider.models.DTOS.CreateStockDTO;
+import com.pinguinera.provider.models.DTOS.SaveTextDTO;
 import com.pinguinera.provider.models.DTOS.WholeSaleDTO;
-import com.pinguinera.provider.models.objects.response.ResponseObject;
 import com.pinguinera.provider.services.QuoteService;
 
 import org.springframework.http.HttpStatus;
@@ -23,8 +22,8 @@ public class QuoteController {
         this.quoteService = quoteService;
     }
 
-    @GetMapping("/FillDataBase")
-    public ResponseEntity<?> fillDataBase(@Valid @RequestBody FillDataBaseDTO payload, BindingResult bindingResult) {
+    @GetMapping("/CreateStock")
+    public ResponseEntity<?> fillDataBase(@Valid @RequestBody CreateStockDTO payload, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
         } else {
@@ -32,12 +31,12 @@ public class QuoteController {
         }
     }
 
-    @PostMapping("/CalculateRetailSaleQuote")
-    public ResponseEntity<?> calculateRetailSaleQuote(@Valid @RequestBody RetailSaleDTO payload, BindingResult bindingResult) {
+    @PostMapping("/SaveText")
+    public ResponseEntity<?> calculateRetailSaleQuote(@Valid @RequestBody SaveTextDTO payload, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
         } else {
-            return ResponseEntity.status(HttpStatus.OK).body(quoteService.calculateRetailSaleQuote(payload));
+            return ResponseEntity.status(HttpStatus.OK).body(quoteService.saveText(payload));
         }
     }
 

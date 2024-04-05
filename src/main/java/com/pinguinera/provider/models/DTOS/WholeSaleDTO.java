@@ -10,32 +10,32 @@ import java.util.List;
 
 public class WholeSaleDTO {
     @NotNull
-    public List<BookObject> bookObjectList;
+    public List<Long> bookIndices;
     @NotNull
-    public List<NovelObject> novelObjectList;
+    public List<Long> novelIndices;
     @NotNull
     public LocalDate clientEntryDate;
 
-    public WholeSaleDTO(List<BookObject> bookObjectList, List<NovelObject> novelObjectList, LocalDate clientEntryDate) {
-        this.bookObjectList = bookObjectList;
-        this.novelObjectList = novelObjectList;
+    public WholeSaleDTO(List<Long> bookIndices, List<Long> novelIndices, LocalDate clientEntryDate) {
+        this.bookIndices = bookIndices;
+        this.novelIndices = novelIndices;
         this.clientEntryDate = clientEntryDate;
     }
 
-    public List<BookObject> getBookList() {
-        return bookObjectList;
+    public List<Long> getBookIndices() {
+        return bookIndices;
     }
 
-    public void setBookList(List<BookObject> bookObjectList) {
-        this.bookObjectList = bookObjectList;
+    public void setBookIndices(List<Long> bookIndices) {
+        this.bookIndices = bookIndices;
     }
 
-    public List<NovelObject> getNovelList() {
-        return novelObjectList;
+    public List<Long> getNovelIndices() {
+        return novelIndices;
     }
 
-    public void setNovelList(List<NovelObject> novelObjectList) {
-        this.novelObjectList = novelObjectList;
+    public void setNovelIndices(List<Long> novelIndices) {
+        this.novelIndices = novelIndices;
     }
 
     public LocalDate getClientEntryDate() {

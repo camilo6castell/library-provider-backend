@@ -9,6 +9,9 @@ public class NovelEntity extends TextEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    public NovelEntity() {
+    }
+
     public NovelEntity(String title, float basePrice) {
         super(title, basePrice);
     }

@@ -3,9 +3,7 @@ package com.pinguinera.provider.models.DTOS;
 import com.pinguinera.provider.models.enums.TextType;
 import jakarta.validation.constraints.*;
 
-import java.time.LocalDate;
-
-public class RetailSaleDTO {
+public class SaveTextDTO {
     @NotNull
     @NotBlank
     public String title;
@@ -14,15 +12,11 @@ public class RetailSaleDTO {
     @NotNull
     @DecimalMin(value = "0", inclusive = false)
     public float basePrice;
-    @NotNull
-    public LocalDate clientEntryDate;
 
-
-    public RetailSaleDTO(String title, TextType type, float basePrice, LocalDate clientEntryDate) {
+    public SaveTextDTO(String title, TextType type, float basePrice) {
         this.title = title;
         this.type = type;
         this.basePrice = basePrice;
-        this.clientEntryDate = clientEntryDate;
     }
 
     public String getTitle() {
@@ -47,13 +41,5 @@ public class RetailSaleDTO {
 
     public void setBasePrice(float basePrice) {
         this.basePrice = basePrice;
-    }
-
-    public LocalDate getClientEntryDate() {
-        return clientEntryDate;
-    }
-
-    public void setClientEntryDate(LocalDate clientEntryDate) {
-        this.clientEntryDate = clientEntryDate;
     }
 }
