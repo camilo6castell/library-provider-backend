@@ -25,6 +25,9 @@ public class BudgetSaleDTO {
         this.clientEntryDate = clientEntryDate;
     }
 
+    public BudgetSaleDTO(List<Long> textIndices, float budget) {
+    }
+
     public List<Integer> getTextsIndices() {
         return textsIndices;
     }

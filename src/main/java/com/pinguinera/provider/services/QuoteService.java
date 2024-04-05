@@ -43,7 +43,7 @@ public class QuoteService {
     private ArrayList<String> budgetQuote = new ArrayList<>();
 
     private final BookRepository bookRepository;
-    private final NovelRepository novelRepository;
+    final NovelRepository novelRepository;
     private final TextFactory textFactory;
 
     private float total;
