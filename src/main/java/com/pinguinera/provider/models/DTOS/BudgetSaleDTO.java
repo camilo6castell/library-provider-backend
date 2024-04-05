@@ -5,28 +5,32 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 public class BudgetSaleDTO {
     @NotNull
-    public ArrayList<SaveTextDTO> textList;
+    public List<Integer> textsIndices;
     @NotNull
     @DecimalMin(value = "0", inclusive = false)
     public float budget;
     @NotNull
     public LocalDate clientEntryDate;
 
-    public BudgetSaleDTO(ArrayList<SaveTextDTO> textList, float budget, LocalDate clientEntryDate) {
-        this.textList = textList;
+    public BudgetSaleDTO() {
+    }
+
+    public BudgetSaleDTO(List<Integer> textsIndices, float budget, LocalDate clientEntryDate) {
+        this.textsIndices = textsIndices;
         this.budget = budget;
         this.clientEntryDate = clientEntryDate;
     }
 
-    public ArrayList<SaveTextDTO> getTextList() {
-        return textList;
+    public List<Integer> getTextsIndices() {
+        return textsIndices;
     }
 
-    public void setTextList(ArrayList<SaveTextDTO> textList) {
-        this.textList = textList;
+    public void setTextsIndices(List<Integer> textsIndices) {
+        this.textsIndices = textsIndices;
     }
 
     public float getBudget() {

@@ -33,7 +33,7 @@ public class QuoteService {
 
     private final LocalDate today = LocalDate.now();
     private List<TextObject> textsSortedAndCombined = new ArrayList<>();
-    private List<SaveTextDTO> rawTexts = new ArrayList<>();
+    private List<SaveTextDTO> processedTexts = new ArrayList<>();
     private List<String> booksQuote = new ArrayList<>();
     private List<String> novelsQuote = new ArrayList<>();
     private BookObject cheapestBookObject;
@@ -65,12 +65,41 @@ public class QuoteService {
             bookEntityStock.add(new BookEntity("El mono desnudo", 20));
             bookEntityStock.add(new BookEntity("Crítica de la razón pura", 300));
             bookEntityStock.add(new BookEntity("Sin blanca en París y Londres", 2));
+            bookEntityStock.add(new BookEntity("1984", 150));
+            bookEntityStock.add(new BookEntity("Cien años de soledad", 200));
+            bookEntityStock.add(new BookEntity("Don Quijote de la Mancha", 250));
+            bookEntityStock.add(new BookEntity("Orgullo y prejuicio", 180));
+            bookEntityStock.add(new BookEntity("Moby Dick", 220));
+            bookEntityStock.add(new BookEntity("El señor de los anillos", 300));
+            bookEntityStock.add(new BookEntity("Los miserables", 280));
+            bookEntityStock.add(new BookEntity("Harry Potter y la piedra filosofal", 180));
+            bookEntityStock.add(new BookEntity("El principito", 120));
+            bookEntityStock.add(new BookEntity("El alquimista", 150));
+            bookEntityStock.add(new BookEntity("El código Da Vinci", 200));
+            bookEntityStock.add(new BookEntity("El amor en los tiempos del cólera", 160));
+            bookEntityStock.add(new BookEntity("La sombra del viento", 190));
+            bookEntityStock.add(new BookEntity("El retrato de Dorian Gray", 170));
             novelEntityStock.add(new NovelEntity("La rebelión en la granja", 1300));
             novelEntityStock.add(new NovelEntity("1984", 3030));
             novelEntityStock.add(new NovelEntity("Cien años de soledad", 550));
             novelEntityStock.add(new NovelEntity("El Conde de Montecristo", 900));
             novelEntityStock.add(new NovelEntity("Crimen y castigo", 500));
             novelEntityStock.add(new NovelEntity("Crónica de una muerte anunciada", 750));
+            novelEntityStock.add(new NovelEntity("Don Quijote de la Mancha", 1200));
+            novelEntityStock.add(new NovelEntity("Orgullo y prejuicio", 800));
+            novelEntityStock.add(new NovelEntity("El señor de los anillos", 1500));
+            novelEntityStock.add(new NovelEntity("Matar un ruiseñor", 700));
+            novelEntityStock.add(new NovelEntity("Los miserables", 2000));
+            novelEntityStock.add(new NovelEntity("Rayuela", 950));
+            novelEntityStock.add(new NovelEntity("El amor en los tiempos del cólera", 1100));
+            novelEntityStock.add(new NovelEntity("El guardián entre el centeno", 850));
+            novelEntityStock.add(new NovelEntity("Memorias de África", 1000));
+            novelEntityStock.add(new NovelEntity("El paciente inglés", 600));
+            novelEntityStock.add(new NovelEntity("Anna Karenina", 1400));
+            novelEntityStock.add(new NovelEntity("Rebelión en la granja", 1800));
+            novelEntityStock.add(new NovelEntity("Cien años de soledad", 1300));
+            novelEntityStock.add(new NovelEntity("Crónica de una muerte anunciada", 950));
+            novelEntityStock.add(new NovelEntity("Los pilares de la Tierra", 1700));
             bookRepository.saveAll(bookEntityStock);
             novelRepository.saveAll(novelEntityStock);
             return new ResponseObject("Textos agregados correctamente a la base de datos ;)");
@@ -102,7 +131,24 @@ public class QuoteService {
     }
 
     public BudgetSaleQuoteObject calculateBudgetSaleQuote(BudgetSaleDTO payload) {
-        rawTexts = payload.textList;
+        
+        List<SaveTextDTO> rawTexts = new ArrayList<>();
+
+        List<BookEntity> bookDb = bookRepository.findAll();
+        List<NovelEntity> novelDb = novelRepository.findAll();
+
+        for (BookEntity book : bookDb){
+            rawTexts.add(new SaveTextDTO(book.getTitle(), TextType.BOOK, book.getBasePrice()));
+        }
+        for (NovelEntity novel : novelDb){
+            rawTexts.add(new SaveTextDTO(novel.getTitle(), TextType.NOVEL, novel.getBasePrice()));
+        }
+
+        for (Integer index : payload.textsIndices) {
+            if (index >= 0 && index < rawTexts.size()) {
+                processedTexts.add(rawTexts.get(index));
+            }
+        }
 
         getCheapestTexts();
 
@@ -158,7 +204,7 @@ public class QuoteService {
         return novelsEntities;
     }
     private void getCheapestTexts() {
-        for (SaveTextDTO text : rawTexts) {
+        for (SaveTextDTO text : processedTexts) {
             textsSortedAndCombined.add(textFactory.create( text, true));
         }
 

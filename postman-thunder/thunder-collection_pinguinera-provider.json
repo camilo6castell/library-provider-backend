@@ -1,7 +1,7 @@
 {
     "client": "Thunder Client",
     "collectionName": "pinguinera-provider",
-    "dateExported": "2024-04-03T03:37:37.419Z",
+    "dateExported": "2024-04-05T05:36:23.602Z",
     "version": "1.1",
     "folders": [],
     "requests": [
@@ -10,11 +10,11 @@
             "colId": "be360734-c924-478e-b4c4-a5420b0c1ecb",
             "containerId": "",
             "name": "CalculateRetailSaleQuote",
-            "url": "http://localhost:8080/CalculateRetailSaleQuote",
+            "url": "http://{{HOST}}:8080/CalculateRetailSaleQuote",
             "method": "POST",
             "sortNum": 10000,
             "created": "2024-04-02T19:42:19.207Z",
-            "modified": "2024-04-02T19:49:26.476Z",
+            "modified": "2024-04-05T05:34:58.707Z",
             "headers": [],
             "params": [],
             "body": {
@@ -29,11 +29,11 @@
             "colId": "be360734-c924-478e-b4c4-a5420b0c1ecb",
             "containerId": "",
             "name": "CalculateWholesaleQuote",
-            "url": "http://localhost:8080/CalculateWholesaleQuote",
+            "url": "http://{{HOST}}:8080/CalculateWholesaleQuote",
             "method": "POST",
             "sortNum": 30000,
             "created": "2024-04-02T20:34:57.869Z",
-            "modified": "2024-04-02T20:37:44.772Z",
+            "modified": "2024-04-05T05:34:52.642Z",
             "headers": [],
             "params": [],
             "body": {
@@ -48,11 +48,11 @@
             "colId": "be360734-c924-478e-b4c4-a5420b0c1ecb",
             "containerId": "",
             "name": "CalculateBudgetSaleQuote",
-            "url": "http://localhost:8080/CalculateBudgetSaleQuote",
+            "url": "http://{{HOST}}:8080/CalculateBudgetSaleQuote",
             "method": "POST",
             "sortNum": 40000,
             "created": "2024-04-02T21:01:51.828Z",
-            "modified": "2024-04-03T03:32:42.829Z",
+            "modified": "2024-04-05T05:34:46.506Z",
             "headers": [],
             "params": [],
             "body": {
@@ -61,6 +61,85 @@
                 "form": []
             },
             "tests": []
+        },
+        {
+            "_id": "79f1f85c-3b64-4665-bc6a-8ab9273ffb16",
+            "colId": "be360734-c924-478e-b4c4-a5420b0c1ecb",
+            "containerId": "",
+            "name": "FillDataBase",
+            "url": "http://{{HOST}}:8080/CreateStock",
+            "method": "GET",
+            "sortNum": 50000,
+            "created": "2024-04-04T21:20:15.566Z",
+            "modified": "2024-04-05T05:32:21.872Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"fillDataBase\": true\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "2e059040-a4a9-4424-b045-6ae0e6ad894b",
+            "colId": "be360734-c924-478e-b4c4-a5420b0c1ecb",
+            "containerId": "",
+            "name": "SaveText",
+            "url": "http://{{HOST}}:8080/SaveText",
+            "method": "POST",
+            "sortNum": 80000,
+            "created": "2024-04-05T03:21:01.259Z",
+            "modified": "2024-04-05T05:34:33.461Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"title\": \"Lloro por la tierra\",\n  \"type\": 0,\n  \"basePrice\": 200\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "10eaaa5a-2dbe-44e7-a395-a3a52852d424",
+            "colId": "be360734-c924-478e-b4c4-a5420b0c1ecb",
+            "containerId": "",
+            "name": "CalculateWholesaleQuoteMySQL",
+            "url": "http://{{HOST}}:8080/CalculateWholesaleQuote",
+            "method": "POST",
+            "sortNum": 90000,
+            "created": "2024-04-05T03:23:59.309Z",
+            "modified": "2024-04-05T05:35:08.891Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"bookIndices\": [1, 2, 3, 4, 5, 6],\n  \"novelIndices\": [1, 2, 3, 4, 5],\n  \"clientEntryDate\": \"2006-01-01\"\n}",
+                "form": []
+            },
+            "tests": []
+        },
+        {
+            "_id": "b8c113c9-a501-4d99-ad6b-4a60c28771e5",
+            "colId": "be360734-c924-478e-b4c4-a5420b0c1ecb",
+            "containerId": "",
+            "name": "CalculateBudgetSaleQuoteMySQL",
+            "url": "http://{{HOST}}:8080/CalculateBudgetSaleQuote",
+            "method": "POST",
+            "sortNum": 100000,
+            "created": "2024-04-05T03:55:08.078Z",
+            "modified": "2024-04-05T05:35:37.307Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"textsIndices\": [1, 3, 7, 9, 11],\n  \"budget\": 800,\n  \"clientEntryDate\": \"2006-01-01\"\n}",
+                "form": []
+            },
+            "tests": []
         }
-    ]
+    ],
+    "settings": {
+        "envId": "d0429e0c-92af-477a-9a08-a76153cfa938"
+    }
 }
