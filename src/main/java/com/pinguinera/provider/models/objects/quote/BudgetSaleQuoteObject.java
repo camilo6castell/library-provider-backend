@@ -1,12 +1,12 @@
-package com.pinguinera.provider.models.entities.quote;
+package com.pinguinera.provider.models.objects.quote;
 
 import java.util.ArrayList;
 
-public class BudgetSaleQuote {
+public class BudgetSaleQuoteObject {
     private ArrayList<String> budgetQuote;
     private String quoteSummary;
 
-    public BudgetSaleQuote(ArrayList<String> budgetQuote, String quoteSummary) {
+    public BudgetSaleQuoteObject(ArrayList<String> budgetQuote, String quoteSummary) {
         this.budgetQuote = budgetQuote;
         this.quoteSummary = quoteSummary;
     }

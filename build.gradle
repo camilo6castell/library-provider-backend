@@ -22,13 +22,23 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+	// To fix servlet related issue
+
 	implementation 'javax.servlet:servlet-api:2.5'
 	implementation 'jakarta.servlet:jakarta.servlet-api:5.0.0'
 
+	// to get Swagger
+
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
-	//implementation 'io.springfox:springfox-boot-starter:3.0.0'
 	implementation 'io.springfox:springfox-swagger2:3.0.0'
 	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+
+	// to get mySQL
+
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+	//implementation 'mysql:mysql-connector-java:8.0.28'
 }
 
 tasks.named('test') {

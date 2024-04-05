@@ -1,13 +1,13 @@
-package com.pinguinera.provider.models.entities.quote;
+package com.pinguinera.provider.models.objects.quote;
 
 import java.util.List;
 
-public class WholesaleQuote {
+public class WholesaleQuoteObject {
     private List<String> booksQuote;
     private List<String> novelsQuote;
     private String total;
 
-    public WholesaleQuote(List<String> booksQuote, List<String> novelsQuote, String total) {
+    public WholesaleQuoteObject(List<String> booksQuote, List<String> novelsQuote, String total) {
         this.booksQuote = booksQuote;
         this.novelsQuote = novelsQuote;
         this.total = total;

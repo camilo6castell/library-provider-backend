@@ -1,8 +1,8 @@
 package com.pinguinera.provider.models.DTOS;
 
 
-import com.pinguinera.provider.models.entities.text.Book;
-import com.pinguinera.provider.models.entities.text.Novel;
+import com.pinguinera.provider.models.objects.text.BookObject;
+import com.pinguinera.provider.models.objects.text.NovelObject;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
@@ -10,32 +10,32 @@ import java.util.List;
 
 public class WholeSaleDTO {
     @NotNull
-    public List<Book> bookList;
+    public List<BookObject> bookObjectList;
     @NotNull
-    public List<Novel> novelList;
+    public List<NovelObject> novelObjectList;
     @NotNull
     public LocalDate clientEntryDate;
 
-    public WholeSaleDTO(List<Book> bookList, List<Novel> novelList, LocalDate clientEntryDate) {
-        this.bookList = bookList;
-        this.novelList = novelList;
+    public WholeSaleDTO(List<BookObject> bookObjectList, List<NovelObject> novelObjectList, LocalDate clientEntryDate) {
+        this.bookObjectList = bookObjectList;
+        this.novelObjectList = novelObjectList;
         this.clientEntryDate = clientEntryDate;
     }
 
-    public List<Book> getBookList() {
-        return bookList;
+    public List<BookObject> getBookList() {
+        return bookObjectList;
     }
 
-    public void setBookList(List<Book> bookList) {
-        this.bookList = bookList;
+    public void setBookList(List<BookObject> bookObjectList) {
+        this.bookObjectList = bookObjectList;
     }
 
-    public List<Novel> getNovelList() {
-        return novelList;
+    public List<NovelObject> getNovelList() {
+        return novelObjectList;
     }
 
-    public void setNovelList(List<Novel> novelList) {
-        this.novelList = novelList;
+    public void setNovelList(List<NovelObject> novelObjectList) {
+        this.novelObjectList = novelObjectList;
     }
 
     public LocalDate getClientEntryDate() {

@@ -1,11 +1,11 @@
-package com.pinguinera.provider.models.entities.quote;
+package com.pinguinera.provider.models.objects.quote;
 
-public class RetailSaleQuote {
+public class RetailSaleQuoteObject {
     private String textTitle;
     private String textType;
     private float total;
 
-    public RetailSaleQuote(String textTitle, String textType, float total) {
+    public RetailSaleQuoteObject(String textTitle, String textType, float total) {
         this.textTitle = textTitle;
         this.textType = textType;
         this.total = total;

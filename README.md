@@ -50,7 +50,7 @@ However, I show them below
 
 ```sh
 {
-  "bookList": [
+  "bookObjectList": [
     {
       "title": "libro1",
       "type": 0,
@@ -77,7 +77,7 @@ However, I show them below
       "basePrice": 750
     }
   ],
-  "novelList": [
+  "novelObjectList": [
     {
       "title": "novela1",
       "type": 1,

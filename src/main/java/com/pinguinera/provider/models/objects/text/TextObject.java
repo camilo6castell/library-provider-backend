@@ -1,17 +1,17 @@
 
-package com.pinguinera.provider.models.entities.text;
+package com.pinguinera.provider.models.objects.text;
 
-public class Text {
+public class TextObject {
     protected String title;
     protected float basePrice;
     protected float price;
     protected boolean isRetail = false;
     protected float totalPrice;
 
-    public Text() {
+    public TextObject() {
     }
 
-    public Text(String title, float basePrice) {
+    public TextObject(String title, float basePrice) {
         this.title = title;
         this.basePrice = basePrice;
     }
