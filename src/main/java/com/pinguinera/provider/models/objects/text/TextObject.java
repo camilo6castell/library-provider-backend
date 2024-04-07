@@ -1,8 +1,11 @@
 
 package com.pinguinera.provider.models.objects.text;
 
+import com.pinguinera.provider.models.enums.TextType;
+
 public class TextObject {
     protected String title;
+    protected TextType type;
     protected float basePrice;
     protected float price;
     protected boolean isRetail = false;
@@ -11,9 +14,11 @@ public class TextObject {
     public TextObject() {
     }
 
-    public TextObject(String title, float basePrice) {
+    public TextObject(String title, TextType type, float basePrice, boolean isRetail) {
         this.title = title;
+        this.type = type;
         this.basePrice = basePrice;
+        this.isRetail = isRetail;
     }
 
     public String getTitle() {
@@ -24,12 +29,28 @@ public class TextObject {
         this.title = title;
     }
 
+    public TextType getType() {
+        return type;
+    }
+
+    public void setType(TextType type) {
+        this.type = type;
+    }
+
     public float getBasePrice() {
         return basePrice;
     }
 
     public void setBasePrice(float basePrice) {
         this.basePrice = basePrice;
+    }
+
+    public float getPrice() {
+        return price;
+    }
+
+    public void setPrice(float price) {
+        this.price = price;
     }
 
     public boolean isRetail() {
@@ -46,13 +67,5 @@ public class TextObject {
 
     public void setTotalPrice(float totalPrice) {
         this.totalPrice = totalPrice;
-    }
-
-    public float getPrice() {
-        return price;
-    }
-
-    public void setPrice(float price) {
-        this.price = price;
     }
 }

@@ -1,9 +1,11 @@
 package com.pinguinera.provider.models.DTOS;
 
 import com.pinguinera.provider.models.enums.TextType;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-public class SaveTextDTO {
+public class TextDTO {
     @NotNull
     @NotBlank
     public String title;
@@ -13,7 +15,7 @@ public class SaveTextDTO {
     @DecimalMin(value = "0", inclusive = false)
     public float basePrice;
 
-    public SaveTextDTO(String title, TextType type, float basePrice) {
+    public TextDTO(String title, TextType type, float basePrice) {
         this.title = title;
         this.type = type;
         this.basePrice = basePrice;
