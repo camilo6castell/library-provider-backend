@@ -7,7 +7,8 @@ public class NovelObject extends TextObject {
 
     public NovelObject(String title, TextType type, float basePrice, boolean isRetail) {
         super(title, type, basePrice, isRetail);
-        price = basePrice*INCREMENT_BY_DEMAND;
-        totalPrice = isRetail ? 1.02f*price : 0.9985f*price;
+        float priceAux = basePrice*INCREMENT_BY_DEMAND;
+        totalPrice = isRetail ? 1.02f*priceAux : 0.9985f*priceAux;
+        price = isRetail ? totalPrice : priceAux;
     }
 }
