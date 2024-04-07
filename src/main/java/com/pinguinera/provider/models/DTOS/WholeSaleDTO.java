@@ -1,8 +1,5 @@
 package com.pinguinera.provider.models.DTOS;
 
-
-import com.pinguinera.provider.models.objects.text.BookObject;
-import com.pinguinera.provider.models.objects.text.NovelObject;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
@@ -10,31 +7,31 @@ import java.util.List;
 
 public class WholeSaleDTO {
     @NotNull
-    public List<Long> bookIndices;
+    public List<ItemFromTextBatchDTO> bookIndices;
     @NotNull
-    public List<Long> novelIndices;
+    public List<ItemFromTextBatchDTO> novelIndices;
     @NotNull
     public LocalDate clientEntryDate;
 
-    public WholeSaleDTO(List<Long> bookIndices, List<Long> novelIndices, LocalDate clientEntryDate) {
+    public WholeSaleDTO(List<ItemFromTextBatchDTO> bookIndices, List<ItemFromTextBatchDTO> novelIndices, LocalDate clientEntryDate) {
         this.bookIndices = bookIndices;
         this.novelIndices = novelIndices;
         this.clientEntryDate = clientEntryDate;
     }
 
-    public List<Long> getBookIndices() {
+    public List<ItemFromTextBatchDTO> getBookIndices() {
         return bookIndices;
     }
 
-    public void setBookIndices(List<Long> bookIndices) {
+    public void setBookIndices(List<ItemFromTextBatchDTO> bookIndices) {
         this.bookIndices = bookIndices;
     }
 
-    public List<Long> getNovelIndices() {
+    public List<ItemFromTextBatchDTO> getNovelIndices() {
         return novelIndices;
     }
 
-    public void setNovelIndices(List<Long> novelIndices) {
+    public void setNovelIndices(List<ItemFromTextBatchDTO> novelIndices) {
         this.novelIndices = novelIndices;
     }
 

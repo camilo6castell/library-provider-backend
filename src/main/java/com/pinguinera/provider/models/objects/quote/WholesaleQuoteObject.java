@@ -3,37 +3,37 @@ package com.pinguinera.provider.models.objects.quote;
 import java.util.List;
 
 public class WholesaleQuoteObject {
-    private List<String> booksQuote;
-    private List<String> novelsQuote;
-    private String total;
+    private List<TextQuoteObject> booksQuote;
+    private List<TextQuoteObject> novelsQuote;
+    private SummaryObject summary;
 
-    public WholesaleQuoteObject(List<String> booksQuote, List<String> novelsQuote, String total) {
+    public WholesaleQuoteObject(List<TextQuoteObject> booksQuote, List<TextQuoteObject> novelsQuote, SummaryObject summary) {
         this.booksQuote = booksQuote;
         this.novelsQuote = novelsQuote;
-        this.total = total;
+        this.summary = summary;
     }
 
-    public List<String> getBooksQuote() {
+    public List<TextQuoteObject> getBooksQuote() {
         return booksQuote;
     }
 
-    public void setBooksQuote(List<String> booksQuote) {
+    public void setBooksQuote(List<TextQuoteObject> booksQuote) {
         this.booksQuote = booksQuote;
     }
 
-    public List<String> getNovelsQuote() {
+    public List<TextQuoteObject> getNovelsQuote() {
         return novelsQuote;
     }
 
-    public void setNovelsQuote(List<String> novelsQuote) {
+    public void setNovelsQuote(List<TextQuoteObject> novelsQuote) {
         this.novelsQuote = novelsQuote;
     }
 
-    public String getTotal() {
-        return total;
+    public SummaryObject getSummary() {
+        return summary;
     }
 
-    public void setTotal(String total) {
-        this.total = total;
+    public void setSummary(SummaryObject summary) {
+        this.summary = summary;
     }
 }
