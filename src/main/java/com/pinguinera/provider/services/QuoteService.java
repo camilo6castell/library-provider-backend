@@ -26,17 +26,11 @@ public class QuoteService {
     private final LocalDate today = LocalDate.now();
     private final TextRepository textRepository;
 
+    private float budget;
     private float subTotal = 0;
     private float total = 0;
 
     private List<TextQuoteObject> quoteObject = new ArrayList<>();
-
-
-    private List<SaveAndQuoteTextDTO> processedTexts = new ArrayList<>();
-
-
-    private ArrayList<String> budgetQuote = new ArrayList<>();
-
 
     private final TextFactory textFactory;
 
@@ -150,6 +144,129 @@ public class QuoteService {
         return result;
     }
 
+    private List<DiscountObject> setDiscountList( float seniorityDiscount){
+        List<DiscountObject> auxDiscuountsList = new ArrayList<>();
+        if (seniorityDiscount != 1) {
+            auxDiscuountsList.add(new DiscountObject("seniority", ((seniorityDiscount) * 100) - 100));
+        }
+        return auxDiscuountsList;
+    }
+
+    private void addCheapestTextObject(TextObject cheapestTextObject, List<TextBatchObject> suggestedTextsBatch, List<DiscountObject> emptyListItemBatchDiscount, float seniorityDiscount) {
+        TextObject cheapestClonedTextObject;
+        if (cheapestTextObject instanceof BookObject) {
+            cheapestClonedTextObject = new BookObject(cheapestTextObject.getTitle(), cheapestTextObject.getType(), cheapestTextObject.getBasePrice(), true);
+        } else {
+            cheapestClonedTextObject = new NovelObject(cheapestTextObject.getTitle(), cheapestTextObject.getType(), cheapestTextObject.getBasePrice(), true);
+        }
+        suggestedTextsBatch.add(new TextBatchObject(cheapestClonedTextObject.getTitle(), cheapestClonedTextObject.getType(), cheapestClonedTextObject.getPrice(), emptyListItemBatchDiscount, cheapestClonedTextObject.getTotalPrice()));
+        budget -= cheapestClonedTextObject.getTotalPrice() * seniorityDiscount;
+        subTotal += cheapestClonedTextObject.getTotalPrice();
+        total += cheapestClonedTextObject.getTotalPrice() * seniorityDiscount;
+    }
+
+    private void setSuggestedTextsBatch( float bookPriceToPlay,  float novelPriceToPlay, TextObject cheapestBookObject, TextObject cheapestNovelObject, ArrayList<TextBatchObject> suggestedTextsBatch, float seniorityDiscount, List<DiscountObject> emptyListItemBatchDiscount, List<DiscountObject> listItemBatchDiscount){
+        int countToWholesale = 9;
+        if (bookPriceToPlay < novelPriceToPlay) {
+            while (budget > 0) {
+                if (budget - bookPriceToPlay < 0) {
+                    break;
+                }
+                if (countToWholesale != 0) {
+                    TextObject cheapestClonedBookObject = new BookObject(cheapestBookObject.getTitle(), cheapestBookObject.getType(), cheapestBookObject.getBasePrice(), true);
+                    suggestedTextsBatch.add(new TextBatchObject(cheapestClonedBookObject.getTitle(), cheapestClonedBookObject.getType(), cheapestClonedBookObject.getPrice(), emptyListItemBatchDiscount, cheapestClonedBookObject.getTotalPrice()));
+                    budget -= cheapestClonedBookObject.getTotalPrice() * seniorityDiscount;
+                    total += cheapestClonedBookObject.getTotalPrice() * seniorityDiscount;
+                    subTotal += cheapestClonedBookObject.getTotalPrice();
+                    countToWholesale -= 1;
+                } else {
+                    TextObject cheapestClonedBookObject = cheapestBookObject.clone();
+                    cheapestClonedBookObject.setIsRetail(false);
+                    suggestedTextsBatch.add(new TextBatchObject(cheapestClonedBookObject.getTitle(), cheapestClonedBookObject.getType(), cheapestClonedBookObject.getPrice(), listItemBatchDiscount, cheapestClonedBookObject.getTotalPrice()));
+                    budget -= bookPriceToPlay;
+                    subTotal += cheapestClonedBookObject.getTotalPrice();
+                    total += bookPriceToPlay;
+                }
+            }
+        } else {
+            while (budget > 0) {
+                if (budget - novelPriceToPlay < 0) {
+                    break;
+                }
+                if (countToWholesale != 0) {
+                    TextObject cheapestClonedNovelObject = new NovelObject(cheapestNovelObject.getTitle(), cheapestNovelObject.getType(), cheapestNovelObject.getBasePrice(), true);
+                    suggestedTextsBatch.add(new TextBatchObject(cheapestClonedNovelObject.getTitle(), cheapestClonedNovelObject.getType(), cheapestClonedNovelObject.getPrice(), emptyListItemBatchDiscount, cheapestClonedNovelObject.getTotalPrice()));
+                    budget -= cheapestClonedNovelObject.getTotalPrice() * seniorityDiscount;
+                    total = cheapestClonedNovelObject.getTotalPrice() * seniorityDiscount;
+                    subTotal += cheapestClonedNovelObject.getTotalPrice();
+                    countToWholesale -= 1;
+                } else {
+                    TextObject cheapestClonedNovelObject = cheapestNovelObject.clone();
+                    cheapestClonedNovelObject.setIsRetail(false);
+                    suggestedTextsBatch.add(new TextBatchObject(cheapestClonedNovelObject.getTitle(), cheapestClonedNovelObject.getType(), cheapestClonedNovelObject.getPrice(), listItemBatchDiscount, cheapestClonedNovelObject.getTotalPrice()));
+                    budget -= bookPriceToPlay;
+                    subTotal += cheapestClonedNovelObject.getTotalPrice();
+                    total += bookPriceToPlay;
+                }
+            }
+        }
+    }
+
+
+
+
+
+    private BudgetSaleQuoteObject setBudgetSaleQuoteObject(ArrayList<TextBatchObject> suggestedTextsBatch, List<DiscountObject> discounts){
+        return suggestedTextsBatch.size() > 10 ? new BudgetSaleQuoteObject(suggestedTextsBatch, new SummaryObject(subTotal, discounts, total), new ResponseObject(true, "Contización hecha con éxito, y te han sobrado: " + budget + ".")) : new BudgetSaleQuoteObject(new ArrayList<>(), new SummaryObject(0, new ArrayList<>(), 0), new ResponseObject(false, "Error, se necesitan por lo menos 11 textos para poder hacer esta cotización"));
+    }
+
+    public BudgetSaleQuoteObject calculateBudgetSaleQuote(BudgetSaleDTO payload) {
+
+        BudgetSaleQuoteObject result;
+
+        float seniorityDiscount = calculateSeniorityDiscount(payload.getClientEntryDate());
+
+        List<DiscountObject> discounts = setDiscountList(seniorityDiscount);
+
+        List<TextEntity> entitiesSortedFromIndicesBatch = getEntitiesSortedFromIndicesBatch(payload);
+
+        if (containsBookAndNovel(entitiesSortedFromIndicesBatch)) {
+
+            ArrayList<TextBatchObject> suggestedTextsBatch = new ArrayList<>();
+            List<DiscountObject> emptyListItemBatchDiscount = new ArrayList<>();
+            List<DiscountObject> listItemBatchDiscount = new ArrayList<>();
+            listItemBatchDiscount.add(new DiscountObject("Descuento por compra al por mayor", 0.15F));
+
+            TextObject cheapestBookObject = getCheapestText(entitiesSortedFromIndicesBatch, TextType.BOOK);
+            TextObject cheapestNovelObject = getCheapestText(entitiesSortedFromIndicesBatch, TextType.NOVEL);
+
+            float bookPriceToPlay = cheapestBookObject.getBasePrice() * seniorityDiscount;
+            float novelPriceToPlay = cheapestNovelObject.getBasePrice() * seniorityDiscount;
+
+            budget = payload.budget;
+
+            if (cheapestBookObject.getTotalPrice() > cheapestNovelObject.getTotalPrice()) {
+                addCheapestTextObject(cheapestBookObject, suggestedTextsBatch, emptyListItemBatchDiscount, seniorityDiscount);
+            } else {
+                addCheapestTextObject(cheapestNovelObject, suggestedTextsBatch, emptyListItemBatchDiscount, seniorityDiscount);
+            }
+
+            setSuggestedTextsBatch(bookPriceToPlay,novelPriceToPlay, cheapestBookObject, cheapestNovelObject, suggestedTextsBatch, seniorityDiscount,  emptyListItemBatchDiscount,  listItemBatchDiscount);
+
+            result = setBudgetSaleQuoteObject(suggestedTextsBatch, discounts);
+
+        } else {
+            result = new BudgetSaleQuoteObject(new ArrayList<>(), new SummaryObject(0, new ArrayList<>(), 0), new ResponseObject(false, "Error, se necesita por lo menos un libro y una novela para poder hacer esta cotización."));
+        }
+        budget = 0;
+        total = 0;
+        subTotal = 0;
+        return result;
+    }
+
+
+
+//    // PRIVATE METHODS
 
     private List<TextEntity> getEntitiesSortedFromIndicesBatch(BudgetSaleDTO payload) {
         List<TextEntity> auxChosenTextsEntities = new ArrayList<>();
@@ -181,29 +298,6 @@ public class QuoteService {
         return hasTextType;
     }
 
-//    private TextObject getCheapestTexts(boolean isBook, List<TextEntity> entitiesSortedFromIndicesBatch) {
-//        TextObject auxCheapestTextObject = new TextObject();
-//        for (TextEntity text : entitiesSortedFromIndicesBatch) {
-//            auxCheapestTextObject = setCheapestText(isBook, auxCheapestTextObject, text);
-//        }
-//        return auxCheapestTextObject;
-//    }
-//
-//    private TextObject setCheapestText(boolean isBook, TextObject auxCheapestTextObject, TextEntity text) {
-//        TextObject tempCheapestTextObject;
-//        if (isBook) {
-//            tempCheapestTextObject = new BookObject(text.getTitle(), text.getType(), text.getBasePrice(), false);
-//        } else {
-//            tempCheapestTextObject = new NovelObject(text.getTitle(), text.getType(), text.getBasePrice(), false);
-//        }
-//        if (tempCheapestTextObject.getBasePrice() < auxCheapestTextObject.getBasePrice()) {
-//            auxCheapestTextObject = tempCheapestTextObject;
-//        }
-//        return auxCheapestTextObject;
-//    }
-
-
-
     public TextObject getCheapestText(List<TextEntity> entitiesSortedFromIndicesBatch, TextType type) {
         TextObject cheapestText = null;
         float lowestPrice = Float.MAX_VALUE;
@@ -218,112 +312,7 @@ public class QuoteService {
             }
         }
         return cheapestText;
-        }
-
-
-
-
-    public BudgetSaleQuoteObject calculateBudgetSaleQuote(BudgetSaleDTO payload) {
-
-        float seniorityDiscount = calculateSeniorityDiscount(payload.getClientEntryDate());
-
-        List<DiscountObject> discounts = new ArrayList<>();
-
-        List<TextEntity> entitiesSortedFromIndicesBatch = getEntitiesSortedFromIndicesBatch(payload);
-
-        if (containsBookAndNovel(entitiesSortedFromIndicesBatch)) {
-
-            ArrayList<TextBatchObject> suggestedTextsBatch = new ArrayList<>();
-            List<DiscountObject> emptyListItemBatchDiscount = new ArrayList<>();
-            List<DiscountObject> listItemBatchDiscount = new ArrayList<>();
-            listItemBatchDiscount.add(new DiscountObject("Descuento por compra al por mayor", 0.15F));
-
-            if (seniorityDiscount != 1) {
-                discounts.add(new DiscountObject("seniority", ((seniorityDiscount) * 100) - 100));
-            }
-
-            TextObject cheapestBookObject = getCheapestText(entitiesSortedFromIndicesBatch, TextType.BOOK);
-            TextObject cheapestNovelObject = getCheapestText(entitiesSortedFromIndicesBatch, TextType.NOVEL);
-
-            float bookPriceToPlay = cheapestBookObject.getBasePrice() * seniorityDiscount;
-            float novelPriceToPlay = cheapestNovelObject.getBasePrice() * seniorityDiscount;
-
-            float budget = payload.budget;
-
-            if (cheapestBookObject.getTotalPrice() > cheapestNovelObject.getTotalPrice()){
-                TextObject cheapestClonedBookObject = new BookObject(cheapestBookObject.getTitle(), cheapestBookObject.getType(), cheapestBookObject.getBasePrice(), true);
-                suggestedTextsBatch.add(new TextBatchObject(cheapestClonedBookObject.getTitle(), cheapestClonedBookObject.getType(), cheapestClonedBookObject.getPrice(), emptyListItemBatchDiscount, cheapestClonedBookObject.getTotalPrice()));
-                budget -= cheapestClonedBookObject.getTotalPrice()*seniorityDiscount;
-                subTotal += cheapestClonedBookObject.getTotalPrice();
-                total +=  cheapestClonedBookObject.getTotalPrice()*seniorityDiscount;
-            } else {
-                TextObject cheapestClonedNovelObject = new NovelObject(cheapestNovelObject.getTitle(), cheapestNovelObject.getType(), cheapestNovelObject.getBasePrice(), true);
-                suggestedTextsBatch.add(new TextBatchObject(cheapestClonedNovelObject.getTitle(), cheapestClonedNovelObject.getType(), cheapestClonedNovelObject.getPrice(), emptyListItemBatchDiscount, cheapestClonedNovelObject.getTotalPrice()));
-                budget -= cheapestClonedNovelObject.getTotalPrice()*seniorityDiscount;
-                subTotal += cheapestClonedNovelObject.getTotalPrice();
-                total +=  cheapestClonedNovelObject.getTotalPrice()*seniorityDiscount;
-            }
-
-            int countToWholesale = 9;
-            if (bookPriceToPlay < novelPriceToPlay) {
-                while (budget > 0) {
-                    if (budget - bookPriceToPlay < 0) {
-                        break;
-                    }
-                    if (countToWholesale != 0){
-                        TextObject cheapestClonedBookObject = new BookObject(cheapestBookObject.getTitle(), cheapestBookObject.getType(), cheapestBookObject.getBasePrice(), true);
-                        suggestedTextsBatch.add(new TextBatchObject(cheapestClonedBookObject.getTitle(), cheapestClonedBookObject.getType(), cheapestClonedBookObject.getPrice(), emptyListItemBatchDiscount, cheapestClonedBookObject.getTotalPrice()));
-                        budget -= cheapestClonedBookObject.getTotalPrice()*seniorityDiscount;
-                        total += cheapestClonedBookObject.getTotalPrice()*seniorityDiscount;
-                        subTotal += cheapestClonedBookObject.getTotalPrice();
-                        countToWholesale-= 1;
-                    } else {
-                        TextObject cheapestClonedBookObject = cheapestBookObject.clone();
-                        cheapestClonedBookObject.setIsRetail(false);
-                        suggestedTextsBatch.add(new TextBatchObject(cheapestClonedBookObject.getTitle(), cheapestClonedBookObject.getType(), cheapestClonedBookObject.getPrice(), listItemBatchDiscount, cheapestClonedBookObject.getTotalPrice()));
-                        budget -= bookPriceToPlay;
-                        subTotal += cheapestClonedBookObject.getTotalPrice();
-                        total += bookPriceToPlay;
-                    }
-
-                }
-
-            } else {
-                while (budget > 0) {
-                    if (budget - novelPriceToPlay < 0) {
-                        break;
-                    }
-                    if (countToWholesale != 0){
-                        TextObject cheapestClonedNovelObject = new NovelObject(cheapestNovelObject.getTitle(), cheapestNovelObject.getType(), cheapestNovelObject.getBasePrice(), true);
-                        suggestedTextsBatch.add(new TextBatchObject(cheapestClonedNovelObject.getTitle(), cheapestClonedNovelObject.getType(), cheapestClonedNovelObject.getPrice(), emptyListItemBatchDiscount, cheapestClonedNovelObject.getTotalPrice()));
-                        budget -= cheapestClonedNovelObject.getTotalPrice()*seniorityDiscount;
-                        total = cheapestClonedNovelObject.getTotalPrice()*seniorityDiscount;
-                        subTotal += cheapestClonedNovelObject.getTotalPrice();
-                        countToWholesale-= 1;
-                    } else {
-                        TextObject cheapestClonedNovelObject = cheapestNovelObject.clone();
-                        cheapestClonedNovelObject.setIsRetail(false);
-                        suggestedTextsBatch.add(new TextBatchObject(cheapestClonedNovelObject.getTitle(), cheapestClonedNovelObject.getType(), cheapestClonedNovelObject.getPrice(), listItemBatchDiscount, cheapestClonedNovelObject.getTotalPrice()));
-                        budget -= bookPriceToPlay;
-                        subTotal += cheapestClonedNovelObject.getTotalPrice();
-                        total += bookPriceToPlay;
-                    }
-                }
-            }
-            if (suggestedTextsBatch.size() > 10) {
-                BudgetSaleQuoteObject result = new BudgetSaleQuoteObject(suggestedTextsBatch, new SummaryObject(subTotal, discounts, total), new ResponseObject(true, "Contización hecha con éxito, y te han sobrado: " + budget + "."));
-                total = 0;
-                subTotal = 0;
-                return result;
-            } else {
-                return new BudgetSaleQuoteObject(new ArrayList<>(), new SummaryObject(0, new ArrayList<>(), 0), new ResponseObject(false, "Error, se necesitan por lo menos 11 textos para poder hacer esta cotización"));
-            }
-        } else {
-            return new BudgetSaleQuoteObject(new ArrayList<>(), new SummaryObject(0, new ArrayList<>(), 0), new ResponseObject(false, "Error, se necesita por lo menos un libro y una novela para poder hacer esta cotización."));
-        }
     }
-
-//    // PRIVATE METHODS
 
     private float calculateSeniorityDiscount(LocalDate clientEntryDate) {
         int years = Period.between(clientEntryDate, today).getYears();
