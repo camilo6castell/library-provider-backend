@@ -7,32 +7,32 @@ import java.util.List;
 
 public class WholeSaleDTO {
     @NotNull
-    public List<ItemFromTextBatchDTO> bookIndices;
+    public List<ItemFromTextBatchDTO> bookIndicesAnQuantity;
     @NotNull
-    public List<ItemFromTextBatchDTO> novelIndices;
+    public List<ItemFromTextBatchDTO> novelIndicesAndQuantity;
     @NotNull
     public LocalDate clientEntryDate;
 
-    public WholeSaleDTO(List<ItemFromTextBatchDTO> bookIndices, List<ItemFromTextBatchDTO> novelIndices, LocalDate clientEntryDate) {
-        this.bookIndices = bookIndices;
-        this.novelIndices = novelIndices;
+    public WholeSaleDTO(List<ItemFromTextBatchDTO> bookIndicesAnQuantity, List<ItemFromTextBatchDTO> novelIndicesAndQuantity, LocalDate clientEntryDate) {
+        this.bookIndicesAnQuantity = bookIndicesAnQuantity;
+        this.novelIndicesAndQuantity = novelIndicesAndQuantity;
         this.clientEntryDate = clientEntryDate;
     }
 
-    public List<ItemFromTextBatchDTO> getBookIndices() {
-        return bookIndices;
+    public List<ItemFromTextBatchDTO> getBookIndicesAnQuantity() {
+        return bookIndicesAnQuantity;
     }
 
-    public void setBookIndices(List<ItemFromTextBatchDTO> bookIndices) {
-        this.bookIndices = bookIndices;
+    public void setBookIndicesAnQuantity(List<ItemFromTextBatchDTO> bookIndicesAnQuantity) {
+        this.bookIndicesAnQuantity = bookIndicesAnQuantity;
     }
 
-    public List<ItemFromTextBatchDTO> getNovelIndices() {
-        return novelIndices;
+    public List<ItemFromTextBatchDTO> getNovelIndicesAndQuantity() {
+        return novelIndicesAndQuantity;
     }
 
-    public void setNovelIndices(List<ItemFromTextBatchDTO> novelIndices) {
-        this.novelIndices = novelIndices;
+    public void setNovelIndicesAndQuantity(List<ItemFromTextBatchDTO> novelIndicesAndQuantity) {
+        this.novelIndicesAndQuantity = novelIndicesAndQuantity;
     }
 
     public LocalDate getClientEntryDate() {

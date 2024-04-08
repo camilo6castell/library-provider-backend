@@ -3,7 +3,7 @@ package com.pinguinera.provider.models.objects.text;
 
 import com.pinguinera.provider.models.enums.TextType;
 
-public class TextObject {
+public class TextObject implements Cloneable{
     protected String title;
     protected TextType type;
     protected float basePrice;
@@ -67,5 +67,16 @@ public class TextObject {
 
     public void setTotalPrice(float totalPrice) {
         this.totalPrice = totalPrice;
+    }
+
+    @Override
+    public TextObject clone() {
+        try {
+            TextObject clone = (TextObject) super.clone();
+            // TODO: copy mutable state here, so the clone can't change the internals of the original
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

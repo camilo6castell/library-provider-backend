@@ -4,6 +4,14 @@ public class DiscountObject {
     private String concept;
     private float percentage;
 
+    public DiscountObject() {
+    }
+
+    public DiscountObject(String concept, float percentage) {
+        this.concept = concept;
+        this.percentage = percentage;
+    }
+
     public String getConcept() {
         return concept;
     }
@@ -20,8 +28,5 @@ public class DiscountObject {
         this.percentage = percentage;
     }
 
-    public DiscountObject(String concept, float percentage) {
-        this.concept = concept;
-        this.percentage = percentage;
-    }
+
 }

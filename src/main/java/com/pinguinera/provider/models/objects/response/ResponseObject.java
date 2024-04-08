@@ -1,17 +1,27 @@
 package com.pinguinera.provider.models.objects.response;
 
 public class ResponseObject {
-    private String response;
+    private boolean succeed;
+    private String message;
 
-    public ResponseObject(String response) {
-        this.response = response;
+    public ResponseObject(boolean succeed, String message) {
+        this.succeed = succeed;
+        this.message = message;
     }
 
-    public String getResponse() {
-        return response;
+    public boolean isSucceed() {
+        return succeed;
     }
 
-    public void setResponse(String response) {
-        this.response = response;
+    public void setSucceed(boolean succeed) {
+        this.succeed = succeed;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 public class ItemFromTextBatchDTO {
     @NotNull
     public int index;
+    @NotNull
     public int quantity;
 
     public ItemFromTextBatchDTO(int index, int quantity) {

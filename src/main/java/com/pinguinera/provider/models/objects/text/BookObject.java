@@ -12,4 +12,7 @@ public class BookObject extends TextObject {
         totalPrice = isRetail ? 1.02f*priceAux : 0.9985f*priceAux;
         price = isRetail ? totalPrice : priceAux;
     }
+
+    public BookObject() {
+    }
 }
