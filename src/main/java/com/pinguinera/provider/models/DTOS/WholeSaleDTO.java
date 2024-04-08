@@ -19,7 +19,7 @@ public class WholeSaleDTO {
         this.clientEntryDate = clientEntryDate;
     }
 
-    public List<ItemFromTextBatchDTO> getBookIndicesAnQuantity() {
+    public List<ItemFromTextBatchDTO> getBookIndicesAndQuantity() {
         return bookIndicesAnQuantity;
     }
 
