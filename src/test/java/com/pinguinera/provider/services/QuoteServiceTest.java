@@ -2,146 +2,178 @@ package com.pinguinera.provider.services;
 
 import static org.mockito.Mockito.*;
 
-import com.pinguinera.provider.models.DTOS.BudgetSaleDTO;
-import com.pinguinera.provider.models.DTOS.CreateStockDTO;
-import com.pinguinera.provider.models.DTOS.SaveAndQuoteTextDTO;
-import com.pinguinera.provider.models.DTOS.WholeSaleDTO;
+import com.pinguinera.provider.models.DTOS.*;
 import com.pinguinera.provider.models.enums.TextType;
 import com.pinguinera.provider.models.factories.TextFactory;
 import com.pinguinera.provider.models.objects.quote.BudgetSaleQuoteObject;
+import com.pinguinera.provider.models.objects.quote.DiscountObject;
+import com.pinguinera.provider.models.objects.quote.TextQuoteObject;
 import com.pinguinera.provider.models.objects.quote.WholesaleQuoteObject;
 import com.pinguinera.provider.models.objects.response.ResponseObject;
+import com.pinguinera.provider.models.objects.text.BookObject;
+import com.pinguinera.provider.models.objects.text.NovelObject;
+import com.pinguinera.provider.models.objects.text.TextObject;
+import com.pinguinera.provider.models.persistence.TextEntity;
 import com.pinguinera.provider.repositories.TextRepository;
+import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.mockito.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class QuoteServiceTest {
 
-//    private QuoteService quoteService;
-//    private TextRepository textRepository;
-//    private NovelRepository novelRepository;
-//    private TextFactory textFactory;
-//
-//    @BeforeEach
-//    public void setUp() {
-//        textRepository = mock(TextRepository.class);
-//        novelRepository = mock(NovelRepository.class);
-//        textFactory = mock(TextFactory.class);
-//        quoteService = new QuoteService(textRepository, novelRepository, textFactory);
-//    }
-//
-//    @Test
-//    void createStock() {
-//        CreateStockDTO payload = new CreateStockDTO(true);
-//        ResponseObject result = quoteService.createStock(payload);
-//
-//        ResponseObject resultTest =  new ResponseObject("Textos agregados correctamente a la base de datos ;)");
-//
-//        assertNotNull(result);
-//        Assertions.assertEquals(result.getResponse(), resultTest.getResponse());
-//    }
-//
-//    @Test
-//    void createStock2() {
-//        CreateStockDTO payload = new CreateStockDTO(false);
-//        ResponseObject result = quoteService.createStock(payload);
-//
-//        ResponseObject resultTest =  new ResponseObject("No se han hecho cambios a la base de datos. ;)");
-//
-//        assertNotNull(result);
-//        Assertions.assertEquals(result.getResponse(), resultTest.getResponse());
-//    }
-//
-//
-//    @Test
-//    void saveText() {
-//        SaveAndQuoteTextDTO payload = new SaveAndQuoteTextDTO("El origen de las especies", TextType.BOOK, 100);
-//        ResponseObject result = quoteService.saveAndQuoteText(payload);
-//
-//        verify(textRepository).save(any(BookEntity.class));
-//        assertNotNull(result);
-//        assertEquals("El título " + payload.getTitle() + " con el precio base de " + payload.getBasePrice() + "ha sido guardado con éxito.", result.getResponse());
-//    }
-//
-//    @Test
-//    void calculateWholesaleQuote() {
-//        List<Long> bookIndices = Arrays.asList(1L, 2L);
-//        List<Long> novelIndices = Arrays.asList(1L, 2L);
-//        WholeSaleDTO payload = new WholeSaleDTO(bookIndices, novelIndices, LocalDate.now());
-//
-//        when(textRepository.findById(any(Long.class))).thenReturn(Optional.of(new BookEntity("BookTest1", 100)));
-//        when(textRepository.findById(any(Long.class))).thenReturn(Optional.of(new BookEntity("BookTest2", 200)));
-//        when(textRepository.findById(any(Long.class))).thenReturn(Optional.of(new BookEntity("BookTest3", 300)));
-//        when(novelRepository.findById(any(Long.class))).thenReturn(Optional.of(new NovelEntity("NovelTest1", 100)));
-//        when(novelRepository.findById(any(Long.class))).thenReturn(Optional.of(new NovelEntity("NovelTest2", 200)));
-//        when(novelRepository.findById(any(Long.class))).thenReturn(Optional.of(new NovelEntity("NovelTest3", 300)));
-//
-//        WholesaleQuoteObject result = quoteService.calculateWholesaleQuote(payload);
-//
-//
-//        assertNotNull(result);
-//    }
-//
-//    @Test
-//    void calculateBudgetSaleQuote() {
-//
-//        List<Long> textIndices = Arrays.asList(1L, 2L, 3L);
-//        float budget = 1000;
-//        BudgetSaleDTO payload = new BudgetSaleDTO(textIndices, budget);
-//
-//        when(textRepository.findById(any(Long.class))).thenReturn(Optional.of(new BookEntity("BookTest1", 100)));
-//        when(novelRepository.findById(any(Long.class))).thenReturn(Optional.of(new NovelEntity("NoveTest1", 200)));
-//
-//        BudgetSaleQuoteObject result = quoteService.calculateBudgetSaleQuote(payload);
-//
-//        assertNotNull(result);
-//    }
-//
-//    @Test
-//    void createBooksEntitiesFromIndices() {
-//        List<Long> indices = Arrays.asList(1L, 2L, 3L); // Índices de libros simulados
-//        List<BookEntity> expectedEntities = Arrays.asList(
-//                new BookEntity("BookTest1", 100),
-//                new BookEntity("BookTest2", 200),
-//                new BookEntity("BookTest3", 300)
-//        );
-//
-//        when(textRepository.findById(1L)).thenReturn(Optional.of(expectedEntities.get(0)));
-//        when(textRepository.findById(2L)).thenReturn(Optional.of(expectedEntities.get(1)));
-//        when(textRepository.findById(3L)).thenReturn(Optional.of(expectedEntities.get(2)));
-//
-//        List<BookEntity> actualEntities = quoteService.createBooksEntitiesFromIndices(indices);
-//
-//        assertNotNull(actualEntities);
-//        assertEquals(expectedEntities.size(), actualEntities.size());
-//        assertEquals(expectedEntities, actualEntities);
-//    }
-//
-//    @Test
-//    void createNovelsEntitiesFromIndices() {
-//        QuoteService quoteService = new QuoteService(Mockito.mock(TextRepository.class), Mockito.mock(NovelRepository.class), Mockito.mock(TextFactory.class));
-//        List<Long> indices = new ArrayList<>();
-//        indices.add(1L);
-//
-//        NovelEntity novelEntity1 = new NovelEntity("La rebelión en la granja", 1300);
-//        NovelEntity novelEntity2 = new NovelEntity("1984", 3030);
-//        Mockito.when(quoteService.novelRepository.findById(1L)).thenReturn(Optional.of(novelEntity1));
-//        Mockito.when(quoteService.novelRepository.findById(2L)).thenReturn(Optional.of(novelEntity2));
-//
-//        List<NovelEntity> novelsEntities = quoteService.createNovelsEntitiesFromIndices(indices);
-//
-//        assertEquals(1, novelsEntities.size());
-//        assertEquals(novelEntity1, novelsEntities.get(0));
-//    }
+    @Mock
+    private TextRepository textRepository;
+
+    @Mock
+    private TextFactory textFactory;
+
+    @InjectMocks
+    private QuoteService service;
+
+    @BeforeEach
+    public void setUp() {
+        textRepository = mock(TextRepository.class);
+        textFactory = mock(TextFactory.class);
+        service = new QuoteService(textRepository, textFactory);
+    }
+
+    @Test
+    public void testSaveAndQuoteText() {
+        // Arrange
+        SaveAndQuoteTextDTO payload = new SaveAndQuoteTextDTO(new TextDTO("El llamado de la selva", TextType.BOOK, 200), LocalDate.of(2000, 3, 17));
+        TextObject outputFactory = new BookObject("El llamado de la selva", TextType.BOOK, 200, true);
+
+        when(textFactory.create(any(TextDTO.class), eq(true))).thenReturn(outputFactory);
+        ArgumentCaptor<TextEntity> captor = ArgumentCaptor.forClass(TextEntity.class);
+
+        // Act
+        TextQuoteObject result = service.saveAndQuoteText(payload);
+
+        // Assert
+        verify(textRepository, times(1)).save(captor.capture());
+
+        assertEquals("El llamado de la selva", captor.getValue().getTitle());
+        assertEquals(TextType.BOOK, captor.getValue().getType());
+        assertEquals(200, captor.getValue().getBasePrice());
+
+        assertEquals("El llamado de la selva", result.getTitle());
+        assertEquals(TextType.BOOK, result.getType());
+        assertEquals(271.32F, result.getPrice());
+        assertEquals(1, result.getDiscounts().size()); // No discounts applied
+        assertEquals(225.1956F, result.getTotalPrice());
+    }
+
+    @Test
+    public void testCalculateWholesaleQuote() {
+        // Arrange
+
+        List<ItemFromTextBatchDTO> bookIndicesAnQuantity = new ArrayList<>();
+        List<ItemFromTextBatchDTO> novelIndicesAndQuantity = new ArrayList<>();
+        ItemFromTextBatchDTO testItemBookFromTextBatchDTO = new ItemFromTextBatchDTO(0, 1);
+        ItemFromTextBatchDTO testItemNovelFromTextBatchDTO = new ItemFromTextBatchDTO(0, 1);
+        bookIndicesAnQuantity.add(testItemBookFromTextBatchDTO);
+        novelIndicesAndQuantity.add(testItemNovelFromTextBatchDTO);
+
+        WholeSaleDTO payload = new WholeSaleDTO(bookIndicesAnQuantity, novelIndicesAndQuantity, LocalDate.of(2000, 3, 17));
+
+        TextObject bookOutputFactory = new BookObject("El llamado de la selva", TextType.BOOK, 200, true);
+        TextObject novelOutputFactory = new NovelObject("Cien años de soledad", TextType.BOOK, 550, true);
+
+                List<TextEntity> mockedListTextEntity = new ArrayList<>();
+        mockedListTextEntity.add(new TextEntity("El llamado de la selva", TextType.BOOK, 200));
+        mockedListTextEntity.add(new TextEntity("Cien años de soledad", TextType.NOVEL, 550));
+
+
+        when(textRepository.findAll()).thenReturn(mockedListTextEntity);
+        when(textFactory.create(any(TextDTO.class), eq(true))).thenReturn(bookOutputFactory).thenReturn(novelOutputFactory);
+
+        // Act
+        WholesaleQuoteObject result = service.calculateWholesaleQuote(payload);
+
+        // Asserts
+        assertEquals(1, result.getBooksQuote().size());
+        assertEquals(1, result.getNovelsQuote().size());
+
+        verify(textRepository, times(2)).findAll();
+    }
+
+    @Test
+    public void testCalculateBudgetSaleQuote_WithBookAndNovel_ReturnsValidQuoteObject() {
+        // Setup
+        BudgetSaleDTO payload = new BudgetSaleDTO(Arrays.asList(1, 9), 6000, LocalDate.of(2000, 3, 17));
+
+        // Mocking required methods in textRepository
+        List<TextEntity> mockedTextEntities = createMockTextEntities();
+        when(textRepository.findAll()).thenReturn(mockedTextEntities);
+        when(textFactory.create(any(TextDTO.class), eq(false)))
+                .thenReturn(new BookObject("El llamado de la selva", TextType.BOOK, 100, true))
+                .thenReturn(new NovelObject("Cien años de soledad", TextType.NOVEL, 550, true));
+        // Execute
+        BudgetSaleQuoteObject result = service.calculateBudgetSaleQuote(payload);
+
+        // Verify
+        assertNotNull(result);
+        assertTrue(result.getMessageFromServer().isSucceed());
+
+        verify(textRepository, times(1)).findAll();
+    }
+
+    @Test
+    public void testCalculateBudgetSaleQuote_WithoutNovels_ReturnsErrorObject() {
+        // Setup
+        BudgetSaleDTO payload = new BudgetSaleDTO(Arrays.asList(1, 2), 1000, LocalDate.of(2000, 3, 17));
+
+        // Mocking required methods in textRepository
+        List<TextEntity> mockedTextEntities = createMockTextEntities();
+        when(textRepository.findAll()).thenReturn(mockedTextEntities);
+        when(textFactory.create(any(TextDTO.class), eq(true)))
+                .thenReturn(new BookObject("El llamado de la selva", TextType.BOOK, 100, true))
+                .thenReturn(new BookObject("El llamado de la selva", TextType.BOOK, 200, true))
+                .thenReturn(new BookObject("El llamado de la selva", TextType.BOOK, 200, true))
+                .thenReturn(new BookObject("El llamado de la selva", TextType.BOOK, 200, true))
+                .thenReturn(new BookObject("El llamado de la selva", TextType.BOOK, 200, true))
+                .thenReturn(new BookObject("El llamado de la selva", TextType.BOOK, 200, true))
+                .thenReturn(new BookObject("Cien años de soledad", TextType.BOOK, 150, true))
+                .thenReturn(new BookObject("Cien años de soledad", TextType.BOOK, 550, true))
+                .thenReturn(new BookObject("Cien años de soledad", TextType.BOOK, 550, true))
+                .thenReturn(new BookObject("Cien años de soledad", TextType.BOOK, 550, true))
+                .thenReturn(new BookObject("Cien años de soledad", TextType.BOOK, 550, true))
+                .thenReturn(new BookObject("Cien años de soledad", TextType.BOOK, 550, true));
+        // Action
+        BudgetSaleQuoteObject result = service.calculateBudgetSaleQuote(payload);
+
+        // Asserts
+        assertNotNull(result);
+        assertFalse(result.getMessageFromServer().isSucceed());
+
+        verify(textRepository, times(1)).findAll();
+
+    }
+
+    // Helper method to create a mock list of TextEntity objects
+    private List<TextEntity> createMockTextEntities() {
+        List<TextEntity> usableNovelEntitiesList = new ArrayList<>();
+        usableNovelEntitiesList.add(new TextEntity("El llamado de la selva", TextType.BOOK, 200));
+        usableNovelEntitiesList.add(new TextEntity("El llamado de la selva", TextType.BOOK, 200));
+        usableNovelEntitiesList.add(new TextEntity("El llamado de la selva", TextType.BOOK, 200));
+        usableNovelEntitiesList.add(new TextEntity("El llamado de la selva", TextType.BOOK, 200));
+        usableNovelEntitiesList.add(new TextEntity("El llamado de la selva", TextType.BOOK, 200));
+        usableNovelEntitiesList.add(new TextEntity("El llamado de la selva", TextType.BOOK, 200));
+        usableNovelEntitiesList.add(new TextEntity("Cien años de soledad", TextType.NOVEL, 550));
+        usableNovelEntitiesList.add(new TextEntity("Cien años de soledad", TextType.NOVEL, 550));
+        usableNovelEntitiesList.add(new TextEntity("Cien años de soledad", TextType.NOVEL, 550));
+        usableNovelEntitiesList.add(new TextEntity("Cien años de soledad", TextType.NOVEL, 550));
+        usableNovelEntitiesList.add(new TextEntity("Cien años de soledad", TextType.NOVEL, 550));
+        usableNovelEntitiesList.add(new TextEntity("Cien años de soledad", TextType.NOVEL, 550));
+        return usableNovelEntitiesList;
+    }
+
 }

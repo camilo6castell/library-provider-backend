@@ -11,6 +11,9 @@ public class SaveAndQuoteTextDTO {
     @NotNull
     public LocalDate clientEntryDate;
 
+    public SaveAndQuoteTextDTO() {
+    }
+
     public SaveAndQuoteTextDTO(TextDTO text, LocalDate clientEntryDate) {
         this.text = text;
         this.clientEntryDate = clientEntryDate;

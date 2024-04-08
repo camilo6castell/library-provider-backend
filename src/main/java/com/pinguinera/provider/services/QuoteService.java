@@ -330,7 +330,7 @@ public class QuoteService {
         float lowestPrice = Float.MAX_VALUE;
 
         for (TextEntity text : entitiesSortedFromIndicesBatch) {
-            if ((text.getType() == type)) {
+            if (text.getType() == type) {
                 TextObject auxText = textFactory.create(new TextDTO(text.getTitle(), text.getType(), text.getBasePrice()), false);
                 if (auxText.getTotalPrice() < lowestPrice) {
                     lowestPrice = auxText.getTotalPrice();
@@ -357,7 +357,6 @@ public class QuoteService {
     private List<TextEntity> createListTextEntity(boolean isBookList) {
         List<TextEntity> auxBookEntitytList = new ArrayList<>();
         List<TextEntity> auxNovelEntitytList = new ArrayList<>();
-
         for (TextEntity text : textRepository.findAll()) {
             if (text.getType() == TextType.BOOK) {
                 auxBookEntitytList.add(text);

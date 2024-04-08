@@ -21,4 +21,44 @@ public class TextQuoteObject {
         this.discounts = discounts.isEmpty() ? discountAux : discounts;
         this.totalPrice = totalPrice;
     }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public TextType getType() {
+        return type;
+    }
+
+    public void setType(TextType type) {
+        this.type = type;
+    }
+
+    public float getPrice() {
+        return price;
+    }
+
+    public void setPrice(float price) {
+        this.price = price;
+    }
+
+    public List<DiscountObject> getDiscounts() {
+        return discounts;
+    }
+
+    public void setDiscounts(List<DiscountObject> discounts) {
+        this.discounts = discounts;
+    }
+
+    public float getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(float totalPrice) {
+        this.totalPrice = totalPrice;
+    }
 }
