@@ -1,13 +1,13 @@
-package com.pinguinera.provider.model.object.quote;
+package com.pinguinera.provider.model.dto.quote.response.shared;
 
-public class DiscountObject {
+public class DiscountResponse {
     private String concept;
     private float percentage;
 
-    public DiscountObject() {
+    public DiscountResponse() {
     }
 
-    public DiscountObject(String concept, float percentage) {
+    public DiscountResponse(String concept, float percentage) {
         this.concept = concept;
         this.percentage = percentage;
     }

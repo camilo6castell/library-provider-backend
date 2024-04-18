@@ -1,9 +1,19 @@
 package com.pinguinera.provider.services;
 
-import com.pinguinera.provider.model.DTO.*;
+import com.pinguinera.provider.model.dto.quote.request.BudgetSaleRequest;
+import com.pinguinera.provider.model.dto.quote.request.CreateStockRequest;
+import com.pinguinera.provider.model.dto.quote.request.SaveAndQuoteTextRequest;
+import com.pinguinera.provider.model.dto.quote.request.WholeSaleRequest;
+import com.pinguinera.provider.model.dto.quote.request.shared.ItemFromTextBatchRequest;
+import com.pinguinera.provider.model.dto.quote.request.shared.TextRequest;
+import com.pinguinera.provider.model.dto.quote.response.BudgetSaleQuoteResponse;
+import com.pinguinera.provider.model.dto.quote.response.WholesaleQuoteResponse;
+import com.pinguinera.provider.model.dto.quote.response.shared.DiscountResponse;
+import com.pinguinera.provider.model.dto.quote.response.shared.SummaryResponse;
+import com.pinguinera.provider.model.dto.quote.response.shared.TextBatchResponse;
+import com.pinguinera.provider.model.dto.quote.response.shared.TextQuoteResponse;
 import com.pinguinera.provider.model.enums.TextType;
-import com.pinguinera.provider.model.object.quote.*;
-import com.pinguinera.provider.model.object.response.ResponseObject;
+import com.pinguinera.provider.model.dto.quote.response.shared.StatusResponse;
 import com.pinguinera.provider.model.object.text.BookObject;
 import com.pinguinera.provider.model.object.text.NovelObject;
 import com.pinguinera.provider.model.object.text.TextObject;
@@ -32,7 +42,7 @@ public class QuoteService {
     private float subTotal = 0;
     private float total = 0;
 
-    private List<TextQuoteObject> quoteObject = new ArrayList<>();
+    private List<TextQuoteResponse> quoteObject = new ArrayList<>();
 
     private final TextFactory textFactory;
 
@@ -42,7 +52,7 @@ public class QuoteService {
         this.textFactory = textFactory;
     }
 
-    public ResponseObject createStock(CreateStockDTO payload) {
+    public StatusResponse createStock(CreateStockRequest payload) {
         if (payload.isFillDataBase()) {
             ArrayList<TextEntity> textEntityStock = new ArrayList<>();
 
@@ -89,16 +99,16 @@ public class QuoteService {
             textEntityStock.add(new TextEntity("Crónica de una muerte anunciada", TextType.NOVEL, 950));
             textEntityStock.add(new TextEntity("Los pilares de la Tierra", TextType.NOVEL, 1700));
             textRepository.saveAll(textEntityStock);
-            return new ResponseObject(true, "Textos agregados correctamente a la base de datos.");
+            return new StatusResponse(true, "Textos agregados correctamente a la base de datos.");
         } else {
-            return new ResponseObject(false, "No se han hecho cambios a la base de datos.");
+            return new StatusResponse(false, "No se han hecho cambios a la base de datos.");
         }
     }
 
-    public TextQuoteObject saveAndQuoteText(SaveAndQuoteTextDTO payload) {
+    public TextQuoteResponse saveAndQuoteText(SaveAndQuoteTextRequest payload) {
 
         float seniorityDiscount = calculateSeniorityDiscount(payload.getClientEntryDate());
-        List<DiscountObject> discounts = new ArrayList<>();
+        List<DiscountResponse> discounts = new ArrayList<>();
 
         textRepository.save(new TextEntity(
                 payload.text.title,
@@ -112,7 +122,7 @@ public class QuoteService {
         );
 
         if (seniorityDiscount != 1) {
-            discounts.add(new DiscountObject(
+            discounts.add(new DiscountResponse(
                     "seniority",
                     ((seniorityDiscount) * 100) - 100)
             );
@@ -120,7 +130,7 @@ public class QuoteService {
 
         total = newTextObject.getTotalPrice() * seniorityDiscount;
 
-        TextQuoteObject result = new TextQuoteObject(
+        TextQuoteResponse result = new TextQuoteResponse(
                 newTextObject.getTitle(),
                 newTextObject.getType(),
                 newTextObject.getPrice(),
@@ -133,11 +143,11 @@ public class QuoteService {
     }
 
 
-    public WholesaleQuoteObject calculateWholesaleQuote(WholeSaleDTO payload) {
+    public WholesaleQuoteResponse calculateWholesaleQuote(WholeSaleRequest payload) {
 
         float seniorityDiscount = calculateSeniorityDiscount(payload.getClientEntryDate());
 
-        List<DiscountObject> discounts = new ArrayList<>();
+        List<DiscountResponse> discounts = new ArrayList<>();
 
         List<TextEntity> booksFromDb = createListTextEntity(true);
         List<TextEntity> novelsFromDb = createListTextEntity(false);
@@ -148,11 +158,11 @@ public class QuoteService {
                 novelsFromDb
         );
 
-        List<TextQuoteObject> booksQuote = createTextQuote(true, chosenAndSortedTextsEntities);
-        List<TextQuoteObject> novelsQuote = createTextQuote(false, chosenAndSortedTextsEntities);
+        List<TextQuoteResponse> booksQuote = createTextQuote(true, chosenAndSortedTextsEntities);
+        List<TextQuoteResponse> novelsQuote = createTextQuote(false, chosenAndSortedTextsEntities);
 
         if (seniorityDiscount != 1) {
-            discounts.add(new DiscountObject(
+            discounts.add(new DiscountResponse(
                     "seniority",
                     ((seniorityDiscount) * 100) - 100)
             );
@@ -160,10 +170,10 @@ public class QuoteService {
 
         total = subTotal * seniorityDiscount;
 
-        WholesaleQuoteObject result = new WholesaleQuoteObject(
+        WholesaleQuoteResponse result = new WholesaleQuoteResponse(
                 booksQuote,
                 novelsQuote,
-                new SummaryObject(
+                new SummaryResponse(
                         subTotal,
                         discounts, total)
         );
@@ -174,22 +184,22 @@ public class QuoteService {
         return result;
     }
 
-    public BudgetSaleQuoteObject calculateBudgetSaleQuote(BudgetSaleDTO payload) {
+    public BudgetSaleQuoteResponse calculateBudgetSaleQuote(BudgetSaleRequest payload) {
 
-        BudgetSaleQuoteObject result;
+        BudgetSaleQuoteResponse result;
 
         float seniorityDiscount = calculateSeniorityDiscount(payload.getClientEntryDate());
 
-        List<DiscountObject> discounts = setDiscountList(seniorityDiscount);
+        List<DiscountResponse> discounts = setDiscountList(seniorityDiscount);
 
         List<TextEntity> entitiesSortedFromIndicesBatch = getEntitiesSortedFromIndicesBatch(payload);
 
         if (containsBookAndNovel(entitiesSortedFromIndicesBatch)) {
 
-            ArrayList<TextBatchObject> suggestedTextsBatch = new ArrayList<>();
-            List<DiscountObject> emptyListItemBatchDiscount = new ArrayList<>();
-            List<DiscountObject> listItemBatchDiscount = new ArrayList<>();
-            listItemBatchDiscount.add(new DiscountObject(
+            ArrayList<TextBatchResponse> suggestedTextsBatch = new ArrayList<>();
+            List<DiscountResponse> emptyListItemBatchDiscount = new ArrayList<>();
+            List<DiscountResponse> listItemBatchDiscount = new ArrayList<>();
+            listItemBatchDiscount.add(new DiscountResponse(
                     "Descuento por compra al por mayor",
                     0.15F)
             );
@@ -238,12 +248,12 @@ public class QuoteService {
             result = setBudgetSaleQuoteObject(suggestedTextsBatch, discounts);
 
         } else {
-            result = new BudgetSaleQuoteObject(
+            result = new BudgetSaleQuoteResponse(
                     new ArrayList<>(),
-                    new SummaryObject(
+                    new SummaryResponse(
                             0, new ArrayList<>(),
                             0),
-                    new ResponseObject(
+                    new StatusResponse(
                             false,
                             "Error, se necesita por lo menos un libro y una novela " +
                                     "para poder hacer esta cotización."
@@ -260,11 +270,11 @@ public class QuoteService {
 
 //    // PRIVATE METHODS
 
-    private List<DiscountObject> setDiscountList(float seniorityDiscount) {
-        List<DiscountObject> auxDiscuountsList = new ArrayList<>();
+    private List<DiscountResponse> setDiscountList(float seniorityDiscount) {
+        List<DiscountResponse> auxDiscuountsList = new ArrayList<>();
         if (seniorityDiscount != 1) {
             auxDiscuountsList.add(
-                    new DiscountObject(
+                    new DiscountResponse(
                             "seniority",
                             ((seniorityDiscount) * 100) - 100
                     )
@@ -275,8 +285,8 @@ public class QuoteService {
 
     private void addCheapestTextObject(
             TextObject cheapestTextObject,
-            List<TextBatchObject> suggestedTextsBatch,
-            List<DiscountObject> emptyListItemBatchDiscount,
+            List<TextBatchResponse> suggestedTextsBatch,
+            List<DiscountResponse> emptyListItemBatchDiscount,
             float seniorityDiscount
     ) {
         TextObject cheapestClonedTextObject;
@@ -296,7 +306,7 @@ public class QuoteService {
             );
         }
         suggestedTextsBatch.add(
-                new TextBatchObject(
+                new TextBatchResponse(
                         cheapestClonedTextObject.getTitle(),
                         cheapestClonedTextObject.getType(),
                         cheapestClonedTextObject.getPrice(),
@@ -312,9 +322,9 @@ public class QuoteService {
 
     private void setBookItemBatch(
             TextObject cheapestBookObject,
-            ArrayList<TextBatchObject> suggestedTextsBatch,
-            List<DiscountObject> emptyListItemBatchDiscount,
-            List<DiscountObject> listItemBatchDiscount,
+            ArrayList<TextBatchResponse> suggestedTextsBatch,
+            List<DiscountResponse> emptyListItemBatchDiscount,
+            List<DiscountResponse> listItemBatchDiscount,
             float seniorityDiscount,
             float bookPriceToPlay
     ) {
@@ -326,7 +336,7 @@ public class QuoteService {
                     true
             );
             suggestedTextsBatch.add(
-                    new TextBatchObject(
+                    new TextBatchResponse(
                             cheapestClonedBookObject.getTitle(),
                             cheapestClonedBookObject.getType(),
                             cheapestClonedBookObject.getPrice(),
@@ -342,7 +352,7 @@ public class QuoteService {
             TextObject cheapestClonedBookObject = cheapestBookObject.clone();
             cheapestClonedBookObject.setIsRetail(false);
             suggestedTextsBatch.add(
-                    new TextBatchObject(
+                    new TextBatchResponse(
                             cheapestClonedBookObject.getTitle(),
                             cheapestClonedBookObject.getType(),
                             cheapestClonedBookObject.getPrice(),
@@ -358,9 +368,9 @@ public class QuoteService {
 
     private void setNovelItemBatch(
             TextObject cheapestNovelObject,
-            ArrayList<TextBatchObject> suggestedTextsBatch,
-            List<DiscountObject> emptyListItemBatchDiscount,
-            List<DiscountObject> listItemBatchDiscount,
+            ArrayList<TextBatchResponse> suggestedTextsBatch,
+            List<DiscountResponse> emptyListItemBatchDiscount,
+            List<DiscountResponse> listItemBatchDiscount,
             float seniorityDiscount,
             float novelPriceToPlay
     ) {
@@ -372,7 +382,7 @@ public class QuoteService {
                     true
             );
             suggestedTextsBatch.add(
-                    new TextBatchObject(
+                    new TextBatchResponse(
                             cheapestClonedNovelObject.getTitle(),
                             cheapestClonedNovelObject.getType(),
                             cheapestClonedNovelObject.getPrice(),
@@ -388,7 +398,7 @@ public class QuoteService {
             TextObject cheapestClonedNovelObject = cheapestNovelObject.clone();
             cheapestClonedNovelObject.setIsRetail(false);
             suggestedTextsBatch.add(
-                    new TextBatchObject(
+                    new TextBatchResponse(
                             cheapestClonedNovelObject.getTitle(),
                             cheapestClonedNovelObject.getType(),
                             cheapestClonedNovelObject.getPrice(),
@@ -405,9 +415,9 @@ public class QuoteService {
     private void checkConditionsToSetBooksItemsBatch(
             float bookPriceToPlay,
             TextObject cheapestBookObject,
-            ArrayList<TextBatchObject> suggestedTextsBatch,
-            List<DiscountObject> emptyListItemBatchDiscount,
-            List<DiscountObject> listItemBatchDiscount,
+            ArrayList<TextBatchResponse> suggestedTextsBatch,
+            List<DiscountResponse> emptyListItemBatchDiscount,
+            List<DiscountResponse> listItemBatchDiscount,
             float seniorityDiscount
     ) {
         while (budget > 0) {
@@ -428,9 +438,9 @@ public class QuoteService {
     private void checkConditionsToSetNovelsItemsBatch(
             float novelPriceToPlay,
             TextObject cheapestNovelObject,
-            ArrayList<TextBatchObject> suggestedTextsBatch,
-            List<DiscountObject> emptyListItemBatchDiscount,
-            List<DiscountObject> listItemBatchDiscount,
+            ArrayList<TextBatchResponse> suggestedTextsBatch,
+            List<DiscountResponse> emptyListItemBatchDiscount,
+            List<DiscountResponse> listItemBatchDiscount,
             float seniorityDiscount
     ) {
         while (budget > 0) {
@@ -453,10 +463,10 @@ public class QuoteService {
             float novelPriceToPlay,
             TextObject cheapestBookObject,
             TextObject cheapestNovelObject,
-            ArrayList<TextBatchObject> suggestedTextsBatch,
+            ArrayList<TextBatchResponse> suggestedTextsBatch,
             float seniorityDiscount,
-            List<DiscountObject> emptyListItemBatchDiscount,
-            List<DiscountObject> listItemBatchDiscount
+            List<DiscountResponse> emptyListItemBatchDiscount,
+            List<DiscountResponse> listItemBatchDiscount
     ) {
         countDown = 9;
         if (bookPriceToPlay < novelPriceToPlay) {
@@ -480,36 +490,36 @@ public class QuoteService {
         }
     }
 
-    private BudgetSaleQuoteObject setBudgetSaleQuoteObject(
-            ArrayList<TextBatchObject> suggestedTextsBatch,
-            List<DiscountObject> discounts) {
+    private BudgetSaleQuoteResponse setBudgetSaleQuoteObject(
+            ArrayList<TextBatchResponse> suggestedTextsBatch,
+            List<DiscountResponse> discounts) {
         return suggestedTextsBatch.size() > 10 ?
-                new BudgetSaleQuoteObject(
+                new BudgetSaleQuoteResponse(
                         suggestedTextsBatch,
-                        new SummaryObject(
+                        new SummaryResponse(
                                 subTotal,
                                 discounts,
                                 total
                         ),
-                        new ResponseObject(
+                        new StatusResponse(
                                 true,
                                 "Contización hecha con éxito, y te han sobrado: " + budget + "."))
                 :
-                new BudgetSaleQuoteObject(
+                new BudgetSaleQuoteResponse(
                         new ArrayList<>(),
-                        new SummaryObject(
+                        new SummaryResponse(
                                 0,
                                 new ArrayList<>(),
                                 0
                         ),
-                        new ResponseObject(
+                        new StatusResponse(
                                 false,
                                 "Error, se necesitan por lo menos 11 textos para poder hacer esta cotización"
                         )
                 );
     }
 
-    private List<TextEntity> getEntitiesSortedFromIndicesBatch(BudgetSaleDTO payload) {
+    private List<TextEntity> getEntitiesSortedFromIndicesBatch(BudgetSaleRequest payload) {
         List<TextEntity> dbTextsEntities = textRepository.findAll();
         List<Integer> validIndices = filterValidIndices(payload.textsIndices, dbTextsEntities.size());
         List<TextEntity> selectedEntities = mapIndicesToEntities(validIndices, dbTextsEntities);
@@ -564,7 +574,7 @@ public class QuoteService {
         for (TextEntity text : entitiesSortedFromIndicesBatch) {
             if (text.getType() == type) {
                 TextObject auxText = textFactory.create(
-                        new TextDTO(text.getTitle(),
+                        new TextRequest(text.getTitle(),
                                 text.getType(),
                                 text.getBasePrice()),
                         false
@@ -605,12 +615,12 @@ public class QuoteService {
     }
 
     private List<TextEntity> getChosenAndSortedTextsEntities(
-            WholeSaleDTO payload,
+            WholeSaleRequest payload,
             List<TextEntity> booksFromDb,
             List<TextEntity> novelsFromDb
     ) {
-        List<ItemFromTextBatchDTO> bookIndicesAndQuantity = payload.getBookIndicesAndQuantity();
-        List<ItemFromTextBatchDTO> novelIndicesAndQuantity = payload.getNovelIndicesAndQuantity();
+        List<ItemFromTextBatchRequest> bookIndicesAndQuantity = payload.getBookIndicesAndQuantity();
+        List<ItemFromTextBatchRequest> novelIndicesAndQuantity = payload.getNovelIndicesAndQuantity();
 
         List<TextEntity> auxChosenTextsEntities = new ArrayList<>();
 
@@ -623,7 +633,7 @@ public class QuoteService {
     }
 
     private void addToChosenTextsEntities(
-            List<ItemFromTextBatchDTO> indicesAndQuantity,
+            List<ItemFromTextBatchRequest> indicesAndQuantity,
             List<TextEntity> chosenTexts,
             List<TextEntity> sourceEntities
     ) {
@@ -636,7 +646,7 @@ public class QuoteService {
         });
     }
 
-    private List<TextQuoteObject> createTextQuote(
+    private List<TextQuoteResponse> createTextQuote(
             boolean isBookQuote,
             List<TextEntity> chosenAndSortedTextsEntities
     ) {
@@ -644,10 +654,10 @@ public class QuoteService {
 
         for (int i = 0; i < chosenAndSortedTextsEntities.size(); i++) {
             TextEntity textEntity = chosenAndSortedTextsEntities.get(i);
-            List<DiscountObject> auxDiscount = new ArrayList<>();
+            List<DiscountResponse> auxDiscount = new ArrayList<>();
 
             TextObject auxTextObject = textFactory.create(
-                    new TextDTO(
+                    new TextRequest(
                             textEntity.getTitle(),
                             textEntity.getType(),
                             textEntity.getBasePrice()),
@@ -655,7 +665,7 @@ public class QuoteService {
 
             if (i > 10) {
                 auxDiscount.add(
-                        new DiscountObject(
+                        new DiscountResponse(
                                 "Descuento por compra al por mayor",
                                 0.15F)
                 );
@@ -671,14 +681,14 @@ public class QuoteService {
             boolean isBookQuote,
             TextEntity textEntity,
             TextObject auxTextObject,
-            List<DiscountObject> auxDiscount
+            List<DiscountResponse> auxDiscount
     ) {
         if ((isBookQuote && textEntity.getType() == TextType.BOOK)
                 ||
                 (!isBookQuote && textEntity.getType() == TextType.NOVEL)
         ) {
             quoteObject.add(
-                    new TextQuoteObject(
+                    new TextQuoteResponse(
                             auxTextObject.getTitle(),
                             auxTextObject.getType(),
                             auxTextObject.getPrice(),

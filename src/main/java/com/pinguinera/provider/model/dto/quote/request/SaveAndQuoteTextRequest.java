@@ -1,28 +1,29 @@
-package com.pinguinera.provider.model.DTO;
+package com.pinguinera.provider.model.dto.quote.request;
 
+import com.pinguinera.provider.model.dto.quote.request.shared.TextRequest;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 
-public class SaveAndQuoteTextDTO {
+public class SaveAndQuoteTextRequest {
     @NotNull
-    public TextDTO text;
+    public TextRequest text;
     @NotNull
     public LocalDate clientEntryDate;
 
-    public SaveAndQuoteTextDTO() {
+    public SaveAndQuoteTextRequest() {
     }
 
-    public SaveAndQuoteTextDTO(TextDTO text, LocalDate clientEntryDate) {
+    public SaveAndQuoteTextRequest(TextRequest text, LocalDate clientEntryDate) {
         this.text = text;
         this.clientEntryDate = clientEntryDate;
     }
 
-    public TextDTO getText() {
+    public TextRequest getText() {
         return text;
     }
 
-    public void setText(TextDTO text) {
+    public void setText(TextRequest text) {
         this.text = text;
     }
 

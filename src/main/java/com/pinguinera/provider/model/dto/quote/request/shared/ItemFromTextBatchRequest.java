@@ -1,14 +1,14 @@
-package com.pinguinera.provider.model.DTO;
+package com.pinguinera.provider.model.dto.quote.request.shared;
 
 import jakarta.validation.constraints.NotNull;
 
-public class ItemFromTextBatchDTO {
+public class ItemFromTextBatchRequest {
     @NotNull
     public int index;
     @NotNull
     public int quantity;
 
-    public ItemFromTextBatchDTO(int index, int quantity) {
+    public ItemFromTextBatchRequest(int index, int quantity) {
         this.index = index;
         this.quantity = quantity;
     }

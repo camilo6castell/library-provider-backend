@@ -1,10 +1,10 @@
-package com.pinguinera.provider.model.object.response;
+package com.pinguinera.provider.model.dto.quote.response.shared;
 
-public class ResponseObject {
+public class StatusResponse {
     private boolean succeed;
     private String message;
 
-    public ResponseObject(boolean succeed, String message) {
+    public StatusResponse(boolean succeed, String message) {
         this.succeed = succeed;
         this.message = message;
     }

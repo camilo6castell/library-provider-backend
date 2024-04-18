@@ -1,21 +1,22 @@
-package com.pinguinera.provider.model.DTO;
+package com.pinguinera.provider.model.dto.quote.request;
 
+import com.pinguinera.provider.model.dto.quote.request.shared.ItemFromTextBatchRequest;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public class WholeSaleDTO {
+public class WholeSaleRequest {
     @NotNull
-    public List<ItemFromTextBatchDTO> bookIndicesAnQuantity;
+    public List<ItemFromTextBatchRequest> bookIndicesAnQuantity;
     @NotNull
-    public List<ItemFromTextBatchDTO> novelIndicesAndQuantity;
+    public List<ItemFromTextBatchRequest> novelIndicesAndQuantity;
     @NotNull
     public LocalDate clientEntryDate;
 
-    public WholeSaleDTO(
-            List<ItemFromTextBatchDTO> bookIndicesAnQuantity,
-            List<ItemFromTextBatchDTO> novelIndicesAndQuantity,
+    public WholeSaleRequest(
+            List<ItemFromTextBatchRequest> bookIndicesAnQuantity,
+            List<ItemFromTextBatchRequest> novelIndicesAndQuantity,
             LocalDate clientEntryDate
     ) {
         this.bookIndicesAnQuantity = bookIndicesAnQuantity;
@@ -23,19 +24,19 @@ public class WholeSaleDTO {
         this.clientEntryDate = clientEntryDate;
     }
 
-    public List<ItemFromTextBatchDTO> getBookIndicesAndQuantity() {
+    public List<ItemFromTextBatchRequest> getBookIndicesAndQuantity() {
         return bookIndicesAnQuantity;
     }
 
-    public void setBookIndicesAnQuantity(List<ItemFromTextBatchDTO> bookIndicesAnQuantity) {
+    public void setBookIndicesAnQuantity(List<ItemFromTextBatchRequest> bookIndicesAnQuantity) {
         this.bookIndicesAnQuantity = bookIndicesAnQuantity;
     }
 
-    public List<ItemFromTextBatchDTO> getNovelIndicesAndQuantity() {
+    public List<ItemFromTextBatchRequest> getNovelIndicesAndQuantity() {
         return novelIndicesAndQuantity;
     }
 
-    public void setNovelIndicesAndQuantity(List<ItemFromTextBatchDTO> novelIndicesAndQuantity) {
+    public void setNovelIndicesAndQuantity(List<ItemFromTextBatchRequest> novelIndicesAndQuantity) {
         this.novelIndicesAndQuantity = novelIndicesAndQuantity;
     }
 

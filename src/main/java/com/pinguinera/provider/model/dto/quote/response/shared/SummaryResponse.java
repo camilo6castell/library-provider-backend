@@ -1,13 +1,13 @@
-package com.pinguinera.provider.model.object.quote;
+package com.pinguinera.provider.model.dto.quote.response.shared;
 
 import java.util.List;
 
-public class SummaryObject {
+public class SummaryResponse {
     private float subtotal;
-    private List<DiscountObject> discounts;
+    private List<DiscountResponse> discounts;
     private float total;
 
-    public SummaryObject(float subtotal, List<DiscountObject> discounts, float total) {
+    public SummaryResponse(float subtotal, List<DiscountResponse> discounts, float total) {
         this.subtotal = subtotal;
         this.discounts = discounts;
         this.total = total;
@@ -21,11 +21,11 @@ public class SummaryObject {
         this.subtotal = subtotal;
     }
 
-    public List<DiscountObject> getDiscounts() {
+    public List<DiscountResponse> getDiscounts() {
         return discounts;
     }
 
-    public void setDiscounts(List<DiscountObject> discounts) {
+    public void setDiscounts(List<DiscountResponse> discounts) {
         this.discounts = discounts;
     }
 

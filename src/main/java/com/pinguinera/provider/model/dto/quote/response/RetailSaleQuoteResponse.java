@@ -1,11 +1,11 @@
-package com.pinguinera.provider.model.object.quote;
+package com.pinguinera.provider.model.dto.quote.response;
 
-public class RetailSaleQuoteObject {
+public class RetailSaleQuoteResponse {
     private String textTitle;
     private String textType;
     private float total;
 
-    public RetailSaleQuoteObject(String textTitle, String textType, float total) {
+    public RetailSaleQuoteResponse(String textTitle, String textType, float total) {
         this.textTitle = textTitle;
         this.textType = textType;
         this.total = total;

@@ -1,26 +1,31 @@
-package com.pinguinera.provider.model.object.quote;
+package com.pinguinera.provider.model.dto.quote.response.shared;
 
 import com.pinguinera.provider.model.enums.TextType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TextQuoteObject {
-    public String title;
-    public TextType type;
-    public float price;
-    public List<DiscountObject> discounts;
-    public float totalPrice;
+public class TextBatchResponse {
+    private String title;
+    private TextType type;
+    private float price;
+    private List<DiscountResponse> discounts;
+    private float totalPrice;
 
-    public TextQuoteObject(
+    public TextBatchResponse(
             String title,
             TextType type,
             float price,
-            List<DiscountObject> discounts,
+            List<DiscountResponse> discounts,
             float totalPrice
     ) {
-        List<DiscountObject> discountAux = new ArrayList<>();
-        discountAux.add(new DiscountObject("No aplica", 0));
+        List<DiscountResponse> discountAux = new ArrayList<>();
+        discountAux.add(
+                new DiscountResponse(
+                        "No aplica",
+                        0
+                )
+        );
         this.title = title;
         this.type = type;
         this.price = price;
@@ -52,11 +57,11 @@ public class TextQuoteObject {
         this.price = price;
     }
 
-    public List<DiscountObject> getDiscounts() {
+    public List<DiscountResponse> getDiscounts() {
         return discounts;
     }
 
-    public void setDiscounts(List<DiscountObject> discounts) {
+    public void setDiscounts(List<DiscountResponse> discounts) {
         this.discounts = discounts;
     }
 

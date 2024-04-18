@@ -1,9 +1,9 @@
 package com.pinguinera.provider.controller;
 
-import com.pinguinera.provider.model.DTO.BudgetSaleDTO;
-import com.pinguinera.provider.model.DTO.CreateStockDTO;
-import com.pinguinera.provider.model.DTO.SaveAndQuoteTextDTO;
-import com.pinguinera.provider.model.DTO.WholeSaleDTO;
+import com.pinguinera.provider.model.dto.quote.request.BudgetSaleRequest;
+import com.pinguinera.provider.model.dto.quote.request.CreateStockRequest;
+import com.pinguinera.provider.model.dto.quote.request.SaveAndQuoteTextRequest;
+import com.pinguinera.provider.model.dto.quote.request.WholeSaleRequest;
 import com.pinguinera.provider.services.QuoteService;
 
 import org.springframework.http.HttpStatus;
@@ -24,7 +24,7 @@ public class QuoteController {
 
     @GetMapping("/CreateStock")
     public ResponseEntity<?> createStockService(
-            @Valid @RequestBody CreateStockDTO payload,
+            @Valid @RequestBody CreateStockRequest payload,
             BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
@@ -36,7 +36,7 @@ public class QuoteController {
 
     @PostMapping("/SaveText")
     public ResponseEntity<?> saveAndQuoteTextService(
-            @Valid @RequestBody SaveAndQuoteTextDTO payload,
+            @Valid @RequestBody SaveAndQuoteTextRequest payload,
             BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
@@ -48,7 +48,7 @@ public class QuoteController {
 
     @PostMapping("/CalculateWholesaleQuote")
     public ResponseEntity<?> calculateWholesaleQuote(
-            @Valid @RequestBody WholeSaleDTO payload,
+            @Valid @RequestBody WholeSaleRequest payload,
             BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
@@ -60,7 +60,7 @@ public class QuoteController {
 
     @PostMapping("/CalculateBudgetSaleQuote")
     public ResponseEntity<?> CalculateBudgetSaleQuote(
-            @Valid @RequestBody BudgetSaleDTO payload,
+            @Valid @RequestBody BudgetSaleRequest payload,
             BindingResult bindingResult
     ) {
         if (bindingResult.hasErrors()) {
