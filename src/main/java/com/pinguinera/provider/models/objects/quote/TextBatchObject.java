@@ -12,9 +12,20 @@ public class TextBatchObject {
     private List<DiscountObject> discounts;
     private float totalPrice;
 
-    public TextBatchObject(String title, TextType type, float price, List<DiscountObject> discounts, float totalPrice) {
+    public TextBatchObject(
+            String title,
+            TextType type,
+            float price,
+            List<DiscountObject> discounts,
+            float totalPrice
+    ) {
         List<DiscountObject> discountAux = new ArrayList<>();
-        discountAux.add(new DiscountObject("No aplica", 0));
+        discountAux.add(
+                new DiscountObject(
+                        "No aplica",
+                        0
+                )
+        );
         this.title = title;
         this.type = type;
         this.price = price;

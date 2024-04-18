@@ -7,7 +7,11 @@ public class WholesaleQuoteObject {
     private List<TextQuoteObject> novelsQuote;
     private SummaryObject summary;
 
-    public WholesaleQuoteObject(List<TextQuoteObject> booksQuote, List<TextQuoteObject> novelsQuote, SummaryObject summary) {
+    public WholesaleQuoteObject(
+            List<TextQuoteObject> booksQuote,
+            List<TextQuoteObject> novelsQuote,
+            SummaryObject summary
+    ) {
         this.booksQuote = booksQuote;
         this.novelsQuote = novelsQuote;
         this.summary = summary;

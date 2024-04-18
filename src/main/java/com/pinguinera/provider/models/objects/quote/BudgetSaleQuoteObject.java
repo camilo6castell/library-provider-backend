@@ -9,7 +9,11 @@ public class BudgetSaleQuoteObject {
     private SummaryObject quoteSummary;
     private ResponseObject messageFromServer;
 
-    public BudgetSaleQuoteObject(ArrayList<TextBatchObject> suggestedTextsBatch, SummaryObject quoteSummary, ResponseObject messageFromServer) {
+    public BudgetSaleQuoteObject(
+            ArrayList<TextBatchObject> suggestedTextsBatch,
+            SummaryObject quoteSummary,
+            ResponseObject messageFromServer
+    ) {
         this.suggestedTextsBatch = suggestedTextsBatch;
         this.quoteSummary = quoteSummary;
         this.messageFromServer = messageFromServer;

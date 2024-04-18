@@ -14,8 +14,24 @@ import java.util.Map;
 public class TextFactory {
     public TextObject create(TextDTO payload, boolean isRetail) {
         Map<TextType, TextObject> textFilter = new HashMap<>();
-        textFilter.put(TextType.BOOK, new BookObject(payload.getTitle(), payload.getType(), payload.getBasePrice(), isRetail));
-        textFilter.put(TextType.NOVEL, new NovelObject(payload.getTitle(), payload.getType(), payload.getBasePrice(), isRetail));
+        textFilter.put(
+                TextType.BOOK,
+                new BookObject(
+                        payload.getTitle(),
+                        payload.getType(),
+                        payload.getBasePrice(),
+                        isRetail
+                )
+        );
+        textFilter.put(
+                TextType.NOVEL,
+                new NovelObject(
+                        payload.getTitle(),
+                        payload.getType(),
+                        payload.getBasePrice(),
+                        isRetail
+                )
+        );
 
         TextObject isTextObject = textFilter.get(payload.getType());
 

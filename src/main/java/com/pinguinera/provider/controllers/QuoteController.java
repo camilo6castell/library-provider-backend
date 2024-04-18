@@ -23,7 +23,10 @@ public class QuoteController {
     }
 
     @GetMapping("/CreateStock")
-    public ResponseEntity<?> createStockService(@Valid @RequestBody CreateStockDTO payload, BindingResult bindingResult) {
+    public ResponseEntity<?> createStockService(
+            @Valid @RequestBody CreateStockDTO payload,
+            BindingResult bindingResult
+    ) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
         } else {
@@ -32,7 +35,10 @@ public class QuoteController {
     }
 
     @PostMapping("/SaveText")
-    public ResponseEntity<?> saveAndQuoteTextService(@Valid @RequestBody SaveAndQuoteTextDTO payload, BindingResult bindingResult) {
+    public ResponseEntity<?> saveAndQuoteTextService(
+            @Valid @RequestBody SaveAndQuoteTextDTO payload,
+            BindingResult bindingResult
+    ) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
         } else {
@@ -41,7 +47,10 @@ public class QuoteController {
     }
 
     @PostMapping("/CalculateWholesaleQuote")
-    public ResponseEntity<?> calculateWholesaleQuote(@Valid @RequestBody WholeSaleDTO payload, BindingResult bindingResult) {
+    public ResponseEntity<?> calculateWholesaleQuote(
+            @Valid @RequestBody WholeSaleDTO payload,
+            BindingResult bindingResult
+    ) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
         } else {
@@ -50,7 +59,10 @@ public class QuoteController {
     }
 
     @PostMapping("/CalculateBudgetSaleQuote")
-    public ResponseEntity<?> CalculateBudgetSaleQuote(@Valid @RequestBody BudgetSaleDTO payload, BindingResult bindingResult) {
+    public ResponseEntity<?> CalculateBudgetSaleQuote(
+            @Valid @RequestBody BudgetSaleDTO payload,
+            BindingResult bindingResult
+    ) {
         if (bindingResult.hasErrors()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
         } else {

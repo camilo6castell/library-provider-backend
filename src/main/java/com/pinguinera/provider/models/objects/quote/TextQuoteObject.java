@@ -12,7 +12,13 @@ public class TextQuoteObject {
     public List<DiscountObject> discounts;
     public float totalPrice;
 
-    public TextQuoteObject(String title, TextType type, float price, List<DiscountObject> discounts, float totalPrice) {
+    public TextQuoteObject(
+            String title,
+            TextType type,
+            float price,
+            List<DiscountObject> discounts,
+            float totalPrice
+    ) {
         List<DiscountObject> discountAux = new ArrayList<>();
         discountAux.add(new DiscountObject("No aplica", 0));
         this.title = title;

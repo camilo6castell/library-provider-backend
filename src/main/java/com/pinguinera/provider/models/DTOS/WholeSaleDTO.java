@@ -13,7 +13,11 @@ public class WholeSaleDTO {
     @NotNull
     public LocalDate clientEntryDate;
 
-    public WholeSaleDTO(List<ItemFromTextBatchDTO> bookIndicesAnQuantity, List<ItemFromTextBatchDTO> novelIndicesAndQuantity, LocalDate clientEntryDate) {
+    public WholeSaleDTO(
+            List<ItemFromTextBatchDTO> bookIndicesAnQuantity,
+            List<ItemFromTextBatchDTO> novelIndicesAndQuantity,
+            LocalDate clientEntryDate
+    ) {
         this.bookIndicesAnQuantity = bookIndicesAnQuantity;
         this.novelIndicesAndQuantity = novelIndicesAndQuantity;
         this.clientEntryDate = clientEntryDate;
