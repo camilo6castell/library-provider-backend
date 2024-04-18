@@ -1,4 +1,4 @@
-package com.pinguinera.provider.security;
+package com.pinguinera.provider.config;
 
 import com.pinguinera.provider.repositories.UserRepository;
 import org.springframework.context.annotation.Bean;
