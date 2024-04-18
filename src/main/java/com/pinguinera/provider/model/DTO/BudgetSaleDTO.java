@@ -1,10 +1,9 @@
-package com.pinguinera.provider.models.DTOS;
+package com.pinguinera.provider.model.DTO;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 public class BudgetSaleDTO {

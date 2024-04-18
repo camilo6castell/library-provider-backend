@@ -1,4 +1,4 @@
-package com.pinguinera.provider.models.DTOS;
+package com.pinguinera.provider.model.DTO;
 
 import jakarta.validation.constraints.NotNull;
 

@@ -2,21 +2,17 @@ package com.pinguinera.provider.services;
 
 import static org.mockito.Mockito.*;
 
-import com.pinguinera.provider.models.DTOS.*;
-import com.pinguinera.provider.models.enums.TextType;
-import com.pinguinera.provider.models.factories.TextFactory;
-import com.pinguinera.provider.models.objects.quote.BudgetSaleQuoteObject;
-import com.pinguinera.provider.models.objects.quote.DiscountObject;
-import com.pinguinera.provider.models.objects.quote.TextQuoteObject;
-import com.pinguinera.provider.models.objects.quote.WholesaleQuoteObject;
-import com.pinguinera.provider.models.objects.response.ResponseObject;
-import com.pinguinera.provider.models.objects.text.BookObject;
-import com.pinguinera.provider.models.objects.text.NovelObject;
-import com.pinguinera.provider.models.objects.text.TextObject;
-import com.pinguinera.provider.models.persistence.TextEntity;
+import com.pinguinera.provider.model.DTO.*;
+import com.pinguinera.provider.model.enums.TextType;
+import com.pinguinera.provider.model.factory.TextFactory;
+import com.pinguinera.provider.model.object.quote.BudgetSaleQuoteObject;
+import com.pinguinera.provider.model.object.quote.TextQuoteObject;
+import com.pinguinera.provider.model.object.quote.WholesaleQuoteObject;
+import com.pinguinera.provider.model.object.text.BookObject;
+import com.pinguinera.provider.model.object.text.NovelObject;
+import com.pinguinera.provider.model.object.text.TextObject;
+import com.pinguinera.provider.model.persistence.TextEntity;
 import com.pinguinera.provider.repositories.TextRepository;
-import jakarta.validation.constraints.NotNull;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 
 import org.junit.jupiter.api.Test;

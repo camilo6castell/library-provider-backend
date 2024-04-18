@@ -1,4 +1,4 @@
-package com.pinguinera.provider.models.objects.response;
+package com.pinguinera.provider.model.object.response;
 
 public class ResponseObject {
     private boolean succeed;

@@ -1,6 +1,6 @@
-package com.pinguinera.provider.models.persistence;
+package com.pinguinera.provider.model.persistence;
 
-import com.pinguinera.provider.models.enums.TextType;
+import com.pinguinera.provider.model.enums.TextType;
 import jakarta.persistence.*;
 
 // import jakarta.persistence.MappedSuperclass;

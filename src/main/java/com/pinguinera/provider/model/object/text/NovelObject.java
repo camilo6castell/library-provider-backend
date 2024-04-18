@@ -1,6 +1,6 @@
-package com.pinguinera.provider.models.objects.text;
+package com.pinguinera.provider.model.object.text;
 
-import com.pinguinera.provider.models.enums.TextType;
+import com.pinguinera.provider.model.enums.TextType;
 
 public class NovelObject extends TextObject {
     protected final float INCREMENT_BY_DEMAND = 2f;

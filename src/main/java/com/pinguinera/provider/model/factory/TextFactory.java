@@ -1,10 +1,10 @@
-package com.pinguinera.provider.models.factories;
+package com.pinguinera.provider.model.factory;
 
-import com.pinguinera.provider.models.DTOS.TextDTO;
-import com.pinguinera.provider.models.objects.text.BookObject;
-import com.pinguinera.provider.models.objects.text.NovelObject;
-import com.pinguinera.provider.models.objects.text.TextObject;
-import com.pinguinera.provider.models.enums.TextType;
+import com.pinguinera.provider.model.DTO.TextDTO;
+import com.pinguinera.provider.model.object.text.BookObject;
+import com.pinguinera.provider.model.object.text.NovelObject;
+import com.pinguinera.provider.model.object.text.TextObject;
+import com.pinguinera.provider.model.enums.TextType;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;

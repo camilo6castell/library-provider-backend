@@ -1,4 +1,4 @@
-package com.pinguinera.provider.models.objects.quote;
+package com.pinguinera.provider.model.object.quote;
 
 public class RetailSaleQuoteObject {
     private String textTitle;

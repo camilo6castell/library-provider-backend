@@ -1,4 +1,4 @@
-package com.pinguinera.provider.models.objects.quote;
+package com.pinguinera.provider.model.object.quote;
 
 import java.util.List;
 

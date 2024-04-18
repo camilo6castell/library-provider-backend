@@ -1,6 +1,6 @@
-package com.pinguinera.provider.models.objects.quote;
+package com.pinguinera.provider.model.object.quote;
 
-import com.pinguinera.provider.models.enums.TextType;
+import com.pinguinera.provider.model.enums.TextType;
 
 import java.util.ArrayList;
 import java.util.List;

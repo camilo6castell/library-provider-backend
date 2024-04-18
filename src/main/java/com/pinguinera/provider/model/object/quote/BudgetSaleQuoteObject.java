@@ -1,6 +1,6 @@
-package com.pinguinera.provider.models.objects.quote;
+package com.pinguinera.provider.model.object.quote;
 
-import com.pinguinera.provider.models.objects.response.ResponseObject;
+import com.pinguinera.provider.model.object.response.ResponseObject;
 
 import java.util.ArrayList;
 

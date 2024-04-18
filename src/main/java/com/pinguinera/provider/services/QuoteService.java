@@ -1,14 +1,14 @@
 package com.pinguinera.provider.services;
 
-import com.pinguinera.provider.models.DTOS.*;
-import com.pinguinera.provider.models.enums.TextType;
-import com.pinguinera.provider.models.objects.quote.*;
-import com.pinguinera.provider.models.objects.response.ResponseObject;
-import com.pinguinera.provider.models.objects.text.BookObject;
-import com.pinguinera.provider.models.objects.text.NovelObject;
-import com.pinguinera.provider.models.objects.text.TextObject;
-import com.pinguinera.provider.models.factories.TextFactory;
-import com.pinguinera.provider.models.persistence.TextEntity;
+import com.pinguinera.provider.model.DTO.*;
+import com.pinguinera.provider.model.enums.TextType;
+import com.pinguinera.provider.model.object.quote.*;
+import com.pinguinera.provider.model.object.response.ResponseObject;
+import com.pinguinera.provider.model.object.text.BookObject;
+import com.pinguinera.provider.model.object.text.NovelObject;
+import com.pinguinera.provider.model.object.text.TextObject;
+import com.pinguinera.provider.model.factory.TextFactory;
+import com.pinguinera.provider.model.persistence.TextEntity;
 import com.pinguinera.provider.repositories.TextRepository;
 
 import org.springframework.stereotype.Service;

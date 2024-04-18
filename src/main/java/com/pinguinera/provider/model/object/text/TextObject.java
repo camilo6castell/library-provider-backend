@@ -1,7 +1,7 @@
 
-package com.pinguinera.provider.models.objects.text;
+package com.pinguinera.provider.model.object.text;
 
-import com.pinguinera.provider.models.enums.TextType;
+import com.pinguinera.provider.model.enums.TextType;
 
 public class TextObject implements Cloneable{
     protected String title;

@@ -1,4 +1,4 @@
-package com.pinguinera.provider.models.enums;
+package com.pinguinera.provider.model.enums;
 
 public enum TextType {
     BOOK,

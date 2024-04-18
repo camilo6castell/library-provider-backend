@@ -1,9 +1,9 @@
-package com.pinguinera.provider.controllers;
+package com.pinguinera.provider.controller;
 
-import com.pinguinera.provider.models.DTOS.BudgetSaleDTO;
-import com.pinguinera.provider.models.DTOS.CreateStockDTO;
-import com.pinguinera.provider.models.DTOS.SaveAndQuoteTextDTO;
-import com.pinguinera.provider.models.DTOS.WholeSaleDTO;
+import com.pinguinera.provider.model.DTO.BudgetSaleDTO;
+import com.pinguinera.provider.model.DTO.CreateStockDTO;
+import com.pinguinera.provider.model.DTO.SaveAndQuoteTextDTO;
+import com.pinguinera.provider.model.DTO.WholeSaleDTO;
 import com.pinguinera.provider.services.QuoteService;
 
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,6 @@
-package com.pinguinera.provider.models.DTOS;
+package com.pinguinera.provider.model.DTO;
 
-import com.pinguinera.provider.models.enums.TextType;
+import com.pinguinera.provider.model.enums.TextType;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

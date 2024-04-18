@@ -1,6 +1,5 @@
-package com.pinguinera.provider.models.DTOS;
+package com.pinguinera.provider.model.DTO;
 
-import com.pinguinera.provider.models.enums.TextType;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
