@@ -17,7 +17,7 @@ public class AuthenticationResponse {
         this.token = token;
     }
     public static Builder builder() {
-        return new UserEntity.Builder();
+        return new Builder();
     }
     public static class Builder {
         private final AuthenticationResponse authenticationResponse = new AuthenticationResponse();

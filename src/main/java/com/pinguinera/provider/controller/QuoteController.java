@@ -22,6 +22,7 @@ public class QuoteController {
         this.quoteService = quoteService;
     }
 
+    @CrossOrigin(origins = "http://localhost:4200")
     @GetMapping("/CreateStock")
     public ResponseEntity<?> createStockService(
             @Valid @RequestBody CreateStockRequest payload,
@@ -33,7 +34,7 @@ public class QuoteController {
             return ResponseEntity.status(HttpStatus.OK).body(quoteService.createStock(payload));
         }
     }
-
+    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/SaveText")
     public ResponseEntity<?> saveAndQuoteTextService(
             @Valid @RequestBody SaveAndQuoteTextRequest payload,
@@ -45,7 +46,7 @@ public class QuoteController {
             return ResponseEntity.status(HttpStatus.OK).body(quoteService.saveAndQuoteText(payload));
         }
     }
-
+    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/CalculateWholesaleQuote")
     public ResponseEntity<?> calculateWholesaleQuote(
             @Valid @RequestBody WholeSaleRequest payload,
@@ -57,7 +58,7 @@ public class QuoteController {
             return ResponseEntity.status(HttpStatus.OK).body(quoteService.calculateWholesaleQuote(payload));
         }
     }
-
+    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/CalculateBudgetSaleQuote")
     public ResponseEntity<?> CalculateBudgetSaleQuote(
             @Valid @RequestBody BudgetSaleRequest payload,

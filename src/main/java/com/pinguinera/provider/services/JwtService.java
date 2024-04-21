@@ -1,5 +1,6 @@
 package com.pinguinera.provider.services;
 
+import com.pinguinera.provider.model.persistence.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -33,10 +34,12 @@ public class JwtService {
         return generateToken(userDetails, new HashMap<>());
     }
 
-    public String generateToken(UserDetails userDetails, Map<String, Object> extraClaims) {
+    public String generateToken(UserDetails userDetails, Map<String, Object> extractClaims) {
+        var userEntity = (UserEntity) userDetails;
         return Jwts.builder()
-                .setClaims(extraClaims)
+                .setClaims(extractClaims)
                 .setSubject(userDetails.getUsername())
+                .claim("entryDate", userEntity.getEntryDate().toString())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
                 .signWith(getSignIngKey(), SignatureAlgorithm.HS256)

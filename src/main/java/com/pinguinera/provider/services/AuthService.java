@@ -3,6 +3,7 @@ package com.pinguinera.provider.services;
 import com.pinguinera.provider.model.dto.authentication.request.AuthenticationRequest;
 import com.pinguinera.provider.model.dto.authentication.request.RegisterRequest;
 import com.pinguinera.provider.model.dto.authentication.response.AuthenticationResponse;
+import com.pinguinera.provider.model.dto.authentication.response.RegisterResponse;
 import com.pinguinera.provider.model.enums.UserRole;
 import com.pinguinera.provider.model.persistence.UserEntity;
 import com.pinguinera.provider.repositories.UserRepository;
@@ -35,7 +36,7 @@ public class AuthService {
 
 
 
-    public AuthenticationResponse register(RegisterRequest registerRequest){
+    public RegisterResponse register(RegisterRequest registerRequest){
         var user = UserEntity.builder()
                 .firstName(registerRequest.getFirstName())
                 .lastName(registerRequest.getLastName())
@@ -45,10 +46,11 @@ public class AuthService {
                 .entryDate(LocalDate.now())
                 .build();
         userRepository.save(user);
-        var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .build();
+//        var jwtToken = jwtService.generateToken(user);
+//        return AuthenticationResponse.builder()
+//                .token(jwtToken)
+//                .build();
+        return new RegisterResponse(true, "User registered");
 
     }
 

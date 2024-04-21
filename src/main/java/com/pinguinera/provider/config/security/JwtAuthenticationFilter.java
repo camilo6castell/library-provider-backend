@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         jwt = authHeader.substring(7);
         userEmail = jwtService.extractUsername(jwt);
 
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() != null) {
+        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             var authoritiesClaims = jwtService.extractAllClaims(jwt).get("roles");
             var authorities = authoritiesClaims != null ?
                     AuthorityUtils.commaSeparatedStringToAuthorityList(authoritiesClaims.toString()) :
