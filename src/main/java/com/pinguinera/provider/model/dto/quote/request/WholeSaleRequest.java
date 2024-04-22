@@ -8,28 +8,27 @@ import java.util.List;
 
 public class WholeSaleRequest {
     @NotNull
-    public List<ItemFromTextBatchRequest> bookIndicesAnQuantity;
+    public List<ItemFromTextBatchRequest> bookIndicesAndQuantity;
     @NotNull
     public List<ItemFromTextBatchRequest> novelIndicesAndQuantity;
     @NotNull
-    public LocalDate clientEntryDate;
+    public String token;
 
-    public WholeSaleRequest(
-            List<ItemFromTextBatchRequest> bookIndicesAnQuantity,
-            List<ItemFromTextBatchRequest> novelIndicesAndQuantity,
-            LocalDate clientEntryDate
-    ) {
-        this.bookIndicesAnQuantity = bookIndicesAnQuantity;
+    public WholeSaleRequest(List<ItemFromTextBatchRequest> bookIndicesAndQuantity, List<ItemFromTextBatchRequest> novelIndicesAndQuantity, String token) {
+        this.bookIndicesAndQuantity = bookIndicesAndQuantity;
         this.novelIndicesAndQuantity = novelIndicesAndQuantity;
-        this.clientEntryDate = clientEntryDate;
+        this.token = token;
+    }
+
+    public WholeSaleRequest() {
     }
 
     public List<ItemFromTextBatchRequest> getBookIndicesAndQuantity() {
-        return bookIndicesAnQuantity;
+        return bookIndicesAndQuantity;
     }
 
-    public void setBookIndicesAnQuantity(List<ItemFromTextBatchRequest> bookIndicesAnQuantity) {
-        this.bookIndicesAnQuantity = bookIndicesAnQuantity;
+    public void setBookIndicesAndQuantity(List<ItemFromTextBatchRequest> bookIndicesAndQuantity) {
+        this.bookIndicesAndQuantity = bookIndicesAndQuantity;
     }
 
     public List<ItemFromTextBatchRequest> getNovelIndicesAndQuantity() {
@@ -40,11 +39,11 @@ public class WholeSaleRequest {
         this.novelIndicesAndQuantity = novelIndicesAndQuantity;
     }
 
-    public LocalDate getClientEntryDate() {
-        return clientEntryDate;
+    public String getToken() {
+        return token;
     }
 
-    public void setClientEntryDate(LocalDate clientEntryDate) {
-        this.clientEntryDate = clientEntryDate;
+    public void setToken(String token) {
+        this.token = token;
     }
 }

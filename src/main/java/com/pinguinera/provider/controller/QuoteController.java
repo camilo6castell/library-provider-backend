@@ -33,7 +33,7 @@ public class QuoteController {
     }
 
     @CrossOrigin(origins = "http://localhost:4200")
-    @GetMapping("/GetStockTexts")
+    @PostMapping("/GetStockTexts")
     public ResponseEntity<?> getStockService(
             @Valid @RequestBody GetTextRequest payload,
             BindingResult bindingResult

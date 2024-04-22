@@ -156,7 +156,7 @@ public class QuoteService {
 
     public WholesaleQuoteResponse calculateWholesaleQuote(WholeSaleRequest payload) {
 
-        float seniorityDiscount = calculateSeniorityDiscount(payload.getClientEntryDate());
+        float seniorityDiscount = calculateSeniorityDiscount(getClientEntryDate(payload.token));
 
         List<DiscountResponse> discounts = new ArrayList<>();
 
