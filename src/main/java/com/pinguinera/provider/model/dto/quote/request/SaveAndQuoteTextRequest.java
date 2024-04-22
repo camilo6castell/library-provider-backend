@@ -9,14 +9,14 @@ public class SaveAndQuoteTextRequest {
     @NotNull
     public TextRequest text;
     @NotNull
-    public LocalDate clientEntryDate;
+    public String token;
 
     public SaveAndQuoteTextRequest() {
     }
 
-    public SaveAndQuoteTextRequest(TextRequest text, LocalDate clientEntryDate) {
+    public SaveAndQuoteTextRequest(TextRequest text, String token) {
         this.text = text;
-        this.clientEntryDate = clientEntryDate;
+        this.token = token;
     }
 
     public TextRequest getText() {
@@ -27,11 +27,11 @@ public class SaveAndQuoteTextRequest {
         this.text = text;
     }
 
-    public LocalDate getClientEntryDate() {
-        return clientEntryDate;
+    public String getToken() {
+        return token;
     }
 
-    public void setClientEntryDate(LocalDate clientEntryDate) {
-        this.clientEntryDate = clientEntryDate;
+    public void setToken(String token) {
+        this.token = token;
     }
 }

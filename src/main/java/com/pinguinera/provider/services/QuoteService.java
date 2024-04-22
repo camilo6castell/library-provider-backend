@@ -1,12 +1,10 @@
 package com.pinguinera.provider.services;
 
-import com.pinguinera.provider.model.dto.quote.request.BudgetSaleRequest;
-import com.pinguinera.provider.model.dto.quote.request.CreateStockRequest;
-import com.pinguinera.provider.model.dto.quote.request.SaveAndQuoteTextRequest;
-import com.pinguinera.provider.model.dto.quote.request.WholeSaleRequest;
+import com.pinguinera.provider.model.dto.quote.request.*;
 import com.pinguinera.provider.model.dto.quote.request.shared.ItemFromTextBatchRequest;
 import com.pinguinera.provider.model.dto.quote.request.shared.TextRequest;
 import com.pinguinera.provider.model.dto.quote.response.BudgetSaleQuoteResponse;
+import com.pinguinera.provider.model.dto.quote.response.GetTextsResponse;
 import com.pinguinera.provider.model.dto.quote.response.WholesaleQuoteResponse;
 import com.pinguinera.provider.model.dto.quote.response.shared.DiscountResponse;
 import com.pinguinera.provider.model.dto.quote.response.shared.SummaryResponse;
@@ -46,10 +44,13 @@ public class QuoteService {
 
     private final TextFactory textFactory;
 
+    private final JwtService jwtService;
 
-    public QuoteService(TextRepository textRepository, TextFactory textFactory) {
+
+    public QuoteService(TextRepository textRepository, TextFactory textFactory, JwtService jwtService) {
         this.textRepository = textRepository;
         this.textFactory = textFactory;
+        this.jwtService = jwtService;
     }
 
     public StatusResponse createStock(CreateStockRequest payload) {
@@ -105,9 +106,19 @@ public class QuoteService {
         }
     }
 
+    public GetTextsResponse getStockTexts(GetTextRequest payload) {
+        if (payload.isGetStock()) {
+            List<TextEntity> textStock = textRepository.findAll();
+
+            return new GetTextsResponse(textRepository.findAll());
+        } else {
+            return new GetTextsResponse(new ArrayList<>());
+        }
+    }
+
     public TextQuoteResponse saveAndQuoteText(SaveAndQuoteTextRequest payload) {
 
-        float seniorityDiscount = calculateSeniorityDiscount(payload.getClientEntryDate());
+        float seniorityDiscount = calculateSeniorityDiscount(getClientEntryDate(payload.token));
         List<DiscountResponse> discounts = new ArrayList<>();
 
         textRepository.save(new TextEntity(
@@ -698,6 +709,11 @@ public class QuoteService {
             );
             subTotal += auxTextObject.getTotalPrice();
         }
+    }
+
+    private LocalDate getClientEntryDate(String token){
+        String jwt = token.substring(7);
+        return jwtService.getEntryDateFromToken(jwt);
     }
 }
 

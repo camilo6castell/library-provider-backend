@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,5 +72,20 @@ public class JwtService {
     private Key getSignIngKey() {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecretKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    //MINE
+
+    //    public Date getEntryDateFromToken(String token) {
+    //        return extractClaim(token, claims -> new Date((String) claims.get("entryDate")));
+    //    }
+    public LocalDate getEntryDateFromToken(String token) {
+        String entryDateString = extractClaim(token, claims -> (String) claims.get("entryDate"));
+
+        // Formato de la cadena de fecha en el token JWT (ajusta según sea necesario)
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        // Parsear la cadena de fecha a un objeto LocalDate
+        return LocalDate.parse(entryDateString, formatter);
     }
 }

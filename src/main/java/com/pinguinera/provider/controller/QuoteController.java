@@ -1,9 +1,6 @@
 package com.pinguinera.provider.controller;
 
-import com.pinguinera.provider.model.dto.quote.request.BudgetSaleRequest;
-import com.pinguinera.provider.model.dto.quote.request.CreateStockRequest;
-import com.pinguinera.provider.model.dto.quote.request.SaveAndQuoteTextRequest;
-import com.pinguinera.provider.model.dto.quote.request.WholeSaleRequest;
+import com.pinguinera.provider.model.dto.quote.request.*;
 import com.pinguinera.provider.services.QuoteService;
 
 import org.springframework.http.HttpStatus;
@@ -34,6 +31,21 @@ public class QuoteController {
             return ResponseEntity.status(HttpStatus.OK).body(quoteService.createStock(payload));
         }
     }
+
+    @CrossOrigin(origins = "http://localhost:4200")
+    @GetMapping("/GetStockTexts")
+    public ResponseEntity<?> getStockService(
+            @Valid @RequestBody GetTextRequest payload,
+            BindingResult bindingResult
+    ) {
+        if (bindingResult.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
+        } else {
+            return ResponseEntity.status(HttpStatus.OK).body(quoteService.getStockTexts(payload));
+        }
+    }
+
+
     @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/SaveText")
     public ResponseEntity<?> saveAndQuoteTextService(
