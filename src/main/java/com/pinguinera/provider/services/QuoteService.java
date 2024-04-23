@@ -108,8 +108,6 @@ public class QuoteService {
 
     public GetTextsResponse getStockTexts(GetTextRequest payload) {
         if (payload.isGetStock()) {
-            List<TextEntity> textStock = textRepository.findAll();
-
             return new GetTextsResponse(textRepository.findAll());
         } else {
             return new GetTextsResponse(new ArrayList<>());
