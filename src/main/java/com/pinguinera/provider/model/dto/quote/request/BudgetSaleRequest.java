@@ -13,18 +13,15 @@ public class BudgetSaleRequest {
     @DecimalMin(value = "0", inclusive = false)
     public float budget;
     @NotNull
-    public LocalDate clientEntryDate;
+    public String token;
 
     public BudgetSaleRequest() {
     }
 
-    public BudgetSaleRequest(List<Integer> textsIndices, float budget, LocalDate clientEntryDate) {
+    public BudgetSaleRequest(List<Integer> textsIndices, float budget, String token) {
         this.textsIndices = textsIndices;
         this.budget = budget;
-        this.clientEntryDate = clientEntryDate;
-    }
-
-    public BudgetSaleRequest(List<Long> textIndices, float budget) {
+        this.token = token;
     }
 
     public List<Integer> getTextsIndices() {
@@ -43,11 +40,11 @@ public class BudgetSaleRequest {
         this.budget = budget;
     }
 
-    public LocalDate getClientEntryDate() {
-        return clientEntryDate;
+    public String getToken() {
+        return token;
     }
 
-    public void setClientEntryDate(LocalDate clientEntryDate) {
-        this.clientEntryDate = clientEntryDate;
+    public void setToken(String token) {
+        this.token = token;
     }
 }

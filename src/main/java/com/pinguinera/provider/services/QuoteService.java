@@ -158,13 +158,12 @@ public class QuoteService {
 
         List<DiscountResponse> discounts = new ArrayList<>();
 
-        List<TextEntity> booksFromDb = createListTextEntity(true);
-        List<TextEntity> novelsFromDb = createListTextEntity(false);
+        List<TextEntity> textsFromDb = new ArrayList<>(textRepository.findAll());
+//        List<TextEntity> novelsFromDb = createListTextEntity(false);
 
         List<TextEntity> chosenAndSortedTextsEntities = getChosenAndSortedTextsEntities(
                 payload,
-                booksFromDb,
-                novelsFromDb
+                textsFromDb
         );
 
         List<TextQuoteResponse> booksQuote = createTextQuote(true, chosenAndSortedTextsEntities);
@@ -197,7 +196,7 @@ public class QuoteService {
 
         BudgetSaleQuoteResponse result;
 
-        float seniorityDiscount = calculateSeniorityDiscount(payload.getClientEntryDate());
+        float seniorityDiscount = calculateSeniorityDiscount(getClientEntryDate(payload.token));
 
         List<DiscountResponse> discounts = setDiscountList(seniorityDiscount);
 
@@ -222,8 +221,8 @@ public class QuoteService {
                     TextType.NOVEL
             );
 
-            float bookPriceToPlay = cheapestBookObject.getBasePrice() * seniorityDiscount;
-            float novelPriceToPlay = cheapestNovelObject.getBasePrice() * seniorityDiscount;
+            float bookPriceToPlay = cheapestBookObject.getPrice() * seniorityDiscount;
+            float novelPriceToPlay = cheapestNovelObject.getPrice() * seniorityDiscount;
 
             budget = payload.budget;
 
@@ -304,14 +303,14 @@ public class QuoteService {
                     cheapestTextObject.getTitle(),
                     cheapestTextObject.getType(),
                     cheapestTextObject.getBasePrice(),
-                    true
+                    false
             );
         } else {
             cheapestClonedTextObject = new NovelObject(
                     cheapestTextObject.getTitle(),
                     cheapestTextObject.getType(),
                     cheapestTextObject.getBasePrice(),
-                    true
+                    false
             );
         }
         suggestedTextsBatch.add(
@@ -512,7 +511,7 @@ public class QuoteService {
                         ),
                         new StatusResponse(
                                 true,
-                                "Contización hecha con éxito, y te han sobrado: " + budget + "."))
+                                "Contización hecha con éxito y te han sobrado: " + budget + "."))
                 :
                 new BudgetSaleQuoteResponse(
                         new ArrayList<>(),
@@ -523,30 +522,33 @@ public class QuoteService {
                         ),
                         new StatusResponse(
                                 false,
-                                "Error, se necesitan por lo menos 11 textos para poder hacer esta cotización"
+                                "Error, se ha hecho la corización y según los datos que nos has dado no" +
+                                        "es posible armar una cotización con almenos 11 libros y hacer eso de esta " +
+                                        "función. \n Recuerda que se necesitan por lo menos 11 textos para poder " +
+                                        "hacer una cotización al por mayor"
                         )
                 );
     }
 
     private List<TextEntity> getEntitiesSortedFromIndicesBatch(BudgetSaleRequest payload) {
         List<TextEntity> dbTextsEntities = textRepository.findAll();
-        List<Integer> validIndices = filterValidIndices(payload.textsIndices, dbTextsEntities.size());
-        List<TextEntity> selectedEntities = mapIndicesToEntities(validIndices, dbTextsEntities);
+//        List<Integer> validIndices = filterValidIndices(payload.textsIndices, dbTextsEntities.size());
+        List<TextEntity> selectedEntities = mapIndicesToEntities(payload.textsIndices, dbTextsEntities);
         return sortEntitiesByBasePriceDesc(selectedEntities);
     }
 
-    private List<Integer> filterValidIndices(List<Integer> indices, int maxIndex) {
-        return indices.stream()
-                .filter(index -> index >= 0 && index < maxIndex)
-                .collect(Collectors.toList());
-    }
+//    private List<Integer> filterValidIndices(List<Integer> indices, int maxIndex) {
+//        return indices.stream()
+//                .filter(index -> index >= 0 && index < maxIndex)
+//                .collect(Collectors.toList());
+//    }
 
     private List<TextEntity> mapIndicesToEntities(
             List<Integer> indices,
             List<TextEntity> entities
     ) {
         return indices.stream()
-                .map(index -> entities.get(index - 1))
+                .map(entities::get)
                 .collect(Collectors.toList());
     }
 
@@ -610,32 +612,33 @@ public class QuoteService {
         return seniorityDiscount;
     }
 
-    private List<TextEntity> createListTextEntity(boolean isBookList) {
-        List<TextEntity> auxBookEntitytList = new ArrayList<>();
-        List<TextEntity> auxNovelEntitytList = new ArrayList<>();
-        for (TextEntity text : textRepository.findAll()) {
-            if (text.getType() == TextType.BOOK) {
-                auxBookEntitytList.add(text);
-            } else {
-                auxNovelEntitytList.add(text);
-            }
-        }
-        return isBookList ? auxBookEntitytList : auxNovelEntitytList;
-    }
+//    private List<TextEntity> createListTextEntity(boolean isBookList) {
+//        List<TextEntity> auxBookEntitytList = new ArrayList<>();
+//        List<TextEntity> auxNovelEntitytList = new ArrayList<>();
+//        for (TextEntity text : textRepository.findAll()) {
+//            if (text.getType() == TextType.BOOK) {
+//                auxBookEntitytList.add(text);
+//            } else {
+//                auxNovelEntitytList.add(text);
+//            }
+//        }
+//        return isBookList ? auxBookEntitytList : auxNovelEntitytList;
+//        return  new ArrayList<>(textRepository.findAll());
+//    }
 
     private List<TextEntity> getChosenAndSortedTextsEntities(
             WholeSaleRequest payload,
-            List<TextEntity> booksFromDb,
-            List<TextEntity> novelsFromDb
+            List<TextEntity> textsFromDb
+//            List<TextEntity> novelsFromDb
     ) {
         List<ItemFromTextBatchRequest> bookIndicesAndQuantity = payload.getBookIndicesAndQuantity();
         List<ItemFromTextBatchRequest> novelIndicesAndQuantity = payload.getNovelIndicesAndQuantity();
 
         List<TextEntity> auxChosenTextsEntities = new ArrayList<>();
 
-        addToChosenTextsEntities(bookIndicesAndQuantity, auxChosenTextsEntities, booksFromDb);
-        addToChosenTextsEntities(novelIndicesAndQuantity, auxChosenTextsEntities, novelsFromDb);
 
+        addToChosenTextsEntities(bookIndicesAndQuantity, auxChosenTextsEntities, textsFromDb);
+        addToChosenTextsEntities(novelIndicesAndQuantity, auxChosenTextsEntities, textsFromDb);
         auxChosenTextsEntities.sort(Comparator.comparing(TextEntity::getBasePrice).reversed());
 
         return auxChosenTextsEntities;
