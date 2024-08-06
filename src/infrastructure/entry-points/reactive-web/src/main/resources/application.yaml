@@ -1,0 +1,5 @@
+spring:
+
+  data:
+    mongodb:
+      uri: 'mongodb+srv://provider-hex:provider-hex@cluster0.09kpcon.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'

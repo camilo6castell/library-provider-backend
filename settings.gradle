@@ -1,1 +1,50 @@
 rootProject.name = 'library-provider-backend'
+
+//
+
+//include 'src:domain:model'
+//findProject(':src:domain:model')?.name = 'model'
+
+include ':model'
+project(':model').projectDir = file ('./src/domain/model')
+
+//
+
+//include 'src:domain:usecase'
+//findProject(':src:domain:usecase')?.name = 'usecase'
+
+include ':usecase'
+project(':usecase').projectDir = file ('./src/domain/usecase')
+
+//
+
+//include 'src:applications:app-main'
+//findProject(':src:applications:app-main')?.name = 'app-main'
+
+include ':app-main'
+project(':app-main').projectDir = file ('./src/application/app-main')
+
+//
+
+//include 'src:infrastucture:driven-adapters:mongo-repository'
+//findProject(':src:infrastucture:driven-adapters:mongo-repository')?.name = 'mongo-repository'
+
+include ':mongo-repository'
+project(':mongo-repository').projectDir = file ('./src/infrastructure/driven-adapters/mongo-repository')
+
+//
+
+//include 'src:infrastructure:entry-points:reactive-web'
+//findProject(':src:infrastructure:entry-points:reactive-web')?.name = 'reactive-web'
+
+include ':reactive-web'
+project(':reactive-web').projectDir = file ('./src/infrastructure/entry-points/reactive-web')
+
+//
+
+//include 'src:infrastructure:helpers:serializer'
+//findProject(':src:infrastructure:helpers:serializer')?.name = 'serializer'
+
+include ':serializer'
+project(':serializer').projectDir = file ('./src/infrastructure/helpers/serializer')
+
