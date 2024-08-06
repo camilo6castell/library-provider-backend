@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-group = 'com.reactive'
+group = 'com.libraryproviderbackend'
 version = '0.0.1-SNAPSHOT'
 
 repositories {
