@@ -1,198 +1,52 @@
-# PINGUINERA-PROVIDER
+# Library Provider: Backend
 
-## IMPLEMENTED TECHNOLOGIES
+![Java](https://img.shields.io/badge/Java-007396?style=for-the-badge&logo=java&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![Gradle](https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white)
 
-- Java
-- Spring
+## About
 
-## USAGE
+This project is developed in **Java** using **Spring Boot** for the backend and **MySQL** as the relational database.
 
-### 1. You will first need to clone the Git repository
+Library Provider is an application designed to manage the operations of a library, including managing users and texts. The backend part of the application handles the **CRUD** (Create, Read, Update, Delete) operations for managing books and user information.
 
-To do this use the following code
+## Features
 
-```sh
-git clone https://github.com/camilo6castell/pinguinera-provider.git
-```
+1. User management (create, read, update, delete).
+2. Book management (create, read, update, delete).
+3. Integration with MySQL database.
+4. RESTful API implementation using Spring Boot.
+5. Secure handling of user data.
 
-### 2. Open the project
+## Installation
 
-Then you should open the project with your favorite IDE to view or edit the project comfortably. I suggest Intellij,
+To set up the project locally, follow these steps:
 
-### 3. Run the program
+1. **Clone the repository:**
+    ```bash
+    git clone https://github.com/camilo6castell/library-provider-backend.git
+    cd library-provider-backend
+    ```
 
-To run the project you must look in the IDE for the symbol to start the server.
+2. **Set up the database:**
+   - Make sure you have MySQL installed and running.
+   - Create a new database for the project.
+   - Update the `application.properties` file with your database connection details.
 
-### 4. Use specialized software for requests
+3. **Build the project:**
+    ```bash
+    ./gradlew build
+    ```
 
-To test the project you will have to use some software that can make POST requests to servers, one of the best known is POSTMAN.
+4. **Run the application:**
+    ```bash
+    ./gradlew bootRun
+    ```
 
-### 5. Use test data
 
-(I had to use Thunder to make these requests to the endpoint because my PC is low-resource and the operating system I use does not allow non-free software to be easily installed and with Wine Postman it did not work well. For these reasons, and time, I couldn't do it in postman and had to go for the simplest alternative I found: Thunder.)
+## Contact
 
-There is a file in the ./postman-thunder folder in .json format which contains the Requests made to test the endpoints.
+[GitHub](https://github.com/camilo6castell?tab=repositories)
 
-However, I show them below
-
-#### endpoint: http://localhost:8080/CalculateRetailSaleQuote
-
-```sh
-{
-  "title": "1884",
-  "type": 0,
-  "basePrice": 100,
-  "clientEntryDate": "2006-01-01"
-}
-```
-
-#### endpoint: http://localhost:8080/CalculateWholesaleQuote
-
-```sh
-{
-  "bookList": [
-    {
-      "title": "libro1",
-      "type": 0,
-      "basePrice": 10000
-    },
-    {
-      "title": "libro2",
-      "type": 0,
-      "basePrice": 200
-    },
-    {
-      "title": "libro3",
-      "type": 0,
-      "basePrice": 4000
-    },
-    {
-      "title": "1ibro4",
-      "type": 0,
-      "basePrice": 4
-    },
-    {
-      "title": "1ibro5",
-      "type": 0,
-      "basePrice": 750
-    }
-  ],
-  "novelList": [
-    {
-      "title": "novela1",
-      "type": 1,
-      "basePrice": 10
-    },
-    {
-      "title": "novela2",
-      "type": 1,
-      "basePrice": 2000
-    },
-    {
-      "title": "novela3",
-      "type": 1,
-      "basePrice": 4000
-    },
-    {
-      "title": "novela4",
-      "type": 1,
-      "basePrice": 200
-    },
-    {
-      "title": "novela5",
-      "type": 1,
-      "basePrice": 200
-    },
-    {
-      "title": "novela6",
-      "type": 1,
-      "basePrice": 2
-    },
-    {
-      "title": "novela7",
-      "type": 1,
-      "basePrice": 2000
-    }
-    ],
-  "clientEntryDate": "2006-01-01"
-}
-```
-
-#### endpoint: http://localhost:8080/CalculateBudgetSaleQuote
-
-```sh
-{
-  "textList": [
-    {
-      "title": "1886",
-      "type": 1,
-      "basePrice": 10000
-    },
-    {
-      "title": "1885",
-      "type": 1,
-      "basePrice": 200
-    },
-    {
-      "title": "1884",
-      "type": 0,
-      "basePrice": 400
-    },
-    {
-      "title": "1883",
-      "type": 1,
-      "basePrice": 400
-    },
-    {
-      "title": "1886",
-      "type": 0,
-      "basePrice": 10000
-    },
-    {
-      "title": "1885",
-      "type": 0,
-      "basePrice": 200
-    },
-    {
-      "title": "1884",
-      "type": 0,
-      "basePrice": 400
-    },
-    {
-      "title": "1883",
-      "type": 0,
-      "basePrice": 400
-    },
-    {
-      "title": "1886",
-      "type": 1,
-      "basePrice": 10000
-    },
-    {
-      "title": "1885",
-      "type": 1,
-      "basePrice": 200
-    },
-    {
-      "title": "1884",
-      "type": 0,
-      "basePrice": 400
-    },
-    {
-      "title": "1883",
-      "type": 0,
-      "basePrice": 400
-    }
-    ],
-    "budget": 4900,
-    "clientEntryDate": "2006-01-01"
-}
-```
-
-### 6. Work points to improve (in progress)
-
-I carried out this work in compliance with the proposed objectives, and although the required functionalities work well, they have a limitation.
-
-The server must be restarted for each test performed. This is because the way I declared the properties of the classes makes them persist and the data from one request affects the others.
-
-I noticed this very late in the project and will correct it as soon as I can.
+[LinkedIn](https://www.linkedin.com/in/camilocastell/)
