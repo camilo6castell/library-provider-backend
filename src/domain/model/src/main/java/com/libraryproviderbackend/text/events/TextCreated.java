@@ -17,7 +17,7 @@ public class TextCreated extends DomainEvent {
             int textType,
             Float initialPrice
     ) {
-        super(textId, TextEventsEnum.TEXT_CREATED.toString());
+        super(TextEventsEnum.TEXT_CREATED.toString());
         this.textId = textId;
         this.title = title;
         this.textType = textType;

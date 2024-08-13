@@ -19,7 +19,7 @@ public class BudgetTextsQuoted extends DomainEvent {
     }
 
     public BudgetTextsQuoted(List<TextQuote> texts, float subtotal, String discount, float total, float change) {
-        super(UUID.randomUUID().toString(), "BudgetTextsQuotedEvent");
+        super("BudgetTextsQuotedEvent");
         this.texts = BatchQuote.mapToTextQuoteResponses(texts);
         this.subtotal = subtotal;
         this.discount = discount;

@@ -16,16 +16,17 @@ public class RouterRest {
         return route(
                 POST("/api/v1/createUser"),
                 handler::listenPOSTCreateUserUseCase
-        ).andRoute(
-                POST("/api/v1/saveAndQuoteText"),
-                handler::listenPOSTSaveAndQuoteTextUseCase
-        ).andRoute(
-                POST("/api/v1/QuoteVariousTexts"),
-                handler::listenPOSTQuoteVariousTextsUseCase
-        ).andRoute(
-                POST("/api/v1/QuoteTextsByBudget"),
-                handler::listenPOSTQuoteTextsByBudgetUseCase
         )
+//                .andRoute(
+//                POST("/api/v1/saveAndQuoteText"),
+//                handler::listenPOSTSaveAndQuoteTextUseCase
+//        ).andRoute(
+//                POST("/api/v1/QuoteVariousTexts"),
+//                handler::listenPOSTQuoteVariousTextsUseCase
+//        ).andRoute(
+//                POST("/api/v1/QuoteTextsByBudget"),
+//                handler::listenPOSTQuoteTextsByBudgetUseCase
+//        )
 //                .andRoute(
 //                POST("/api/v1/QuoteBatchQuote"),
 //                handler::listenPOSTQuoteBatchQuoteUseCase

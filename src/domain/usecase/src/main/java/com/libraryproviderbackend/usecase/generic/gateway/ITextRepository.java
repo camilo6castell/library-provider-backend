@@ -9,9 +9,7 @@ import java.util.List;
 
 public interface ITextRepository {
 
-    Flux<DomainEvent> findById(String aggregateId);
-
-    Flux<List<DomainEvent>> getEventsByType(String eventType);
+    Flux<DomainEvent> getEventsByType(String eventType);
 
     Mono<DomainEvent> saveEvent(DomainEvent domainEvent);
 

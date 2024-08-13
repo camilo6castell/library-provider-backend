@@ -1,54 +1,84 @@
 package com.libraryproviderbackend.generic;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
+/**
+ * ChangeEventSubscriber is responsible for managing domain events, handling subscriptions,
+ * and applying events to the subscribed consumers. It also manages the versioning of events.
+ */
 public class ChangeEventSubscriber {
 
+    // Stores the list of domain events that have been appended.
+    private final List<DomainEvent> domainEvents = Collections.synchronizedList(new LinkedList<>());
 
-    public final List<DomainEvent> domainEvents = new LinkedList<>();
-    //Associated logic ready for execute when an event occurs
-    private final Set<Consumer<? super DomainEvent>> subscribers = new HashSet<>();
+    // Holds the set of subscribers that will consume the events when they occur.
+    private final Set<Consumer<? super DomainEvent>> subscribers = ConcurrentHashMap.newKeySet();
+
+    // Manages the versions of different types of events.
     private final Map<String, AtomicLong> versions = new ConcurrentHashMap<>();
 
-
-    //To get all events
-    public List<DomainEvent> events(){
-        return domainEvents;
+    /**
+     * Returns an unmodifiable list of all domain events that have been appended.
+     *
+     * @return an unmodifiable list of DomainEvent objects.
+     */
+    public List<DomainEvent> events() {
+        return Collections.unmodifiableList(domainEvents);
     }
 
-    //Allow us to add subscribers
-    public final void subscribe(EventChange eventChange){
+    /**
+     * Allows adding subscribers that will be notified when an event occurs.
+     *
+     * @param eventChange the EventChange object containing the subscribers to add.
+     */
+    public void subscribe(EventChange eventChange) {
         this.subscribers.addAll(eventChange.subscribers);
     }
 
-    //Allow us to add DomainEvents
-    public final IChangeApply appendEvent(DomainEvent domainEvent){
+    /**
+     * Appends a domain event to the list of events and returns an IChangeApply object
+     * that can be used to apply the event to the subscribers.
+     *
+     * @param domainEvent the DomainEvent to append.
+     * @return an IChangeApply object to apply the event.
+     */
+    public IChangeApply appendEvent(DomainEvent domainEvent) {
+        domainEvent.setOccurredOn(LocalDateTime.now());
+        long version = nextVersion(domainEvent);
+        domainEvent.setVersion(version);
         domainEvents.add(domainEvent);
         return () -> applyEvent(domainEvent);
     }
 
-    //Apply domainEvent
-    public final void applyEvent(DomainEvent domainEvent){
+    /**
+     * Applies a domain event to all subscribed consumers. If a consumer is not able to
+     * process the event due to a ClassCastException, the exception is logged and ignored.
+     *
+     * @param domainEvent the DomainEvent to apply.
+     */
+    public void applyEvent(DomainEvent domainEvent) {
         subscribers.forEach(consumer -> {
-            try{
+            try {
                 consumer.accept(domainEvent);
-//                var map = versions.get(event.type);
-//                long version = nextVersion(event, map);
-//                event.setVersionType(version);
-            } catch (ClassCastException ignored){}
+            } catch (ClassCastException e) {
+                System.err.println("Event could not be processed: " + e.getMessage());
+            }
         });
     }
-    //
-    //Find next domain version
-//    private long nextVersion(Event event, AtomicLong map){
-//        if (map == null) {
-//            versions.put(event.type, new AtomicLong(event.versionType()));
-//            return event.versionType();
-//        }
-//        return versions.get(event.type).incrementAndGet();
-//    }
-    //
+
+    /**
+     * Calculates the next version number for the given domain event based on its type.
+     * If the event type has not been encountered before, it starts with the initial version.
+     *
+     * @param domainEvent the DomainEvent for which the version is to be calculated.
+     * @return the next version number for the domain event.
+     */
+    private long nextVersion(DomainEvent domainEvent) {
+        return versions.computeIfAbsent(domainEvent.getType(), key -> new AtomicLong(domainEvent.initialVersion()))
+                .incrementAndGet();
+    }
 }

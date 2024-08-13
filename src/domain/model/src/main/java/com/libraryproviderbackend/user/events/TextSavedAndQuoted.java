@@ -21,7 +21,7 @@ public class TextSavedAndQuoted extends DomainEvent {
             Float initialPrice,
             LocalDate entryDate
     ) {
-        super(userId.value(), UserEventsEnum.SAVE_AND_QUOTE_TEXT.toString());
+        super(UserEventsEnum.SAVE_AND_QUOTE_TEXT.toString());
         this.title = title;
         this.type = type;
         this.initialPrice = initialPrice;

@@ -15,12 +15,12 @@ public class UserBehavior extends EventChange {
     TextTypeEnum[] textTypeEnum = TextTypeEnum.values();
 
     public UserBehavior(User user){
-        addSubscriber((UserCreated event) -> {
-            user.email = Email.of(event.email);
-            user.password = Password.of(event.password);
-            user.entryDate = EntryDate.of(event.entryDate);
+        addSubscriber(UserCreated.class, event -> {
+            user.email = Email.of(event.getEmail());
+            user.password = Password.of(event.getPassword());
+            user.entryDate = EntryDate.of(String.valueOf(event.getEntryDate()));
         });
-        addSubscriber((TextSavedAndQuoted event) -> {
+        addSubscriber(TextSavedAndQuoted.class, event -> {
             user.quoteText(event.title, event.initialPrice, textTypeEnum[event.type], DiscountsEnum.NONE);
         });
     }

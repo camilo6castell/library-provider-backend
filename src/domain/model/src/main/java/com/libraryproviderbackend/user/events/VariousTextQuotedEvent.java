@@ -19,7 +19,7 @@ public class VariousTextQuotedEvent extends DomainEvent {
     }
 
     public VariousTextQuotedEvent(List<TextQuote> bookQuoteList, List<TextQuote> novelQuoteList, float subtotal, String discount, float total) {
-        super("324fdsfrwefdsf4-435fer-35", "VariostextQuotedEvent");
+        super("VariostextQuotedEvent");
         this.bookQuoteList = BatchQuote.mapToTextQuoteResponses(bookQuoteList);
         this.novelQuoteList = BatchQuote.mapToTextQuoteResponses(novelQuoteList);
         this.subtotal = subtotal;

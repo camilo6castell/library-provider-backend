@@ -13,14 +13,13 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.UUID;
 
 @Component
 public class CreateUserUseCase extends UseCaseForCommandMono<CreateUserCommand> {
-    private final IUserRepository repository;
 
+    private final IUserRepository repository;
 
     public CreateUserUseCase(IUserRepository repository) {
         this.repository = repository;
@@ -29,21 +28,30 @@ public class CreateUserUseCase extends UseCaseForCommandMono<CreateUserCommand> 
     @Override
     public Mono<DomainEvent> apply(Mono<CreateUserCommand> createUserCommandMono) {
         return createUserCommandMono
+                .flatMap(command ->
+                        repository.findByEmail(command.email)
+                                .flatMap(existingUser -> Mono.<CreateUserCommand>error(
+                                        new IllegalArgumentException("Email already exists")))
+                                .switchIfEmpty(Mono.just(command))  // Si no existe un usuario con ese email, continúa
+                )
                 .flatMap(command -> {
-
+                    // Crear el usuario con los datos del comando
                     User user = new User(
-                            UserId.of(UUID.randomUUID().toString()),
+                            UserId.of(UUID.randomUUID().toString()),  // Crear nuevo ID para el usuario
                             Email.of(command.email),
                             Password.of(command.password),
                             EntryDate.of(command.entryDate)
                     );
 
-                    // Asumiendo que solo te interesa el primer evento, puedes hacer esto:
-                    return Flux.fromIterable(user.getUncommittedChanges())
-                            .flatMap(event -> repository.saveEvent(event)
-                                    .thenReturn(event)
-                                    .switchIfEmpty(Mono.error(new IllegalStateException("Failed to save event"))))
-                            .next();  // 'next()' toma solo el primer elemento del Flux y lo convierte a Mono
+                    // Obtener los eventos generados por el usuario (Uncommitted Changes)
+                    List<DomainEvent> events = user.getUncommittedChanges();
+
+                    // Guardar cada evento en la base de datos
+                    return Flux.fromIterable(events)
+                            .flatMap(repository::saveEvent)
+                            .collectList()
+                            .map(List::getFirst);  // Devuelve el primer evento de la lista
                 });
     }
+
 }

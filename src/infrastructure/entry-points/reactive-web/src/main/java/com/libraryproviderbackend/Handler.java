@@ -23,23 +23,23 @@ import org.springframework.stereotype.Component;
 @Component
 public class Handler {
     private final CreateUserUseCase createUserUseCase;
-    private final SaveAndQuoteTextUseCase saveAndQuoteTextUseCase;
-    private final QuoteVariousTextsUseCase quoteVariousTextsUseCase;
+//    private final SaveAndQuoteTextUseCase saveAndQuoteTextUseCase;
+//    private final QuoteVariousTextsUseCase quoteVariousTextsUseCase;
     private final QuoteTextsByBudgetUseCase quoteTextsByBudgetUseCase;
     //    private final QuoteBatchQuoteUseCase quoteBatchQuoteUseCase;
     private final CreateTextUseCase createTextUseCase;
 
     public Handler(
             CreateUserUseCase createUserUseCase,
-            SaveAndQuoteTextUseCase saveAndQuoteTextUseCase,
-            QuoteVariousTextsUseCase quoteVariousTextsUseCase,
+//            SaveAndQuoteTextUseCase saveAndQuoteTextUseCase,
+//            QuoteVariousTextsUseCase quoteVariousTextsUseCase,
             QuoteTextsByBudgetUseCase quoteTextsByBudgetUseCase,
 //            QuoteBatchQuoteUseCase quoteBatchQuoteUseCase,
             CreateTextUseCase createTextUseCase
     ) {
         this.createUserUseCase = createUserUseCase;
-        this.saveAndQuoteTextUseCase = saveAndQuoteTextUseCase;
-        this.quoteVariousTextsUseCase = quoteVariousTextsUseCase;
+//        this.saveAndQuoteTextUseCase = saveAndQuoteTextUseCase;
+//        this.quoteVariousTextsUseCase = quoteVariousTextsUseCase;
         this.quoteTextsByBudgetUseCase = quoteTextsByBudgetUseCase;
 //        this.quoteBatchQuoteUseCase = quoteBatchQuoteUseCase;
         this.createTextUseCase = createTextUseCase;
@@ -71,97 +71,97 @@ public class Handler {
     }
 
 
-    public Mono<ServerResponse> listenPOSTSaveAndQuoteTextUseCase(ServerRequest serverRequest) {
-        return serverRequest.bodyToMono(SaveAndQuoteTextCommand.class)
-                .flatMap(command -> saveAndQuoteTextUseCase.apply(Mono.just(command))
-                        .collectList()
-                        .flatMap(events -> {
-                            // Busca el evento TextQuotedEvent en la lista de eventos
-                            TextQuoteMade textQuotedEvent = events.stream()
-                                    .filter(event -> event instanceof TextQuoteMade)
-                                    .map(event -> (TextQuoteMade) event)
-                                    .findFirst()
-                                    .orElse(null);
-
-                            if (textQuotedEvent == null) {
-                                return ServerResponse.badRequest()
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .body(BodyInserters.fromValue(
-                                                new RegisterResponse(
-                                                        false,
-                                                        "Quote result not found"
-                                                )
-                                        ));
-                            }
-
-                            return ServerResponse.ok()
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .body(BodyInserters.fromValue(
-                                            new TextQuoteResponse(
-                                                    textQuotedEvent.title,
-                                                    textQuotedEvent.type,
-                                                    textQuotedEvent.subtotal,
-                                                    textQuotedEvent.discount,
-                                                    textQuotedEvent.total
-                                            )
-                                    ));
-                        })
-                )
-                .onErrorResume(e -> ServerResponse.badRequest()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(
-                                new RegisterResponse(
-                                        false, e.getMessage()
-                                ))
-                        )
-                );
-    }
-
-    public Mono<ServerResponse> listenPOSTQuoteVariousTextsUseCase(ServerRequest serverRequest) {
-        return serverRequest.bodyToMono(QuoteVariousTextsCommand.class)
-                .flatMap(command -> quoteVariousTextsUseCase.apply(Mono.just(command))
-                        .collectList()
-                        .flatMap(events -> {
-                            // Busca el evento VariousTextQuotedEvent en la lista de eventos
-                            VariousTextQuotedEvent quotedEvent = events.stream()
-                                    .filter(event -> event instanceof VariousTextQuotedEvent)
-                                    .map(event -> (VariousTextQuotedEvent) event)
-                                    .findFirst()
-                                    .orElse(null);
-
-                            if (quotedEvent == null) {
-                                return ServerResponse.badRequest()
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .body(BodyInserters.fromValue(
-                                                new RegisterResponse(
-                                                        false,
-                                                        "Quote result not found"
-                                                )
-                                        ));
-                            }
-
-                            return ServerResponse.ok()
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .body(BodyInserters.fromValue(
-                                            new VariousTextQuoteResponse(
-                                                    quotedEvent.getBookQuoteList(),
-                                                    quotedEvent.getNovelQuoteList(),
-                                                    quotedEvent.getSubtotal(),
-                                                    quotedEvent.getDiscount(),
-                                                    quotedEvent.getTotal()
-                                            )
-                                    ));
-                        })
-                )
-                .onErrorResume(e -> ServerResponse.badRequest()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(
-                                new RegisterResponse(
-                                        false, e.getMessage()
-                                ))
-                        )
-                );
-    }
+//    public Mono<ServerResponse> listenPOSTSaveAndQuoteTextUseCase(ServerRequest serverRequest) {
+//        return serverRequest.bodyToMono(SaveAndQuoteTextCommand.class)
+//                .flatMap(command -> saveAndQuoteTextUseCase.apply(Mono.just(command))
+//                        .collectList()
+//                        .flatMap(events -> {
+//                            // Busca el evento TextQuotedEvent en la lista de eventos
+//                            TextQuoteMade textQuotedEvent = events.stream()
+//                                    .filter(event -> event instanceof TextQuoteMade)
+//                                    .map(event -> (TextQuoteMade) event)
+//                                    .findFirst()
+//                                    .orElse(null);
+//
+//                            if (textQuotedEvent == null) {
+//                                return ServerResponse.badRequest()
+//                                        .contentType(MediaType.APPLICATION_JSON)
+//                                        .body(BodyInserters.fromValue(
+//                                                new RegisterResponse(
+//                                                        false,
+//                                                        "Quote result not found"
+//                                                )
+//                                        ));
+//                            }
+//
+//                            return ServerResponse.ok()
+//                                    .contentType(MediaType.APPLICATION_JSON)
+//                                    .body(BodyInserters.fromValue(
+//                                            new TextQuoteResponse(
+//                                                    textQuotedEvent.title,
+//                                                    textQuotedEvent.type,
+//                                                    textQuotedEvent.subtotal,
+//                                                    textQuotedEvent.discount,
+//                                                    textQuotedEvent.total
+//                                            )
+//                                    ));
+//                        })
+//                )
+//                .onErrorResume(e -> ServerResponse.badRequest()
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .body(BodyInserters.fromValue(
+//                                new RegisterResponse(
+//                                        false, e.getMessage()
+//                                ))
+//                        )
+//                );
+//    }
+//
+//    public Mono<ServerResponse> listenPOSTQuoteVariousTextsUseCase(ServerRequest serverRequest) {
+//        return serverRequest.bodyToMono(QuoteVariousTextsCommand.class)
+//                .flatMap(command -> quoteVariousTextsUseCase.apply(Mono.just(command))
+//                        .collectList()
+//                        .flatMap(events -> {
+//                            // Busca el evento VariousTextQuotedEvent en la lista de eventos
+//                            VariousTextQuotedEvent quotedEvent = events.stream()
+//                                    .filter(event -> event instanceof VariousTextQuotedEvent)
+//                                    .map(event -> (VariousTextQuotedEvent) event)
+//                                    .findFirst()
+//                                    .orElse(null);
+//
+//                            if (quotedEvent == null) {
+//                                return ServerResponse.badRequest()
+//                                        .contentType(MediaType.APPLICATION_JSON)
+//                                        .body(BodyInserters.fromValue(
+//                                                new RegisterResponse(
+//                                                        false,
+//                                                        "Quote result not found"
+//                                                )
+//                                        ));
+//                            }
+//
+//                            return ServerResponse.ok()
+//                                    .contentType(MediaType.APPLICATION_JSON)
+//                                    .body(BodyInserters.fromValue(
+//                                            new VariousTextQuoteResponse(
+//                                                    quotedEvent.getBookQuoteList(),
+//                                                    quotedEvent.getNovelQuoteList(),
+//                                                    quotedEvent.getSubtotal(),
+//                                                    quotedEvent.getDiscount(),
+//                                                    quotedEvent.getTotal()
+//                                            )
+//                                    ));
+//                        })
+//                )
+//                .onErrorResume(e -> ServerResponse.badRequest()
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .body(BodyInserters.fromValue(
+//                                new RegisterResponse(
+//                                        false, e.getMessage()
+//                                ))
+//                        )
+//                );
+//    }
 
     public Mono<ServerResponse> listenPOSTQuoteTextsByBudgetUseCase(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(QuoteTextsByBudgetCommand.class)

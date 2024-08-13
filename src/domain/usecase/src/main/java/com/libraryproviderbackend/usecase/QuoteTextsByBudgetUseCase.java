@@ -33,10 +33,10 @@ public class QuoteTextsByBudgetUseCase extends UseCaseForCommandFlux<QuoteTextsB
         return quoteTextsByBudgetCommandMono
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("quoteTextsByBudgetCommand must not be null")))
                 .flatMapMany(command ->
-                        userRepository.getEventByAggregateRootId(command.getUserId())
+                        userRepository.getEventsByAggregateRootId(command.getUserId())
                                 .collectList()
                                 .flatMapMany(userEvents -> {
-                                    User user = User.from(command.getUserId(), userEvents.getFirst().getFirst());
+                                    User user = User.from(command.getUserId(), userEvents.getFirst());
 
                                     return textRepository.getEventsByType("com.reactive.text.events.TextCreated")
                                             .collectList()
@@ -45,7 +45,7 @@ public class QuoteTextsByBudgetUseCase extends UseCaseForCommandFlux<QuoteTextsB
                                                     return Flux.<BudgetTextsQuoted>empty();
                                                 }
 
-                                                List<DomainEvent> firtsList = events.getFirst();
+                                                List<DomainEvent> firtsList = events;
 
                                                 // Convert events to Text instances
                                                 List<Text> allTexts = firtsList.stream().map(event -> (TextCreated) event).map(Text::from).toList();

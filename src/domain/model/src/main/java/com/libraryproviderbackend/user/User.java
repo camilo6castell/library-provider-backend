@@ -37,7 +37,6 @@ public class User extends AggregateRoot<UserId> {
         subscribe(new UserBehavior(this));
         appendEvent(
                 new UserCreated(
-                        userId,
                         email.value(),
                         password.value(),
                         entryDate.value()
@@ -51,9 +50,9 @@ public class User extends AggregateRoot<UserId> {
         DomainEvent domainEvent
     ) {
         User user = new User(UserId.of(userId));
-        user.email = Email.of(((UserCreated) domainEvent).email);
-        user.password = Password.of(((UserCreated) domainEvent).password);
-        user.entryDate = EntryDate.of(((UserCreated) domainEvent).entryDate);
+        user.email = Email.of(((UserCreated) domainEvent).getEmail());
+        user.password = Password.of(((UserCreated) domainEvent).getPassword());
+        user.entryDate = EntryDate.of(((UserCreated) domainEvent).getEntryDate().toString());
         return user;
     }
 

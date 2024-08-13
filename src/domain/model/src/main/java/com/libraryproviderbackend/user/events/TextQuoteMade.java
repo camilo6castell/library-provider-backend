@@ -12,7 +12,7 @@ public class TextQuoteMade extends DomainEvent {
     }
 
     public TextQuoteMade(String title, float subtotal, String discount, float total) {
-        super("result", "result");
+        super("result");
         this.title = title;
         this.subtotal = subtotal;
         this.discount = discount;

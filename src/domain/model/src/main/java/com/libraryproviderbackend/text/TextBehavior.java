@@ -12,7 +12,7 @@ public class TextBehavior extends EventChange {
     TextTypeEnum[] textTypeEnumValues = TextTypeEnum.values();
 
     public TextBehavior(Text text){
-        addSubscriber((TextCreated event) -> {
+        addSubscriber(TextCreated.class, event -> {
             text.title = Title.of(event.title);
             text.type = Type.of(textTypeEnumValues[event.textType]);
             text.initialPrice = InitialPrice.of(event.initialPrice);
