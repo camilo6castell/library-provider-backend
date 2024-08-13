@@ -4,14 +4,16 @@ import com.libraryproviderbackend.generic.DomainEvent;
 import com.libraryproviderbackend.text.Text;
 import com.libraryproviderbackend.text.commands.CreateTextCommand;
 import com.libraryproviderbackend.text.values.*;
-import com.libraryproviderbackend.usecase.generic.UseCaseForCommand;
+import com.libraryproviderbackend.usecase.generic.UseCaseForCommandFlux;
 import com.libraryproviderbackend.usecase.generic.gateway.ITextRepository;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
-public class CreateTextUseCase extends UseCaseForCommand<CreateTextCommand> {
+@Component
+public class CreateTextUseCase extends UseCaseForCommandFlux<CreateTextCommand> {
     private final ITextRepository repository;
     public CreateTextUseCase(ITextRepository repository) {
         this.repository = repository;

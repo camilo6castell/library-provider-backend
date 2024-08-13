@@ -4,6 +4,7 @@ import com.libraryproviderbackend.Dtos.authentication.response.RegisterResponse;
 //import com.reactive.Dtos.quote.response.BatchTextQuoteResponse;
 import com.libraryproviderbackend.Dtos.quote.response.BudgetTextQuoteResponse;
 import com.libraryproviderbackend.Dtos.quote.response.VariousTextQuoteResponse;
+import com.libraryproviderbackend.generic.DomainEvent;
 import com.libraryproviderbackend.usecase.*;
 import com.libraryproviderbackend.user.commands.*;
 import com.libraryproviderbackend.user.events.BudgetTextsQuoted;
@@ -11,31 +12,32 @@ import com.libraryproviderbackend.user.values.batchquote.TextQuoteResponse;
 import com.libraryproviderbackend.user.events.TextQuoteMade;
 import com.libraryproviderbackend.user.events.VariousTextQuotedEvent;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import org.springframework.stereotype.Component;
+
 
 @Component
 public class Handler {
-    private final CreateUserUseCase createUseruseCase;
+    private final CreateUserUseCase createUserUseCase;
     private final SaveAndQuoteTextUseCase saveAndQuoteTextUseCase;
     private final QuoteVariousTextsUseCase quoteVariousTextsUseCase;
     private final QuoteTextsByBudgetUseCase quoteTextsByBudgetUseCase;
-//    private final QuoteBatchQuoteUseCase quoteBatchQuoteUseCase;
+    //    private final QuoteBatchQuoteUseCase quoteBatchQuoteUseCase;
     private final CreateTextUseCase createTextUseCase;
 
     public Handler(
-            CreateUserUseCase createUseruseCase,
+            CreateUserUseCase createUserUseCase,
             SaveAndQuoteTextUseCase saveAndQuoteTextUseCase,
             QuoteVariousTextsUseCase quoteVariousTextsUseCase,
             QuoteTextsByBudgetUseCase quoteTextsByBudgetUseCase,
 //            QuoteBatchQuoteUseCase quoteBatchQuoteUseCase,
             CreateTextUseCase createTextUseCase
     ) {
-        this.createUseruseCase = createUseruseCase;
+        this.createUserUseCase = createUserUseCase;
         this.saveAndQuoteTextUseCase = saveAndQuoteTextUseCase;
         this.quoteVariousTextsUseCase = quoteVariousTextsUseCase;
         this.quoteTextsByBudgetUseCase = quoteTextsByBudgetUseCase;
@@ -44,17 +46,14 @@ public class Handler {
     }
 
     public Mono<ServerResponse> listenPOSTCreateUserUseCase(ServerRequest serverRequest) {
-        return serverRequest.bodyToMono(CreateUserCommand.class)
-                .flatMap(command -> createUseruseCase.apply(Mono.just(command))
-                        .collectList()
-                        .flatMap(events -> ServerResponse.ok()
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .body(
-                                        BodyInserters.fromValue(
-                                                new RegisterResponse(
-                                                        true,
-                                                        "User created"
-                                                )
+        return createUserUseCase
+                .apply(serverRequest.bodyToMono(CreateUserCommand.class))
+                .flatMap(events -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(
+                                        new RegisterResponse(
+                                                true,
+                                                "User created"
                                         )
                                 )
                         )
@@ -62,13 +61,15 @@ public class Handler {
                 .onErrorResume(e -> ServerResponse.badRequest()
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(
-                                new RegisterResponse(
-                                        false,
-                                        e.getMessage()
+                                        new RegisterResponse(
+                                                false,
+                                                e.getMessage()
+                                        )
                                 )
-                        ))
+                        )
                 );
     }
+
 
     public Mono<ServerResponse> listenPOSTSaveAndQuoteTextUseCase(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(SaveAndQuoteTextCommand.class)
@@ -188,12 +189,12 @@ public class Handler {
                             return ServerResponse.ok()
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .body(BodyInserters.fromValue(
-                                            new BudgetTextQuoteResponse(
-                                                    quotedEvent.getChange(),
-                                                    quotedEvent.getTotal(),
-                                                    quotedEvent.getDiscount(),
-                                                    quotedEvent.getSubtotal(),
-                                                    quotedEvent.getTexts()
+                                                    new BudgetTextQuoteResponse(
+                                                            quotedEvent.getChange(),
+                                                            quotedEvent.getTotal(),
+                                                            quotedEvent.getDiscount(),
+                                                            quotedEvent.getSubtotal(),
+                                                            quotedEvent.getTexts()
                                                     )
                                             )
                                     );

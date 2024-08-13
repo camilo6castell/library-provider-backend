@@ -4,7 +4,7 @@ import com.libraryproviderbackend.generic.DomainEvent;
 import com.libraryproviderbackend.text.Text;
 import com.libraryproviderbackend.text.events.TextCreated;
 import com.libraryproviderbackend.text.values.TextTypeEnum;
-import com.libraryproviderbackend.usecase.generic.UseCaseForCommand;
+import com.libraryproviderbackend.usecase.generic.UseCaseForCommandFlux;
 import com.libraryproviderbackend.usecase.generic.gateway.ITextRepository;
 import com.libraryproviderbackend.usecase.generic.gateway.IUserRepository;
 import com.libraryproviderbackend.user.User;
@@ -12,6 +12,7 @@ import com.libraryproviderbackend.user.commands.QuoteVariousTextsCommand;
 import com.libraryproviderbackend.user.commands.shared.ItemFromTextBatchRequest;
 import com.libraryproviderbackend.user.entity.BatchQuote;
 import com.libraryproviderbackend.user.events.VariousTextQuotedEvent;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -20,8 +21,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-
-public class QuoteVariousTextsUseCase extends UseCaseForCommand<QuoteVariousTextsCommand> {
+@Component
+public class QuoteVariousTextsUseCase extends UseCaseForCommandFlux<QuoteVariousTextsCommand> {
 
     public static TextTypeEnum[] textTypeEnumValues = TextTypeEnum.values();
 

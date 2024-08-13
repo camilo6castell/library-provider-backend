@@ -7,6 +7,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.function.Function;
 
-public  abstract class UseCaseForCommand <R extends Command> implements Function<Mono<R>, Flux<DomainEvent>> {
+public  abstract class UseCaseForCommandFlux<R extends Command> implements Function<Mono<R>, Flux<DomainEvent>> {
     public abstract Flux<DomainEvent> apply(Mono<R> rMono);
 }

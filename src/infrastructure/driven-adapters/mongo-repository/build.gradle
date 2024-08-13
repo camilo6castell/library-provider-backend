@@ -16,10 +16,6 @@ dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 
-    //MODULES
-
-    implementation project(':serializer')
-
     //MONGO REACTIVE
 
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb-reactive'
@@ -31,11 +27,9 @@ dependencies {
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.1'
 
-
-
-
     //MODULES
 
+    implementation project(':serializer')
     implementation project(':usecase')
     implementation project(':model')
     implementation project(':serializer')

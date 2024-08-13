@@ -3,7 +3,7 @@ package com.libraryproviderbackend.usecase;
 import com.libraryproviderbackend.generic.DomainEvent;
 import com.libraryproviderbackend.text.Text;
 import com.libraryproviderbackend.text.values.*;
-import com.libraryproviderbackend.usecase.generic.UseCaseForCommand;
+import com.libraryproviderbackend.usecase.generic.UseCaseForCommandFlux;
 import com.libraryproviderbackend.usecase.generic.gateway.ITextRepository;
 import com.libraryproviderbackend.usecase.generic.gateway.IUserRepository;
 import com.libraryproviderbackend.user.User;
@@ -12,12 +12,14 @@ import com.libraryproviderbackend.user.entity.TextQuote;
 import com.libraryproviderbackend.user.events.TextQuoteMade;
 import com.libraryproviderbackend.user.events.UserEventsEnum;
 import com.libraryproviderbackend.user.values.shared.DiscountsEnum;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.format.DateTimeFormatter;
 
-public class SaveAndQuoteTextUseCase extends UseCaseForCommand<SaveAndQuoteTextCommand> {
+@Component
+public class SaveAndQuoteTextUseCase extends UseCaseForCommandFlux<SaveAndQuoteTextCommand> {
 
     TextTypeEnum[] textTypeEnumValues = TextTypeEnum.values();
     UserEventsEnum[] userEventsEnums = UserEventsEnum.values();

@@ -3,20 +3,22 @@ package com.libraryproviderbackend.usecase;
 import com.libraryproviderbackend.generic.DomainEvent;
 import com.libraryproviderbackend.text.Text;
 import com.libraryproviderbackend.text.events.TextCreated;
-import com.libraryproviderbackend.usecase.generic.UseCaseForCommand;
+import com.libraryproviderbackend.usecase.generic.UseCaseForCommandFlux;
 import com.libraryproviderbackend.usecase.generic.gateway.ITextRepository;
 import com.libraryproviderbackend.usecase.generic.gateway.IUserRepository;
 import com.libraryproviderbackend.user.User;
 import com.libraryproviderbackend.user.commands.QuoteTextsByBudgetCommand;
 import com.libraryproviderbackend.user.entity.BatchQuote;
 import com.libraryproviderbackend.user.events.BudgetTextsQuoted;
+import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class QuoteTextsByBudgetUseCase extends UseCaseForCommand<QuoteTextsByBudgetCommand> {
+@Component
+public class QuoteTextsByBudgetUseCase extends UseCaseForCommandFlux<QuoteTextsByBudgetCommand> {
 
     private final IUserRepository userRepository;
     private final ITextRepository textRepository;
