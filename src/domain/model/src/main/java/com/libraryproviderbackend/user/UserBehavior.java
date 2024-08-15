@@ -25,7 +25,7 @@ public class UserBehavior extends EventChange {
         });
 
         addSubscriber(TextSavedAndQuoted.class, event -> {
-            user.quoteText(event.title, BigDecimal.valueOf(event.initialPrice), textTypeEnum[event.type], DiscountsEnum.NONE);
+            user.quoteText(event.title, event.initialPrice, textTypeEnum[event.type], DiscountsEnum.NONE);
         });
     }
 }

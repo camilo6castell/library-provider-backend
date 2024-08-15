@@ -67,7 +67,7 @@ public class User extends AggregateRoot<UserId> {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public TextQuote quoteText(String title, BigDecimal initialPrice, TextTypeEnum type, DiscountsEnum discount) {
+    public TextQuote quoteText(String title, Float initialPrice, TextTypeEnum type, DiscountsEnum discount) {
         return new TextQuote(title, initialPrice, type, discount);
     }
 
@@ -106,7 +106,7 @@ public class User extends AggregateRoot<UserId> {
     }
 
     public BatchQuote calculateBudgetTextsQuote(List<Text> textList, Float budget, EntryDate entryDate) {
-        return new BatchQuote(textList, BigDecimal.valueOf(budget), entryDate.value());
+        return new BatchQuote(textList, budget, entryDate.value());
     }
 
     public static float calculateSeniorityDiscount(LocalDate clientEntryDate) {

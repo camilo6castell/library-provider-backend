@@ -82,7 +82,7 @@ public class Text extends AggregateRoot<TextId> {
      *
      * @return El precio inicial del texto.
      */
-    public BigDecimal getInitialFloatPrice() {
+    public Float getInitialFloatPrice() {
         return initialPrice.value();
     }
 }

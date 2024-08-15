@@ -10,7 +10,7 @@ import com.libraryproviderbackend.usecase.generic.gateway.IUserRepository;
 import com.libraryproviderbackend.user.User;
 import com.libraryproviderbackend.user.commands.SaveAndQuoteTextCommand;
 import com.libraryproviderbackend.user.entity.TextQuote;
-import com.libraryproviderbackend.user.events.TextQuoteMade;
+import com.libraryproviderbackend.user.events.TextQuoted;
 import com.libraryproviderbackend.user.values.shared.DiscountsEnum;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -58,13 +58,13 @@ public class SaveAndQuoteTextUseCase extends UseCaseForCommandMono<SaveAndQuoteT
                                             // Optionally save user changes or handle further logic
                                             return Mono.just(textQuote)
                                                     .map(userEvents -> {
-                                                        TextQuoteMade textQuoteMade = new TextQuoteMade();
-                                                        textQuoteMade.setTitle(textQuote.getTitle().value());
-                                                        textQuoteMade.setType(textQuote.getType().value().toString());
-                                                        textQuoteMade.setDiscount(DiscountsEnum.NONE.toString());
-                                                        textQuoteMade.setSubtotal(textQuote.getSubtotal().value().floatValue());
-                                                        textQuoteMade.setTotal(textQuote.getTotal().value().floatValue());
-                                                        return textQuoteMade;
+                                                        TextQuoted textQuoted = new TextQuoted();
+                                                        textQuoted.setTitle(textQuote.getTitle().value());
+                                                        textQuoted.setType(textQuote.getType().value().toString());
+                                                        textQuoted.setDiscount(DiscountsEnum.NONE.toString());
+                                                        textQuoted.setSubtotal(textQuote.getSubtotal().value().floatValue());
+                                                        textQuoted.setTotal(textQuote.getTotal().value().floatValue());
+                                                        return textQuoted;
                                                     });
                                         });
                             });

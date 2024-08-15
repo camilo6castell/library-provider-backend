@@ -2,36 +2,32 @@ package com.libraryproviderbackend.text.values;
 
 import com.libraryproviderbackend.generic.IValueObject;
 
-import java.math.BigDecimal;
+public class InitialPrice implements IValueObject<Float> {
+    private final Float initialPrice;
 
-import java.math.BigDecimal;
-
-public class InitialPrice implements IValueObject<BigDecimal> {
-    private final BigDecimal initialPrice;
-
-    private InitialPrice(BigDecimal initialPrice) {
+    private InitialPrice(Float initialPrice) {
         if (initialPrice == null) {
             throw new IllegalArgumentException("InitialPrice cannot be null");
         }
-        if (initialPrice.compareTo(BigDecimal.ZERO) < 0) {
+        if (initialPrice < 0) {
             throw new IllegalArgumentException("InitialPrice cannot be negative");
         }
         this.initialPrice = initialPrice;
     }
 
     @Override
-    public BigDecimal value() {
+    public Float value() {
         return initialPrice;
     }
 
     /**
      * Factory method to create an InitialPrice object.
      *
-     * @param initialPrice The BigDecimal value of the initial price.
+     * @param initialPrice The Float value of the initial price.
      * @return A new InitialPrice object.
      * @throws IllegalArgumentException if the initialPrice is null or negative.
      */
-    public static InitialPrice of(BigDecimal initialPrice) {
+    public static InitialPrice of(Float initialPrice) {
         return new InitialPrice(initialPrice);
     }
 
@@ -55,19 +51,19 @@ public class InitialPrice implements IValueObject<BigDecimal> {
 }
 
 
-//public class InitialPrice implements IValueObject<BigDecimal> {
-//    public final BigDecimal initialPrice;
+//public class InitialPrice implements IValueObject<Float> {
+//    public final Float initialPrice;
 //
-//    private InitialPrice(BigDecimal initialPrice) {
+//    private InitialPrice(Float initialPrice) {
 //        this.initialPrice = initialPrice;
 //    }
 //
 //    @Override
-//    public BigDecimal value() {
+//    public Float value() {
 //        return initialPrice;
 //    }
 //
-//    public static InitialPrice of(BigDecimal initialPrice){
+//    public static InitialPrice of(Float initialPrice){
 //        return new InitialPrice(initialPrice);
 //    }
 //}

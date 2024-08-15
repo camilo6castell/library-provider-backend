@@ -66,14 +66,14 @@ public class BatchQuote extends Entity<BatchQuoteId> {
 
     public BatchQuote(
             List<Text> textsList,
-            BigDecimal budget,
+            Float budget,
             LocalDate entryDate
     ) {
 
         super(new BatchQuoteId());
         this.bookQuoteList = new ArrayList<>();
-        this.total = Total.of(BigDecimal.ZERO);
-        this.subtotal = Subtotal.of(BigDecimal.ZERO);
+        this.total = Total.of(0f);
+        this.subtotal = Subtotal.of(0f);
         this.discountValue = User.calculateSeniorityDiscount(entryDate);
         this.discount = discountValue == 1f ? Discount.of(DiscountsEnum.NONE) : Discount.of(DiscountsEnum.SENIORITY);
 
@@ -98,14 +98,14 @@ public class BatchQuote extends Entity<BatchQuoteId> {
             );
             boolean isFirstTime = true;
             int count = 1;
-            if (cheapestBookQuote.total.value().compareTo(cheapestNovelQuote.total.value()) > 0) {
+            if (cheapestBookQuote.total.value() > cheapestNovelQuote.total.value()) {
 
-                while (budget.compareTo(BigDecimal.ZERO) > 0) {
+                while (budget > 0) {
 
-                    if (budget.subtract(cheapestBookQuote.total.value()).compareTo(BigDecimal.ZERO) < 0 && isFirstTime) {
+                    if (budget - cheapestBookQuote.total.value() < 0 && isFirstTime) {
                         break;
                     }
-                    if (budget.subtract(cheapestNovelQuote.total.value()).compareTo(BigDecimal.ZERO) < 0 && !isFirstTime) {
+                    if (budget - cheapestNovelQuote.total.value() < 0 && !isFirstTime) {
                         break;
                     }
                     if (isFirstTime) {
@@ -116,57 +116,12 @@ public class BatchQuote extends Entity<BatchQuoteId> {
                                 DiscountsEnum.NONE);
 
                         this.bookQuoteList.add(auxCheapestBookQuote);
-                        budget = budget.subtract(auxCheapestBookQuote.total.value());
+                        budget -= auxCheapestBookQuote.total.value();
 
                         isFirstTime = false;
 
-                        this.subtotal = Subtotal.of(this.subtotal.value().add(auxCheapestBookQuote.total.value()));
-                        this.total = Total.of(this.total.value().add(auxCheapestBookQuote.total.value()));
-
-                    } else {
-                        if (count < 10) {
-                            TextQuote auxCheapestBookQuote = new TextQuote(
-                                    cheapestBook.getTitle().value(),
-                                    cheapestBook.getInitialFloatPrice(),
-                                    cheapestBook.getType().value(),
-                                    DiscountsEnum.NONE);
-
-                            this.bookQuoteList.add(auxCheapestBookQuote);
-                            budget = budget.subtract(auxCheapestBookQuote.total.value());
-
-                            this.subtotal = Subtotal.of(this.subtotal.value().add(auxCheapestBookQuote.total.value()));
-                            this.total = Total.of(this.total.value().add(auxCheapestBookQuote.total.value()));
-
-                            count++;
-                        } else {
-                            break;
-                        }
-                    }
-                }
-
-            } else {
-                while (budget.compareTo(BigDecimal.ZERO) > 0) {
-
-                    if (budget.subtract(cheapestNovelQuote.total.value()).compareTo(BigDecimal.ZERO) < 0 && isFirstTime) {
-                        break;
-                    }
-                    if (budget.subtract(cheapestBookQuote.total.value()).compareTo(BigDecimal.ZERO) < 0 && !isFirstTime) {
-                        break;
-                    }
-                    if (isFirstTime) {
-                        TextQuote auxCheapestNovelQuote = new TextQuote(
-                                cheapestNovel.getTitle().value(),
-                                cheapestNovel.getInitialFloatPrice(),
-                                cheapestNovel.getType().value(),
-                                DiscountsEnum.NONE);
-
-                        this.novelQuoteList.add(auxCheapestNovelQuote);
-                        budget = budget.subtract(auxCheapestNovelQuote.total.value());
-
-                        isFirstTime = false;
-
-                        this.subtotal = Subtotal.of(this.subtotal.value().add(auxCheapestNovelQuote.total.value()));
-                        this.total = Total.of(this.total.value().add(auxCheapestNovelQuote.total.value()));
+                        this.subtotal = Subtotal.of(this.total.value() + auxCheapestBookQuote.total.value());
+                        this.total = Total.of(this.total.value() + auxCheapestBookQuote.total.value());
 
                     } else {
                         if (count < 10) {
@@ -176,24 +131,99 @@ public class BatchQuote extends Entity<BatchQuoteId> {
                                     cheapestNovel.getType().value(),
                                     DiscountsEnum.NONE);
 
-                            this.novelQuoteList.add(auxCheapestNovelQuote);
-                            budget = budget.subtract(auxCheapestNovelQuote.total.value());
+                            this.bookQuoteList.add(auxCheapestNovelQuote);
+                            budget -= cheapestNovelQuote.total.value();
+                            this.total = Total.of(this.subtotal.value() + cheapestBookQuote.total.value());
+                            this.subtotal =  Subtotal.of(this.subtotal.value() + cheapestBookQuote.subtotal.value());
 
-                            this.subtotal = Subtotal.of(this.subtotal.value().add(auxCheapestNovelQuote.total.value()));
-                            this.total = Total.of(this.total.value().add(auxCheapestNovelQuote.total.value()));
-
-                            count++;
+                            count += 1;
                         } else {
-                            break;
+                            TextQuote auxCheapestNovelQuote = new TextQuote(
+                                    cheapestNovel.getTitle().value(),
+                                    cheapestNovel.getInitialFloatPrice(),
+                                    cheapestNovel.getType().value(),
+                                    DiscountsEnum.WHOLESALE);
+
+                            this.bookQuoteList.add(auxCheapestNovelQuote);
+                            budget -= cheapestNovelQuote.total.value();
+                            this.total = Total.of(this.subtotal.value() + cheapestBookQuote.total.value());
+                            this.subtotal =  Subtotal.of(this.subtotal.value() + cheapestBookQuote.subtotal.value());
+
+                            count += 1;
+                        }
+                    }
+                }
+
+            } else {
+                while (budget > 0) {
+                    if (budget - cheapestNovelQuote.total.value() < 0 && isFirstTime) {
+                        break;
+                    }
+                    if (budget - cheapestBookQuote.total.value() < 0 && !isFirstTime) {
+                        break;
+                    }
+                    if (isFirstTime) {
+
+                        TextQuote auxCheapestNovelQuote = new TextQuote(
+                                cheapestNovel.getTitle().value(),
+                                cheapestNovel.getInitialFloatPrice(),
+                                cheapestNovel.getType().value(),
+                                DiscountsEnum.NONE);
+
+                        this.bookQuoteList.add(auxCheapestNovelQuote);
+
+                        budget -= auxCheapestNovelQuote.total.value();
+
+                        isFirstTime = false;
+
+                        this.total = Total.of(this.total.value() + auxCheapestNovelQuote.total.value());
+                        this.subtotal = Subtotal.of(this.subtotal.value() + auxCheapestNovelQuote.total.value());
+
+
+
+                    } else {
+                        if (count < 10) {
+                            TextQuote auxCheapestBookQuote = new TextQuote(
+                                    cheapestBook.getTitle().value(),
+                                    cheapestBook.getInitialFloatPrice(),
+                                    cheapestBook.getType().value(),
+                                    DiscountsEnum.NONE);
+
+                            this.bookQuoteList.add(auxCheapestBookQuote.clone());
+                            budget -= auxCheapestBookQuote.total.value();
+                            this.total = Total.of(this.total.value() + auxCheapestBookQuote.total.value());
+
+                            this.subtotal =  Subtotal.of(this.subtotal.value() + auxCheapestBookQuote.subtotal.value());
+
+                            count += 1;
+                        } else {
+                            TextQuote auxCheapestBookQuote = new TextQuote(
+                                    cheapestBook.getTitle().value(),
+                                    cheapestBook.getInitialFloatPrice(),
+                                    cheapestBook.getType().value(),
+                                    DiscountsEnum.WHOLESALE);
+
+                            this.bookQuoteList.add(auxCheapestBookQuote);
+                            budget -= auxCheapestBookQuote.total.value();
+                            this.total = Total.of(this.total.value() + auxCheapestBookQuote.total.value());
+
+                            this.subtotal =  Subtotal.of(this.subtotal.value() + auxCheapestBookQuote.subtotal.value());
+
+                            count += 1;
                         }
                     }
                 }
             }
 
         } else {
-            throw new RuntimeException("Error, se necesita por lo menos un libro y una novela para realizar la cotización.");
+            throw new RuntimeException("Error, se necesita por lo menos un libro y una novela " +
+                    "para poder hacer esta cotización.");
         }
-        this.change = Change.of(budget.floatValue());
+        this.change = Change.of(budget);
+
+
+
+
     }
 
     public Text getCheapestText(List<Text> textList, TextTypeEnum textEnum){
@@ -201,9 +231,17 @@ public class BatchQuote extends Entity<BatchQuoteId> {
         float lowestPrice = Float.MAX_VALUE;
 
         for (Text text : textList){
-            if (text.getType().value().equals(textEnum) && text.getInitialFloatPrice().floatValue() < lowestPrice) {
-                auxText = text;
-                lowestPrice = text.getInitialFloatPrice().floatValue();
+            if (text.getType().value() == textEnum){
+                TextQuote auxTextQuote = new TextQuote(
+                        text.getTitle().value(),
+                        text.getInitialFloatPrice(),
+                        text.getType().value(),
+                        DiscountsEnum.WHOLESALE
+                );
+                if (auxTextQuote.total.value() < lowestPrice){
+                    lowestPrice = auxTextQuote.total.value();
+                    auxText = text;
+                }
             }
         }
         return auxText;
@@ -218,7 +256,7 @@ public class BatchQuote extends Entity<BatchQuoteId> {
     private boolean hasTypeText(TextTypeEnum type, List<Text> texts) {
         boolean hasTextType = false;
         for (Text text : texts) {
-            if (text.getType().value().equals(type)) {
+            if (text.getType().value() == type) {
                 hasTextType = true;
                 break;
             }
@@ -226,45 +264,64 @@ public class BatchQuote extends Entity<BatchQuoteId> {
         return hasTextType;
     }
 
+
+
+
+
+
+
+
+
     public List<TextQuote> createNewTextQuote(List<Text> textList){
         List<TextQuote> auxTextQuoteList = new ArrayList<>();
-        BigDecimal totalAux = BigDecimal.ZERO;
-        BigDecimal subTotalAux = BigDecimal.ZERO;
+        float totalAux = 0f;
+        float subTotalAux = 0f;
         for (int i = 0; i < textList.size(); i++) {
-            Text text = textList.get(i);
-            TextQuote textQuote = new TextQuote(
-                    text.getTitle().value(),
-                    text.getInitialFloatPrice(),
-                    text.getType().value(),
-                    DiscountsEnum.NONE
+
+            auxTextQuoteList.add(
+                    new TextQuote(
+                            textList.get(i).getTitle().value(),
+                            textList.get(i).getInitialFloatPrice(),
+                            textList.get(i).getType().value(),
+                            toWholeSale < 10 ? DiscountsEnum.NONE : DiscountsEnum.WHOLESALE
+                    )
             );
-            auxTextQuoteList.add(textQuote);
-            totalAux = totalAux.add(textQuote.total.value());
-            subTotalAux = subTotalAux.add(textQuote.subtotal.value());
+            toWholeSale += 1;
+            TextQuote lastTextQuote = auxTextQuoteList.getLast();
+            subTotalAux += lastTextQuote.total.value();
+            totalAux += auxTextQuoteList.getLast().total.value();
         }
 
-        totalAux = totalAux.multiply(BigDecimal.valueOf(discountValue));
+        totalAux = totalAux * discountValue;
 
         this.subtotal = Subtotal.of(subTotalAux);
         this.total = Total.of(totalAux);
         return auxTextQuoteList;
     }
 
+
     public static List<TextQuoteResponse> mapToTextQuoteResponses(List<TextQuote> textQuotes) {
         List<TextQuoteResponse> textQuoteResponses = new ArrayList<>();
         for (int i = 0; i < textQuotes.size(); i++) {
-            TextQuote textQuote = textQuotes.get(i);
-            TextQuoteResponse textQuoteResponse = new TextQuoteResponse(
-                    textQuote.getTitle().value(),
-                    textQuote.getType().value().toString(),
-                    textQuote.getSubtotal().value().floatValue(),
-                    textQuote.getDiscount().value().toString(),
-                    textQuote.getTotal().value().floatValue()
+            TextQuote textQuote =textQuotes.get(i);
+            textQuoteResponses.add(new TextQuoteResponse(
+                    textQuote.title.value(),
+                    textQuote.type.value().toString(),
+                    textQuote.subtotal.value(),
+                    textQuote.discount.value().toString(),
+                    textQuote.total.value())
             );
-            textQuoteResponses.add(textQuoteResponse);
         }
         return textQuoteResponses;
     }
+
+
+
+
+
+
+
+
 
     public List<TextQuote> getBookQuoteList() {
         return bookQuoteList;
@@ -319,6 +376,10 @@ public class BatchQuote extends Entity<BatchQuoteId> {
 
 
 
+
+
+
+
 //public class BatchQuote extends Entity<BatchQuoteId> {
 //
 //    public float discountValue;
@@ -350,14 +411,14 @@ public class BatchQuote extends Entity<BatchQuoteId> {
 //
 //    public BatchQuote(
 //            List<Text> textsList,
-//            Float budget,
+//            BigDecimal budget,
 //            LocalDate entryDate
 //    ) {
 //
 //        super(new BatchQuoteId());
 //        this.bookQuoteList = new ArrayList<>();
-//        this.total = Total.of(0f);
-//        this.subtotal = Subtotal.of(0f);
+//        this.total = Total.of(BigDecimal.ZERO);
+//        this.subtotal = Subtotal.of(BigDecimal.ZERO);
 //        this.discountValue = User.calculateSeniorityDiscount(entryDate);
 //        this.discount = discountValue == 1f ? Discount.of(DiscountsEnum.NONE) : Discount.of(DiscountsEnum.SENIORITY);
 //
@@ -382,14 +443,14 @@ public class BatchQuote extends Entity<BatchQuoteId> {
 //            );
 //            boolean isFirstTime = true;
 //            int count = 1;
-//            if (cheapestBookQuote.total.value() > cheapestNovelQuote.total.value()) {
+//            if (cheapestBookQuote.total.value().compareTo(cheapestNovelQuote.total.value()) > 0) {
 //
-//                while (budget > 0) {
+//                while (budget.compareTo(BigDecimal.ZERO) > 0) {
 //
-//                    if (budget - cheapestBookQuote.total.value() < 0 && isFirstTime) {
+//                    if (budget.subtract(cheapestBookQuote.total.value()).compareTo(BigDecimal.ZERO) < 0 && isFirstTime) {
 //                        break;
 //                    }
-//                    if (budget - cheapestNovelQuote.total.value() < 0 && !isFirstTime) {
+//                    if (budget.subtract(cheapestNovelQuote.total.value()).compareTo(BigDecimal.ZERO) < 0 && !isFirstTime) {
 //                        break;
 //                    }
 //                    if (isFirstTime) {
@@ -400,114 +461,84 @@ public class BatchQuote extends Entity<BatchQuoteId> {
 //                                DiscountsEnum.NONE);
 //
 //                        this.bookQuoteList.add(auxCheapestBookQuote);
-//                        budget -= auxCheapestBookQuote.total.value();
+//                        budget = budget.subtract(auxCheapestBookQuote.total.value());
 //
 //                        isFirstTime = false;
 //
-//                        this.subtotal = Subtotal.of(this.total.value() + auxCheapestBookQuote.total.value());
-//                        this.total = Total.of(this.total.value() + auxCheapestBookQuote.total.value());
+//                        this.subtotal = Subtotal.of(this.subtotal.value().add(auxCheapestBookQuote.total.value()));
+//                        this.total = Total.of(this.total.value().add(auxCheapestBookQuote.total.value()));
 //
 //                    } else {
 //                        if (count < 10) {
-//                            TextQuote auxCheapestNovelQuote = new TextQuote(
-//                                    cheapestNovel.getTitle().value(),
-//                                    cheapestNovel.getInitialFloatPrice(),
-//                                    cheapestNovel.getType().value(),
+//                            TextQuote auxCheapestBookQuote = new TextQuote(
+//                                    cheapestBook.getTitle().value(),
+//                                    cheapestBook.getInitialFloatPrice(),
+//                                    cheapestBook.getType().value(),
 //                                    DiscountsEnum.NONE);
 //
-//                            this.bookQuoteList.add(auxCheapestNovelQuote);
-//                            budget -= cheapestNovelQuote.total.value();
-//                            this.total = Total.of(this.subtotal.value() + cheapestBookQuote.total.value());
-//                            this.subtotal =  Subtotal.of(this.subtotal.value() + cheapestBookQuote.subtotal.value());
+//                            this.bookQuoteList.add(auxCheapestBookQuote);
+//                            budget = budget.subtract(auxCheapestBookQuote.total.value());
 //
-//                            count += 1;
+//                            this.subtotal = Subtotal.of(this.subtotal.value().add(auxCheapestBookQuote.total.value()));
+//                            this.total = Total.of(this.total.value().add(auxCheapestBookQuote.total.value()));
+//
+//                            count++;
 //                        } else {
-//                            TextQuote auxCheapestNovelQuote = new TextQuote(
-//                                    cheapestNovel.getTitle().value(),
-//                                    cheapestNovel.getInitialFloatPrice(),
-//                                    cheapestNovel.getType().value(),
-//                                    DiscountsEnum.WHOLESALE);
-//
-//                            this.bookQuoteList.add(auxCheapestNovelQuote);
-//                            budget -= cheapestNovelQuote.total.value();
-//                            this.total = Total.of(this.subtotal.value() + cheapestBookQuote.total.value());
-//                            this.subtotal =  Subtotal.of(this.subtotal.value() + cheapestBookQuote.subtotal.value());
-//
-//                            count += 1;
+//                            break;
 //                        }
 //                    }
 //                }
 //
 //            } else {
-//                while (budget > 0) {
-//                    if (budget - cheapestNovelQuote.total.value() < 0 && isFirstTime) {
+//                while (budget.compareTo(BigDecimal.ZERO) > 0) {
+//
+//                    if (budget.subtract(cheapestNovelQuote.total.value()).compareTo(BigDecimal.ZERO) < 0 && isFirstTime) {
 //                        break;
 //                    }
-//                    if (budget - cheapestBookQuote.total.value() < 0 && !isFirstTime) {
+//                    if (budget.subtract(cheapestBookQuote.total.value()).compareTo(BigDecimal.ZERO) < 0 && !isFirstTime) {
 //                        break;
 //                    }
 //                    if (isFirstTime) {
-//
 //                        TextQuote auxCheapestNovelQuote = new TextQuote(
 //                                cheapestNovel.getTitle().value(),
 //                                cheapestNovel.getInitialFloatPrice(),
 //                                cheapestNovel.getType().value(),
 //                                DiscountsEnum.NONE);
 //
-//                        this.bookQuoteList.add(auxCheapestNovelQuote);
-//
-//                        budget -= auxCheapestNovelQuote.total.value();
+//                        this.novelQuoteList.add(auxCheapestNovelQuote);
+//                        budget = budget.subtract(auxCheapestNovelQuote.total.value());
 //
 //                        isFirstTime = false;
 //
-//                        this.total = Total.of(this.total.value() + auxCheapestNovelQuote.total.value());
-//                        this.subtotal = Subtotal.of(this.subtotal.value() + auxCheapestNovelQuote.total.value());
-//
-//
+//                        this.subtotal = Subtotal.of(this.subtotal.value().add(auxCheapestNovelQuote.total.value()));
+//                        this.total = Total.of(this.total.value().add(auxCheapestNovelQuote.total.value()));
 //
 //                    } else {
 //                        if (count < 10) {
-//                            TextQuote auxCheapestBookQuote = new TextQuote(
-//                                    cheapestBook.getTitle().value(),
-//                                    cheapestBook.getInitialFloatPrice(),
-//                                    cheapestBook.getType().value(),
+//                            TextQuote auxCheapestNovelQuote = new TextQuote(
+//                                    cheapestNovel.getTitle().value(),
+//                                    cheapestNovel.getInitialFloatPrice(),
+//                                    cheapestNovel.getType().value(),
 //                                    DiscountsEnum.NONE);
 //
-//                            this.bookQuoteList.add(auxCheapestBookQuote.clone());
-//                            budget -= auxCheapestBookQuote.total.value();
-//                            this.total = Total.of(this.total.value() + auxCheapestBookQuote.total.value());
+//                            this.novelQuoteList.add(auxCheapestNovelQuote);
+//                            budget = budget.subtract(auxCheapestNovelQuote.total.value());
 //
-//                            this.subtotal =  Subtotal.of(this.subtotal.value() + auxCheapestBookQuote.subtotal.value());
+//                            this.subtotal = Subtotal.of(this.subtotal.value().add(auxCheapestNovelQuote.total.value()));
+//                            this.total = Total.of(this.total.value().add(auxCheapestNovelQuote.total.value()));
 //
-//                            count += 1;
+//                            count++;
 //                        } else {
-//                            TextQuote auxCheapestBookQuote = new TextQuote(
-//                                    cheapestBook.getTitle().value(),
-//                                    cheapestBook.getInitialFloatPrice(),
-//                                    cheapestBook.getType().value(),
-//                                    DiscountsEnum.WHOLESALE);
-//
-//                            this.bookQuoteList.add(auxCheapestBookQuote);
-//                            budget -= auxCheapestBookQuote.total.value();
-//                            this.total = Total.of(this.total.value() + auxCheapestBookQuote.total.value());
-//
-//                            this.subtotal =  Subtotal.of(this.subtotal.value() + auxCheapestBookQuote.subtotal.value());
-//
-//                            count += 1;
+//                            break;
 //                        }
 //                    }
 //                }
 //            }
 //
 //        } else {
-//            throw new RuntimeException("Error, se necesita por lo menos un libro y una novela " +
-//                    "para poder hacer esta cotización.");
+//            throw new RuntimeException("Error, se necesita por lo menos un libro y una novela para realizar la cotización.");
 //        }
-//        this.change = Change.of(budget);
-//
-//
-//
-//
+//        this.change = Change.of(budget.floatValue());
 //    }
 //
 //    public Text getCheapestText(List<Text> textList, TextTypeEnum textEnum){
@@ -515,17 +546,9 @@ public class BatchQuote extends Entity<BatchQuoteId> {
 //        float lowestPrice = Float.MAX_VALUE;
 //
 //        for (Text text : textList){
-//            if (text.getType().value() == textEnum){
-//                TextQuote auxTextQuote = new TextQuote(
-//                        text.getTitle().value(),
-//                        text.getInitialFloatPrice(),
-//                        text.getType().value(),
-//                        DiscountsEnum.WHOLESALE
-//                );
-//                if (auxTextQuote.total.value() < lowestPrice){
-//                    lowestPrice = auxTextQuote.total.value();
-//                    auxText = text;
-//                }
+//            if (text.getType().value().equals(textEnum) && text.getInitialFloatPrice().floatValue() < lowestPrice) {
+//                auxText = text;
+//                lowestPrice = text.getInitialFloatPrice().floatValue();
 //            }
 //        }
 //        return auxText;
@@ -540,7 +563,7 @@ public class BatchQuote extends Entity<BatchQuoteId> {
 //    private boolean hasTypeText(TextTypeEnum type, List<Text> texts) {
 //        boolean hasTextType = false;
 //        for (Text text : texts) {
-//            if (text.getType().value() == type) {
+//            if (text.getType().value().equals(type)) {
 //                hasTextType = true;
 //                break;
 //            }
@@ -548,64 +571,45 @@ public class BatchQuote extends Entity<BatchQuoteId> {
 //        return hasTextType;
 //    }
 //
-//
-//
-//
-//
-//
-//
-//
-//
 //    public List<TextQuote> createNewTextQuote(List<Text> textList){
 //        List<TextQuote> auxTextQuoteList = new ArrayList<>();
-//        float totalAux = 0f;
-//        float subTotalAux = 0f;
+//        BigDecimal totalAux = BigDecimal.ZERO;
+//        BigDecimal subTotalAux = BigDecimal.ZERO;
 //        for (int i = 0; i < textList.size(); i++) {
-//
-//            auxTextQuoteList.add(
-//                    new TextQuote(
-//                            textList.get(i).getTitle().value(),
-//                            textList.get(i).getInitialFloatPrice(),
-//                            textList.get(i).getType().value(),
-//                            toWholeSale < 10 ? DiscountsEnum.NONE : DiscountsEnum.WHOLESALE
-//                    )
+//            Text text = textList.get(i);
+//            TextQuote textQuote = new TextQuote(
+//                    text.getTitle().value(),
+//                    text.getInitialFloatPrice(),
+//                    text.getType().value(),
+//                    DiscountsEnum.NONE
 //            );
-//            toWholeSale += 1;
-//            TextQuote lastTextQuote = auxTextQuoteList.getLast();
-//            subTotalAux += lastTextQuote.total.value();
-//            totalAux += auxTextQuoteList.getLast().total.value();
+//            auxTextQuoteList.add(textQuote);
+//            totalAux = totalAux.add(textQuote.total.value());
+//            subTotalAux = subTotalAux.add(textQuote.subtotal.value());
 //        }
 //
-//        totalAux = totalAux * discountValue;
+//        totalAux = totalAux.multiply(BigDecimal.valueOf(discountValue));
 //
 //        this.subtotal = Subtotal.of(subTotalAux);
 //        this.total = Total.of(totalAux);
 //        return auxTextQuoteList;
 //    }
 //
-//
 //    public static List<TextQuoteResponse> mapToTextQuoteResponses(List<TextQuote> textQuotes) {
 //        List<TextQuoteResponse> textQuoteResponses = new ArrayList<>();
 //        for (int i = 0; i < textQuotes.size(); i++) {
-//            TextQuote textQuote =textQuotes.get(i);
-//            textQuoteResponses.add(new TextQuoteResponse(
-//                    textQuote.title.value(),
-//                    textQuote.type.value().toString(),
-//                    textQuote.subtotal.value(),
-//                    textQuote.discount.value().toString(),
-//                    textQuote.total.value())
+//            TextQuote textQuote = textQuotes.get(i);
+//            TextQuoteResponse textQuoteResponse = new TextQuoteResponse(
+//                    textQuote.getTitle().value(),
+//                    textQuote.getType().value().toString(),
+//                    textQuote.getSubtotal().value().floatValue(),
+//                    textQuote.getDiscount().value().toString(),
+//                    textQuote.getTotal().value().floatValue()
 //            );
+//            textQuoteResponses.add(textQuoteResponse);
 //        }
 //        return textQuoteResponses;
 //    }
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //    public List<TextQuote> getBookQuoteList() {
 //        return bookQuoteList;

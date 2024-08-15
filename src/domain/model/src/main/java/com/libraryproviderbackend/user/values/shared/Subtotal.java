@@ -2,21 +2,19 @@ package com.libraryproviderbackend.user.values.shared;
 
 import com.libraryproviderbackend.generic.IValueObject;
 
-import java.math.BigDecimal;
+public class Subtotal implements IValueObject<Float> {
+    public final Float total;
 
-public class Subtotal implements IValueObject<BigDecimal> {
-    public final BigDecimal total;
-
-    private Subtotal(BigDecimal total){
+    private Subtotal(Float total){
         this.total = total;
     }
 
     @Override
-    public BigDecimal value() {
+    public Float value() {
         return total;
     }
 
-    public static Subtotal of(BigDecimal subtotal){
+    public static Subtotal of(Float subtotal){
         return new Subtotal(subtotal);
     }
 }

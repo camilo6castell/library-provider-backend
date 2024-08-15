@@ -3,26 +3,24 @@ package com.libraryproviderbackend.user.commands;
 import com.libraryproviderbackend.generic.Command;
 import com.libraryproviderbackend.user.values.identities.UserId;
 
-import java.math.BigDecimal;
-
 public class SaveAndQuoteTextCommand extends Command {
     public  UserId userId;
     public  String title;
     public  String textType;
-    public  BigDecimal initialPrice;
+    public  Float initialPrice;
 
     public SaveAndQuoteTextCommand() {
         super();
     }
 
-    public SaveAndQuoteTextCommand(UserId userId, String title, String textType, BigDecimal initialPrice) {
+    public SaveAndQuoteTextCommand(UserId userId, String title, String textType, Float initialPrice) {
         if (userId == null) {
             throw new IllegalArgumentException("User ID cannot be null");
         }
         if (title == null || title.trim().isEmpty()) {
             throw new IllegalArgumentException("Title cannot be null or empty");
         }
-        if (initialPrice == null || initialPrice.compareTo(BigDecimal.ZERO) < 0) {
+        if (initialPrice == null || initialPrice < 0) {
             throw new IllegalArgumentException("Initial price cannot be null or negative");
         }
 
@@ -44,7 +42,7 @@ public class SaveAndQuoteTextCommand extends Command {
         return textType;
     }
 
-    public BigDecimal getInitialPrice() {
+    public Float getInitialPrice() {
         return initialPrice;
     }
 }

@@ -3,12 +3,11 @@ package com.libraryproviderbackend.text.events;
 import com.libraryproviderbackend.generic.DomainEvent;
 import com.libraryproviderbackend.text.values.TextTypeEnum;
 
-import java.math.BigDecimal;
 
 public class TextCreated extends DomainEvent {
     public String title;
     public TextTypeEnum textType;
-    public BigDecimal initialPrice;
+    public Float initialPrice;
 
     public TextCreated() {
     }
@@ -18,12 +17,12 @@ public class TextCreated extends DomainEvent {
      *
      * @param title       Título del texto.
      * @param textType    Tipo de texto, representado por un enum.
-     * @param initialPrice Precio inicial del texto, usando BigDecimal para mayor precisión.
+     * @param initialPrice Precio inicial del texto, usando Float para mayor precisión.
      */
     public TextCreated(
             String title,
             TextTypeEnum textType,
-            BigDecimal initialPrice
+            Float initialPrice
     ) {
         super(TextEventsEnum.TEXT_CREATED.toString());
         this.title = title;
@@ -39,7 +38,7 @@ public class TextCreated extends DomainEvent {
         return textType;
     }
 
-    public BigDecimal getInitialPrice() {
+    public Float getInitialPrice() {
         return initialPrice;
     }
 }
