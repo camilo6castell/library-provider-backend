@@ -14,6 +14,7 @@ import com.libraryproviderbackend.user.values.user.Email;
 import com.libraryproviderbackend.user.values.user.EntryDate;
 import com.libraryproviderbackend.user.values.user.Password;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
@@ -28,9 +29,7 @@ public class User extends AggregateRoot<UserId> {
 
     public Quote quote;
 
-    public User(UserId userId) {
-        super(userId);
-    }
+
 
     public User(UserId userId, Email email, Password password, EntryDate entryDate) {
         super(userId);
@@ -45,65 +44,73 @@ public class User extends AggregateRoot<UserId> {
 
     }
 
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    private User(UserId userId) {
+        super(userId);
+        subscribe(new UserBehavior(this));
+    }
+
     public static User from(
-        String userId,
-        DomainEvent domainEvent
+            String userId,
+            List<DomainEvent> domainEvents
     ) {
         User user = new User(UserId.of(userId));
-        user.email = Email.of(((UserCreated) domainEvent).getEmail());
-        user.password = Password.of(((UserCreated) domainEvent).getPassword());
-        user.entryDate = EntryDate.of(((UserCreated) domainEvent).getEntryDate().toString());
+        domainEvents.forEach(user::applyEvent);
         return user;
     }
 
 
+
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public TextQuote quoteText(String title, Float initialPrice, TextTypeEnum type, DiscountsEnum discount){
+    public TextQuote quoteText(String title, BigDecimal initialPrice, TextTypeEnum type, DiscountsEnum discount) {
         return new TextQuote(title, initialPrice, type, discount);
     }
 
 
-    public List<TextQuote> calculateBatchTextsQuote(List<Text> textList, User user){
+//    public List<TextQuote> calculateBatchTextsQuote(List<Text> textList, User user){
+//
+//        float discountValue = calculateSeniorityDiscount(user.entryDate.value());
+//        int toWholeSale = 0;
+//        List<TextQuote> auxTextQuoteList = new ArrayList<>();
+//        float totalAux = 0f;
+//        float subTotalAux = 0f;
+//        for (int i = 0; i < textList.size(); i++) {
+//
+//            auxTextQuoteList.add(
+//                    new TextQuote(
+//                            textList.get(i).getTitle().value(),
+//                            textList.get(i).getInitialFloatPrice(),
+//                            textList.get(i).getType().value(),
+//                            toWholeSale < 10 ? DiscountsEnum.NONE : DiscountsEnum.WHOLESALE
+//                    )
+//            );
+//            toWholeSale += 1;
+//            TextQuote lastTextQuote = auxTextQuoteList.getLast();
+//            subTotalAux += lastTextQuote.total.value();
+//            totalAux += auxTextQuoteList.getLast().total.value();
+//        }
+//
+//        totalAux = totalAux * discountValue;
+//
+//        return auxTextQuoteList;
+//    }
 
-        float discountValue = calculateSeniorityDiscount(user.entryDate.value());
-        int toWholeSale = 0;
-        List<TextQuote> auxTextQuoteList = new ArrayList<>();
-        float totalAux = 0f;
-        float subTotalAux = 0f;
-        for (int i = 0; i < textList.size(); i++) {
 
-            auxTextQuoteList.add(
-                    new TextQuote(
-                            textList.get(i).getTitle().value(),
-                            textList.get(i).getInitialFloatPrice(),
-                            textList.get(i).getType().value(),
-                            toWholeSale < 10 ? DiscountsEnum.NONE : DiscountsEnum.WHOLESALE
-                    )
-            );
-            toWholeSale += 1;
-            TextQuote lastTextQuote = auxTextQuoteList.getLast();
-            subTotalAux += lastTextQuote.total.value();
-            totalAux += auxTextQuoteList.getLast().total.value();
-        }
-
-        totalAux = totalAux * discountValue;
-
-        return auxTextQuoteList;
+    public BatchQuote calculateVariousTextQuote(List<Text> bookList, List<Text> novelList, EntryDate entryDate) {
+        return new BatchQuote(bookList, novelList, entryDate.value());
     }
 
-
-
-    public BatchQuote calculateVariousTextQuote(List<Text> bookList, List<Text> novelList, EntryDate entryDate){
-        return new BatchQuote( bookList, novelList, entryDate.value());
-    }
-
-    public BatchQuote calculateBudgetTextsQuote(List<Text> textList, Float budget, EntryDate entryDate){
-        return new BatchQuote(textList, budget, entryDate.value());
+    public BatchQuote calculateBudgetTextsQuote(List<Text> textList, Float budget, EntryDate entryDate) {
+        return new BatchQuote(textList, BigDecimal.valueOf(budget), entryDate.value());
     }
 
     public static float calculateSeniorityDiscount(LocalDate clientEntryDate) {
-         LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now();
         int years = Period.between(clientEntryDate, today).getYears();
         float seniorityDiscount;
         if (years < 1) {

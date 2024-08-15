@@ -6,7 +6,7 @@ public class TextId extends Identity {
     public TextId(){
         super();
     }
-    private TextId(String uuid) {
+    public TextId(String uuid) {
         super(uuid);
     }
 

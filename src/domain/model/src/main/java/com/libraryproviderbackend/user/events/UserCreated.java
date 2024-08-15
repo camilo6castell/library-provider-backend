@@ -6,9 +6,12 @@ import com.libraryproviderbackend.user.values.identities.UserId;
 import java.time.LocalDate;
 
 public class UserCreated extends DomainEvent {
-    private final String email;
-    private final String password;
-    private final LocalDate entryDate;
+    public String email;
+    public String password;
+    public LocalDate entryDate;
+
+    public UserCreated() {
+    }
 
     public UserCreated(
             String email,

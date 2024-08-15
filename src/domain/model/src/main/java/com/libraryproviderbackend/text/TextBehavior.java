@@ -13,9 +13,9 @@ public class TextBehavior extends EventChange {
 
     public TextBehavior(Text text){
         addSubscriber(TextCreated.class, event -> {
-            text.title = Title.of(event.title);
-            text.type = Type.of(textTypeEnumValues[event.textType]);
-            text.initialPrice = InitialPrice.of(event.initialPrice);
+            text.title = Title.of(event.getTitle());
+            text.type = Type.of(event.getTextType());
+            text.initialPrice = InitialPrice.of(event.getInitialPrice());
         });
     }
 }

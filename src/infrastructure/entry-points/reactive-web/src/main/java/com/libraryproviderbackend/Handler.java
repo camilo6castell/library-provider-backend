@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Handler {
     private final CreateUserUseCase createUserUseCase;
-//    private final SaveAndQuoteTextUseCase saveAndQuoteTextUseCase;
+    private final SaveAndQuoteTextUseCase saveAndQuoteTextUseCase;
 //    private final QuoteVariousTextsUseCase quoteVariousTextsUseCase;
     private final QuoteTextsByBudgetUseCase quoteTextsByBudgetUseCase;
     //    private final QuoteBatchQuoteUseCase quoteBatchQuoteUseCase;
@@ -31,14 +31,14 @@ public class Handler {
 
     public Handler(
             CreateUserUseCase createUserUseCase,
-//            SaveAndQuoteTextUseCase saveAndQuoteTextUseCase,
+            SaveAndQuoteTextUseCase saveAndQuoteTextUseCase,
 //            QuoteVariousTextsUseCase quoteVariousTextsUseCase,
             QuoteTextsByBudgetUseCase quoteTextsByBudgetUseCase,
 //            QuoteBatchQuoteUseCase quoteBatchQuoteUseCase,
             CreateTextUseCase createTextUseCase
     ) {
         this.createUserUseCase = createUserUseCase;
-//        this.saveAndQuoteTextUseCase = saveAndQuoteTextUseCase;
+        this.saveAndQuoteTextUseCase = saveAndQuoteTextUseCase;
 //        this.quoteVariousTextsUseCase = quoteVariousTextsUseCase;
         this.quoteTextsByBudgetUseCase = quoteTextsByBudgetUseCase;
 //        this.quoteBatchQuoteUseCase = quoteBatchQuoteUseCase;
@@ -48,12 +48,12 @@ public class Handler {
     public Mono<ServerResponse> listenPOSTCreateUserUseCase(ServerRequest serverRequest) {
         return createUserUseCase
                 .apply(serverRequest.bodyToMono(CreateUserCommand.class))
-                .flatMap(events -> ServerResponse.ok()
+                .flatMap(event -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(
                                         new RegisterResponse(
                                                 true,
-                                                "User created"
+                                                event.aggregateRootId
                                         )
                                 )
                         )
@@ -71,7 +71,24 @@ public class Handler {
     }
 
 
-//    public Mono<ServerResponse> listenPOSTSaveAndQuoteTextUseCase(ServerRequest serverRequest) {
+    public Mono<ServerResponse> listenPOSTSaveAndQuoteTextUseCase(ServerRequest serverRequest) {
+        return saveAndQuoteTextUseCase
+                .apply(serverRequest.bodyToMono(SaveAndQuoteTextCommand.class))
+                .flatMap(result -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(result)) // Usa fromValue porque ya tienes el objeto final
+                )
+                .onErrorResume(e -> ServerResponse.badRequest()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .body(BodyInserters.fromValue(
+                                new RegisterResponse(
+                                        false,
+                                        e.getMessage()
+                                )
+                        ))
+                );
+
+
 //        return serverRequest.bodyToMono(SaveAndQuoteTextCommand.class)
 //                .flatMap(command -> saveAndQuoteTextUseCase.apply(Mono.just(command))
 //                        .collectList()
@@ -115,7 +132,7 @@ public class Handler {
 //                                ))
 //                        )
 //                );
-//    }
+    }
 //
 //    public Mono<ServerResponse> listenPOSTQuoteVariousTextsUseCase(ServerRequest serverRequest) {
 //        return serverRequest.bodyToMono(QuoteVariousTextsCommand.class)

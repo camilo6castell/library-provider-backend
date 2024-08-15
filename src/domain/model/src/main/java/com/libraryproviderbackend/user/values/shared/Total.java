@@ -2,20 +2,22 @@ package com.libraryproviderbackend.user.values.shared;
 
 import com.libraryproviderbackend.generic.IValueObject;
 
-public class Total implements IValueObject<Float> {
+import java.math.BigDecimal;
 
-    public final Float total;
+public class Total implements IValueObject<BigDecimal> {
 
-    private Total(Float total) {
+    public final BigDecimal total;
+
+    private Total(BigDecimal total) {
         this.total = total;
     }
 
     @Override
-    public Float value() {
+    public BigDecimal value() {
         return total;
     }
 
-    public static Total of(Float total){
+    public static Total of(BigDecimal total){
         return new Total(total);
     }
 }

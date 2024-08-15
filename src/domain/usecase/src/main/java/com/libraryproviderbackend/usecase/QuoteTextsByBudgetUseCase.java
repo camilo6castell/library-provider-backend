@@ -30,47 +30,47 @@ public class QuoteTextsByBudgetUseCase extends UseCaseForCommandFlux<QuoteTextsB
 
     @Override
     public Flux<DomainEvent> apply(Mono<QuoteTextsByBudgetCommand> quoteTextsByBudgetCommandMono) {
-        return quoteTextsByBudgetCommandMono
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("quoteTextsByBudgetCommand must not be null")))
-                .flatMapMany(command ->
-                        userRepository.getEventsByAggregateRootId(command.getUserId())
-                                .collectList()
-                                .flatMapMany(userEvents -> {
-                                    User user = User.from(command.getUserId(), userEvents.getFirst());
-
-                                    return textRepository.getEventsByType("com.reactive.text.events.TextCreated")
-                                            .collectList()
-                                            .flatMapMany(events -> {
-                                                if (events.isEmpty()) {
-                                                    return Flux.<BudgetTextsQuoted>empty();
-                                                }
-
-                                                List<DomainEvent> firtsList = events;
-
-                                                // Convert events to Text instances
-                                                List<Text> allTexts = firtsList.stream().map(event -> (TextCreated) event).map(Text::from).toList();
-
-                                                // Filter the Text instances based on indices in the command
-                                                List<Text> filteredTexts = command.getTextsIndices().stream()
-                                                        .map(allTexts::get)
-                                                        .collect(Collectors.toList());
-
-                                                // Calculate quote response
-                                                BatchQuote quoteResponse = user.calculateBudgetTextsQuote(filteredTexts, command.getBudget(), user.entryDate);
-
-                                                // Create BudgetTextsQuotedEvent
-                                                BudgetTextsQuoted event = new BudgetTextsQuoted(
-                                                        quoteResponse.bookQuoteList,
-                                                        quoteResponse.getSubtotal().value(),
-                                                        quoteResponse.getDiscount().value().toString(),
-                                                        quoteResponse.getTotal().value(),
-                                                        quoteResponse.getChange().value()
-                                                );
-
-                                                return Flux.just(event);
-                                            });
-                                })
-                )
-                .cast(DomainEvent.class);
+        return null;
     }
+//        return quoteTextsByBudgetCommandMono
+//                .switchIfEmpty(Mono.error(new IllegalArgumentException("quoteTextsByBudgetCommand must not be null")))
+//                .flatMapMany(command ->
+//                        userRepository.getEventsByAggregateRootId(command.getUserId())
+//                                .collectList()
+//                                .flatMapMany(userEvents -> {
+//                                    User user = User.from(command.getUserId(), userEvents);
+//
+//                                    return textRepository.getEventsByType("com.reactive.text.events.TextCreated")
+//                                            .collectList()
+//                                            .flatMapMany(events -> {
+//                                                if (events.isEmpty()) {
+//                                                    return Flux.<BudgetTextsQuoted>empty();
+//                                                }
+//
+//                                                // Convert events to Text instances
+//                                                List<Text> allTexts = events.stream().map(event -> Text.).toList();
+//
+//                                                // Filter the Text instances based on indices in the command
+//                                                List<Text> filteredTexts = command.getTextsIndices().stream()
+//                                                        .map(allTexts::get)
+//                                                        .collect(Collectors.toList());
+//
+//                                                // Calculate quote response
+//                                                BatchQuote quoteResponse = user.calculateBudgetTextsQuote(filteredTexts, command.getBudget(), user.entryDate);
+//
+//                                                // Create BudgetTextsQuotedEvent
+//                                                BudgetTextsQuoted event = new BudgetTextsQuoted(
+//                                                        quoteResponse.bookQuoteList,
+//                                                        quoteResponse.getSubtotal().value().floatValue(),
+//                                                        quoteResponse.getDiscount().value().toString(),
+//                                                        quoteResponse.getTotal().value().floatValue(),
+//                                                        quoteResponse.getChange().value()
+//                                                );
+//
+//                                                return Flux.just(event);
+//                                            });
+//                                })
+//                )
+//                .cast(DomainEvent.class);
+//    }
 }

@@ -2,6 +2,12 @@ package com.libraryproviderbackend;
 
 import com.libraryproviderbackend.config.IMongoRepository;
 import com.libraryproviderbackend.data.EventSaved;
+import com.libraryproviderbackend.text.Text;
+import com.libraryproviderbackend.text.events.TextCreated;
+import com.libraryproviderbackend.text.values.InitialPrice;
+import com.libraryproviderbackend.text.values.TextId;
+import com.libraryproviderbackend.text.values.TextTypeEnum;
+import com.libraryproviderbackend.text.values.Type;
 import com.libraryproviderbackend.usecase.generic.gateway.ITextRepository;
 import com.libraryproviderbackend.usecase.generic.gateway.IUserRepository;
 
@@ -21,9 +27,6 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Comparator;
-import java.util.List;
-
 /**
  * Adapter class for MongoDB operations related to Users and Texts.
  * Implements repository interfaces for user and text domain models.
@@ -40,14 +43,26 @@ public class MongoRepositoryAdapter implements IUserRepository, ITextRepository 
     /**
      * Constructs a new MongoRepositoryAdapter with the provided dependencies.
      *
-     * @param repository       The MongoDB repository interface for saving events.
-     * @param eventSerializer  Serializer/deserializer for domain events.
-     * @param template         Reactive MongoDB template for executing queries.
+     * @param repository      The MongoDB repository interface for saving events.
+     * @param eventSerializer Serializer/deserializer for domain events.
+     * @param template        Reactive MongoDB template for executing queries.
      */
     public MongoRepositoryAdapter(IMongoRepository repository, JSONMapper eventSerializer, ReactiveMongoTemplate template) {
         this.repository = repository;
         this.eventSerializer = eventSerializer;
         this.template = template;
+    }
+
+    /**
+     * Retrieves a stream of domain events by their event type.
+     *
+     * @param eventType The fully qualified class name of the event type to search for.
+     * @return A Flux stream of DomainEvents matching the provided event type.
+     */
+    @Override
+    public Flux<DomainEvent> getEventsByType(String eventType) {
+        return template.find(Query.query(Criteria.where("type").is(eventType)), EventSaved.class)
+                .map(storedEvent -> storedEvent.deserializeEvent(eventSerializer));
     }
 
     /**
@@ -69,38 +84,35 @@ public class MongoRepositoryAdapter implements IUserRepository, ITextRepository 
      * @return A Mono emitting the found User or Mono.empty() if no user was found.
      */
     @Override
-    public Mono<User> findByEmail(String email) {
+    public Mono<UserCreated> findByEmail(String email) {
         return getEventsByType("com.libraryproviderbackend.user.events.UserCreated")
-                .filter(event -> {
-                    if (event instanceof UserCreated) {
-                        return ((UserCreated) event).getEmail().equalsIgnoreCase(email);
-                    }
-                    return false;
-                })
-                .next()  // Returns the first matching event found.
-                .map(event -> {
-                    UserCreated userCreatedEvent = (UserCreated) event;
-                    return new User(
-                            UserId.of(userCreatedEvent.getAggregateRootId()),
-                            Email.of(userCreatedEvent.getEmail()),
-                            Password.of(userCreatedEvent.getPassword()),
-                            EntryDate.of(userCreatedEvent.getEntryDate().toString())
-                    );
-                })
-                .switchIfEmpty(Mono.empty());  // Returns Mono.empty() if no matching event is found.
+                .cast(UserCreated.class)
+                .filter(event -> event.getEmail().equals(email))
+                .next();
+
+//        return getEventsByType("com.libraryproviderbackend.user.events.UserCreated")
+//                .filter(event -> {
+//                    if (event instanceof UserCreated) {
+//                        return ((UserCreated) event).getEmail().equalsIgnoreCase(email);
+//                    }
+//                    return false;
+//                })
+//                .next()  // Returns the first matching event found.
+//                .map(event -> {
+//                    UserCreated userCreatedEvent = (UserCreated) event;
+//                    return User.from(userCreatedEvent);
+//                })
+//                .switchIfEmpty(Mono.empty());  // Returns Mono.empty() if no matching event is found.
     }
 
-    /**
-     * Retrieves a stream of domain events by their event type.
-     *
-     * @param eventType The fully qualified class name of the event type to search for.
-     * @return A Flux stream of DomainEvents matching the provided event type.
-     */
     @Override
-    public Flux<DomainEvent> getEventsByType(String eventType) {
-        return template.find(Query.query(Criteria.where("type").is(eventType)), EventSaved.class)
-                .map(storedEvent -> storedEvent.deserializeEvent(eventSerializer));
+    public Mono<TextCreated> findByTitle(String title) {
+        return getEventsByType("com.libraryproviderbackend.text.events.TextCreated")
+                .cast(TextCreated.class)
+                .filter(event -> event.getTitle().equals(title))
+                .next();
     }
+
 
     /**
      * Saves a domain event to the MongoDB repository.
@@ -131,6 +143,8 @@ public class MongoRepositoryAdapter implements IUserRepository, ITextRepository 
                     return deserializedDomainEvent;
                 });
     }
+
+
 }
 
 

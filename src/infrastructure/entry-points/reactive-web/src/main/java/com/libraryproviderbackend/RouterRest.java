@@ -17,10 +17,11 @@ public class RouterRest {
                 POST("/api/v1/createUser"),
                 handler::listenPOSTCreateUserUseCase
         )
-//                .andRoute(
-//                POST("/api/v1/saveAndQuoteText"),
-//                handler::listenPOSTSaveAndQuoteTextUseCase
-//        ).andRoute(
+                .andRoute(
+                POST("/api/v1/saveAndQuoteText"),
+                handler::listenPOSTSaveAndQuoteTextUseCase
+        )
+//        .andRoute(
 //                POST("/api/v1/QuoteVariousTexts"),
 //                handler::listenPOSTQuoteVariousTextsUseCase
 //        ).andRoute(

@@ -1,25 +1,80 @@
-//package com.libraryproviderbackend.usecase;
-//
-//import com.libraryproviderbackend.generic.DomainEvent;
-//import com.libraryproviderbackend.text.Text;
-//import com.libraryproviderbackend.text.values.*;
-//import com.libraryproviderbackend.usecase.generic.UseCaseForCommandFlux;
-//import com.libraryproviderbackend.usecase.generic.gateway.ITextRepository;
-//import com.libraryproviderbackend.usecase.generic.gateway.IUserRepository;
-//import com.libraryproviderbackend.user.User;
-//import com.libraryproviderbackend.user.commands.SaveAndQuoteTextCommand;
-//import com.libraryproviderbackend.user.entity.TextQuote;
-//import com.libraryproviderbackend.user.events.TextQuoteMade;
-//import com.libraryproviderbackend.user.events.UserEventsEnum;
-//import com.libraryproviderbackend.user.values.shared.DiscountsEnum;
-//import org.springframework.stereotype.Component;
-//import reactor.core.publisher.Flux;
-//import reactor.core.publisher.Mono;
-//
-//import java.time.format.DateTimeFormatter;
-//
+package com.libraryproviderbackend.usecase;
+
+import com.libraryproviderbackend.generic.DomainEvent;
+import com.libraryproviderbackend.text.commands.CreateTextCommand;
+import com.libraryproviderbackend.text.events.TextCreated;
+import com.libraryproviderbackend.text.values.*;
+import com.libraryproviderbackend.usecase.generic.UseCaseForCommandMono;
+import com.libraryproviderbackend.usecase.generic.gateway.ITextRepository;
+import com.libraryproviderbackend.usecase.generic.gateway.IUserRepository;
+import com.libraryproviderbackend.user.User;
+import com.libraryproviderbackend.user.commands.SaveAndQuoteTextCommand;
+import com.libraryproviderbackend.user.entity.TextQuote;
+import com.libraryproviderbackend.user.events.TextQuoteMade;
+import com.libraryproviderbackend.user.values.shared.DiscountsEnum;
+import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
+
+import java.util.stream.Collectors;
+
+@Component
+public class SaveAndQuoteTextUseCase extends UseCaseForCommandMono<SaveAndQuoteTextCommand> {
+
+    private final ITextRepository textRepository;
+    private final IUserRepository userRepository;
+    private final CreateTextUseCase createTextUseCase;
+
+    public SaveAndQuoteTextUseCase(ITextRepository textRepository, IUserRepository userRepository, CreateTextUseCase createTextUseCase) {
+        this.textRepository = textRepository;
+        this.userRepository = userRepository;
+        this.createTextUseCase = createTextUseCase;
+    }
+
+    @Override
+    public Mono<DomainEvent> apply(Mono<SaveAndQuoteTextCommand> saveAndQuoteTextCommandMono) {
+        return saveAndQuoteTextCommandMono
+                .flatMap(command -> {
+                    // Step 1: Create or retrieve the Text
+                    return createTextUseCase.apply(Mono.just(new CreateTextCommand(
+                                    command.getTitle(),
+                                    command.getTextType(),
+                                    command.getInitialPrice()
+                            )))
+                            .cast(TextCreated.class)
+                            .flatMap(textCreated -> {
+                                // Step 2: Retrieve the User and quote the Text
+                                return userRepository.getEventsByAggregateRootId(command.getUserId().value())
+                                        .collect(Collectors.toList())
+                                        .flatMap(events -> {
+                                            User user = User.from(command.getUserId().value(), events);
+                                            // Perform the quoting
+                                            TextQuote textQuote = user.quoteText(
+                                                    textCreated.getTitle(),
+                                                    textCreated.getInitialPrice(),
+                                                    TextTypeEnum.valueOf(textCreated.getTextType().toString()),
+                                                    DiscountsEnum.NONE
+                                            );
+
+                                            // Optionally save user changes or handle further logic
+                                            return Mono.just(textQuote)
+                                                    .map(userEvents -> {
+                                                        TextQuoteMade textQuoteMade = new TextQuoteMade();
+                                                        textQuoteMade.setTitle(textQuote.getTitle().value());
+                                                        textQuoteMade.setType(textQuote.getType().value().toString());
+                                                        textQuoteMade.setDiscount(DiscountsEnum.NONE.toString());
+                                                        textQuoteMade.setSubtotal(textQuote.getSubtotal().value().floatValue());
+                                                        textQuoteMade.setTotal(textQuote.getTotal().value().floatValue());
+                                                        return textQuoteMade;
+                                                    });
+                                        });
+                            });
+                });
+    }
+}
+
+
 //@Component
-//public class SaveAndQuoteTextUseCase extends UseCaseForCommandFlux<SaveAndQuoteTextCommand> {
+//public class SaveAndQuoteTextUseCase extends UseCaseForCommandMono<SaveAndQuoteTextCommand> {
 //
 //    TextTypeEnum[] textTypeEnumValues = TextTypeEnum.values();
 //    UserEventsEnum[] userEventsEnums = UserEventsEnum.values();
@@ -37,7 +92,7 @@
 //    }
 //
 //    @Override
-//    public Flux<DomainEvent> apply(Mono<SaveAndQuoteTextCommand> saveAndQuoteTextCommandMono) {
+//    public Mono<DomainEvent> apply(Mono<SaveAndQuoteTextCommand> saveAndQuoteTextCommandMono) {
 //        return saveAndQuoteTextCommandMono
 //                .switchIfEmpty(Mono.error(new IllegalArgumentException("saveAndQuoteTextCommand must not be null")))
 //                .flatMapMany(command ->
@@ -95,8 +150,8 @@
 //
 //    }
 //}
-//
-//
-//
-//
-//
+
+
+
+
+
