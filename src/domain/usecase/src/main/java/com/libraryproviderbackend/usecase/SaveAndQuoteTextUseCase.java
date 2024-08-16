@@ -13,6 +13,7 @@ import com.libraryproviderbackend.user.entity.TextQuote;
 import com.libraryproviderbackend.user.events.TextQuoted;
 import com.libraryproviderbackend.user.values.shared.DiscountsEnum;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.stream.Collectors;
@@ -48,24 +49,29 @@ public class SaveAndQuoteTextUseCase extends UseCaseForCommandMono<SaveAndQuoteT
                                         .flatMap(events -> {
                                             User user = User.from(command.getUserId().value(), events);
                                             // Perform the quoting
-                                            TextQuote textQuote = user.quoteText(
+                                            user.quoteText(
                                                     textCreated.getTitle(),
                                                     textCreated.getInitialPrice(),
                                                     TextTypeEnum.valueOf(textCreated.getTextType().toString()),
-                                                    DiscountsEnum.NONE
+                                                    user.entryDate.value()
                                             );
 
+                                            return Flux.fromIterable(user.getUncommittedChanges())
+                                                    .flatMap(userRepository::saveEvent)
+                                                    .collectList()
+                                                    .map(list -> (TextQuoted) list.get(0)); // Devuelve el primer evento de la lista
+
                                             // Optionally save user changes or handle further logic
-                                            return Mono.just(textQuote)
-                                                    .map(userEvents -> {
-                                                        TextQuoted textQuoted = new TextQuoted();
-                                                        textQuoted.setTitle(textQuote.getTitle().value());
-                                                        textQuoted.setType(textQuote.getType().value().toString());
-                                                        textQuoted.setDiscount(DiscountsEnum.NONE.toString());
-                                                        textQuoted.setSubtotal(textQuote.getSubtotal().value().floatValue());
-                                                        textQuoted.setTotal(textQuote.getTotal().value().floatValue());
-                                                        return textQuoted;
-                                                    });
+//                                            return Mono.just(textQuote)
+//                                                    .map(userEvents -> {
+//                                                        TextQuoted textQuoted = new TextQuoted();
+//                                                        textQuoted.setTitle(textQuote.getTitle().value());
+//                                                        textQuoted.setType(textQuote.getType().value().toString());
+//                                                        textQuoted.setDiscount(DiscountsEnum.NONE.toString());
+//                                                        textQuoted.setSubtotal(textQuote.getSubtotal().value().floatValue());
+//                                                        textQuoted.setTotal(textQuote.getTotal().value().floatValue());
+//                                                        return textQuoted;
+//                                                    });
                                         });
                             });
                 });

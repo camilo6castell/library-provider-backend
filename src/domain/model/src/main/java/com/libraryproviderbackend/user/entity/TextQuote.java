@@ -9,9 +9,8 @@ import com.libraryproviderbackend.user.values.shared.DiscountsEnum;
 import com.libraryproviderbackend.user.values.shared.Subtotal;
 import com.libraryproviderbackend.text.values.Title;
 import com.libraryproviderbackend.user.values.shared.Total;
-import java.math.BigDecimal;
 
-public class TextQuote extends Entity<BookQuoteId> implements Cloneable{
+public class TextQuote extends Entity<BookQuoteId> implements Cloneable {
 
     private final float INCREMENT_BY_DEMAND_NOVEL = 2f;
     private final float INCREMENT_BY_DEMAND_BOOK = 1.33f;
@@ -19,7 +18,7 @@ public class TextQuote extends Entity<BookQuoteId> implements Cloneable{
     private final float RETAIL_SALE_INCREMENT = 1.02f;
 
     public Title title;
-    public Type type;
+    public Type textType;
     public Subtotal subtotal;
     public Discount discount;
     public Total total;
@@ -29,30 +28,61 @@ public class TextQuote extends Entity<BookQuoteId> implements Cloneable{
         super(new BookQuoteId());
     }
 
-    public TextQuote(String title, Float initialPrice, TextTypeEnum type, DiscountsEnum discount) {
+    public TextQuote(String title, Float initialPrice, TextTypeEnum textType, DiscountsEnum discount) {
         super(new BookQuoteId());
 
         this.title = Title.of(title);
 
-        this.type = Type.of(type);
+        this.textType = Type.of(textType);
 
         this.discount = Discount.of(discount);
 
-        this.subtotal = discount == DiscountsEnum.NONE ? Subtotal.of(
-                initialPrice*
-                        (type == TextTypeEnum.BOOK ?
+        this.subtotal =
+                discount == DiscountsEnum.WHOLESALE ?
+                        Subtotal.of(
+                                initialPrice *
+                                        (textType == TextTypeEnum.BOOK ?
+                                                INCREMENT_BY_DEMAND_BOOK : INCREMENT_BY_DEMAND_NOVEL
+                                        )
+                        ) :
+                        Subtotal.of(
+                                initialPrice *
+                                        (textType == TextTypeEnum.BOOK ?
+                                                INCREMENT_BY_DEMAND_BOOK : INCREMENT_BY_DEMAND_NOVEL
+                                        ) * RETAIL_SALE_INCREMENT
+                        );
+        this.total =
+                discount == DiscountsEnum.WHOLESALE ?
+                        Total.of(this.subtotal.value() *
+                                WHOLE_SALE_DECREMENT
+                        ) :
+                        Total.of(
+                                this.subtotal.value()
+                        );
+    }
+
+    public TextQuote(String title, Float initialPrice, TextTypeEnum textType, Float seniorityDiscount) {
+        super(new BookQuoteId());
+
+        this.title = Title.of(title);
+
+        this.textType = Type.of(textType);
+
+        this.discount =
+                seniorityDiscount == 1F ?
+                    Discount.of(DiscountsEnum.NONE) :
+                    Discount.of(DiscountsEnum.SENIORITY);
+
+        this.subtotal = Subtotal.of(
+                initialPrice *
+                        (textType == TextTypeEnum.BOOK ?
                                 INCREMENT_BY_DEMAND_BOOK : INCREMENT_BY_DEMAND_NOVEL
                         ) * RETAIL_SALE_INCREMENT
+        );
 
-        ) : Subtotal.of(
-                initialPrice *
-                        (type== TextTypeEnum.BOOK ?
-                                INCREMENT_BY_DEMAND_BOOK : INCREMENT_BY_DEMAND_NOVEL
-                        ));
-        this.total = discount == DiscountsEnum.NONE ? Total.of(
-                this.subtotal.value()
-        ) : Total.of(this.subtotal.value() *
-                WHOLE_SALE_DECREMENT
+        this.total = Total.of(
+                this.subtotal.value() *
+                        seniorityDiscount
         );
     }
 
@@ -68,7 +98,6 @@ public class TextQuote extends Entity<BookQuoteId> implements Cloneable{
     }
 
 
-
     public Title getTitle() {
         return title;
     }
@@ -77,12 +106,12 @@ public class TextQuote extends Entity<BookQuoteId> implements Cloneable{
         this.title = title;
     }
 
-    public Type getType() {
-        return type;
+    public Type getTextType() {
+        return textType;
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    public void setTextType(Type textType) {
+        this.textType = textType;
     }
 
     public Subtotal getSubtotal() {
@@ -109,8 +138,6 @@ public class TextQuote extends Entity<BookQuoteId> implements Cloneable{
         this.total = total;
     }
 }
-
-
 
 
 //public class TextQuote extends Entity<BookQuoteId> implements Cloneable {

@@ -34,6 +34,18 @@ public class TextCreated extends DomainEvent {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setTextType(TextTypeEnum textType) {
+        this.textType = textType;
+    }
+
+    public void setInitialPrice(Float initialPrice) {
+        this.initialPrice = initialPrice;
+    }
+
     public TextTypeEnum getTextType() {
         return textType;
     }

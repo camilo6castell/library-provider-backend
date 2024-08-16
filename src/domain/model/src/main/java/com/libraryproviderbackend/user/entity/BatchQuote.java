@@ -17,24 +17,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import com.libraryproviderbackend.generic.Entity;
-import com.libraryproviderbackend.text.Text;
-import com.libraryproviderbackend.text.values.TextTypeEnum;
-import com.libraryproviderbackend.user.User;
-import com.libraryproviderbackend.user.values.batchquote.Change;
-import com.libraryproviderbackend.user.values.batchquote.TextQuoteResponse;
-import com.libraryproviderbackend.user.values.identities.BatchQuoteId;
-import com.libraryproviderbackend.user.values.shared.Discount;
-import com.libraryproviderbackend.user.values.shared.DiscountsEnum;
-import com.libraryproviderbackend.user.values.shared.Subtotal;
-import com.libraryproviderbackend.user.values.shared.Total;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
 public class BatchQuote extends Entity<BatchQuoteId> {
 
     public float discountValue;
@@ -306,7 +288,7 @@ public class BatchQuote extends Entity<BatchQuoteId> {
             TextQuote textQuote =textQuotes.get(i);
             textQuoteResponses.add(new TextQuoteResponse(
                     textQuote.title.value(),
-                    textQuote.type.value().toString(),
+                    textQuote.textType.value().toString(),
                     textQuote.subtotal.value(),
                     textQuote.discount.value().toString(),
                     textQuote.total.value())

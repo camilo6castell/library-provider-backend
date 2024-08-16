@@ -7,6 +7,7 @@ import com.libraryproviderbackend.text.values.TextTypeEnum;
 import com.libraryproviderbackend.user.entity.BatchQuote;
 import com.libraryproviderbackend.user.entity.Quote;
 import com.libraryproviderbackend.user.entity.TextQuote;
+import com.libraryproviderbackend.user.events.TextQuoted;
 import com.libraryproviderbackend.user.events.UserCreated;
 import com.libraryproviderbackend.user.values.identities.UserId;
 import com.libraryproviderbackend.user.values.shared.DiscountsEnum;
@@ -27,6 +28,7 @@ public class User extends AggregateRoot<UserId> {
     public Password password;
     public EntryDate entryDate;
 
+    public TextQuote textQuote;
     public Quote quote;
 
 
@@ -63,12 +65,22 @@ public class User extends AggregateRoot<UserId> {
     }
 
 
-
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    public TextQuote quoteText(String title, Float initialPrice, TextTypeEnum type, DiscountsEnum discount) {
-        return new TextQuote(title, initialPrice, type, discount);
+    public void quoteText(String title, Float initialPrice, TextTypeEnum textType, LocalDate entryDate) {
+//        subscribe(new UserBehavior(this));
+        TextQuote textQuote = new TextQuote(title, initialPrice, textType, calculateSeniorityDiscount(entryDate));
+        TextQuoted tq = new TextQuoted(
+                textQuote.getTitle().value(),
+                textQuote.getTextType().value().toString(),
+                textQuote.getSubtotal().value(),
+                textQuote.getDiscount().value().toString(),
+                textQuote.getTotal().value()
+        );
+        tq.setVersion(5);
+        appendEvent(
+                tq
+        ).apply();
     }
 
 
