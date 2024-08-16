@@ -53,6 +53,49 @@ To set up the project locally, follow these steps:
    ./gradlew bootRun
    ```
 
+## Testing with Postman
+
+To test the API endpoints using Postman, you can import the provided Postman collection and execute the requests directly. Follow these steps:
+
+1. **Import the Postman collection:**
+
+   - Download the [Postman collection](https://drive.google.com/file/d/1-7eZIgGvCbVpv7aqJV1679djr9F5GMnn/view?usp=sharing).
+   - Open Postman, go to "File" -> "Import", and select the downloaded JSON file.
+
+2. **Available Requests:**
+
+   - **Create User:**
+
+     - **Method:** POST
+     - **Endpoint:** `http://127.0.0.1:8080/api/v1/createUser`
+     - **Body (raw JSON):**
+       ```json
+       {
+         "email": "test@test.com",
+         "password": "zzzzDzddddd2%",
+         "entryDate": "2000-01-01"
+       }
+       ```
+
+   - **Save and Quote Text:**
+     - **Method:** POST
+     - **Endpoint:** `http://127.0.0.1:8080/api/v1/saveAndQuoteText`
+     - **Body (raw JSON):**
+       ```json
+       {
+         "userID": "",
+         "title": "test",
+         "type": "BOOK",
+         "initialPrice": 100.0
+       }
+       ```
+
+3. **Execute the Requests:**
+
+   - Ensure your backend service is running.
+   - Use the imported requests in Postman to interact with the API endpoints.
+   - Check the responses and verify the operations.
+
 ## Contact
 
 [GitHub](https://github.com/camilo6castell?tab=repositories)
