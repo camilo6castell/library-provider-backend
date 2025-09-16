@@ -269,9 +269,9 @@ public class BatchQuote extends Entity<BatchQuoteId> {
                     )
             );
             toWholeSale += 1;
-            TextQuote lastTextQuote = auxTextQuoteList.getLast();
+            TextQuote lastTextQuote = auxTextQuoteList.get(auxTextQuoteList.size() - 1);
             subTotalAux += lastTextQuote.total.value();
-            totalAux += auxTextQuoteList.getLast().total.value();
+            totalAux += lastTextQuote.total.value();
         }
 
         totalAux = totalAux * discountValue;

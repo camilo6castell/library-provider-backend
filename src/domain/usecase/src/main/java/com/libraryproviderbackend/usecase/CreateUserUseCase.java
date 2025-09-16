@@ -50,8 +50,12 @@ public class CreateUserUseCase extends UseCaseForCommandMono<CreateUserCommand> 
                     return Flux.fromIterable(events)
                             .flatMap(repository::saveEvent)
                             .collectList()
-                            .map(List::getFirst);  // Devuelve el primer evento de la lista
+                            .map(eventsList -> {
+                                if (eventsList.isEmpty()) {
+                                    throw new IllegalStateException("No events generated for user creation");
+                                }
+                                return eventsList.get(0); // Devuelve el primer evento
+                            });
                 });
     }
-
 }
