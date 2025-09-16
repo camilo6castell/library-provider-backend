@@ -28,6 +28,10 @@ dependencies {
     implementation project(':reactive-web')
 }
 
+tasks.named("bootJar") {
+    enabled = true
+}
+
 test {
     useJUnitPlatform()
 }
