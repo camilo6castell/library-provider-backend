@@ -24,9 +24,6 @@ dependencies {
     //implementation project(':reactive-web')
 }
 
-tasks.named("bootJar") {
-    enabled = false
-}
 tasks.named("jar") {
     enabled = true
 }

@@ -26,9 +26,6 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3'
 }
 
-tasks.named("bootJar") {
-    enabled = false
-}
 tasks.named("jar") {
     enabled = true
 }
