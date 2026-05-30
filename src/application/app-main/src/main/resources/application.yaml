@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: library-provider-backend
+
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/library-provider}
+
+server:
+  port: ${PORT:8080}
+
+app:
+  cors:
+    allowed-origins:
+      - ${CORS_ORIGIN_1:http://localhost:5173}
+      - ${CORS_ORIGIN_2:http://localhost:4200}
+      - ${CORS_ORIGIN_3:http://127.0.0.1:5173}
+
+logging:
+  level:
+    com.libraryproviderbackend: DEBUG
+    org.springframework.data.mongodb: INFO

@@ -12,26 +12,30 @@ repositories {
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
-    //MODULES
-
+    implementation project(':model')
     implementation project(':usecase')
     implementation project(':mongo-repository')
-
-    //?
-
-    implementation project(':model')
     implementation project(':reactive-web')
+    implementation project(':serializer')
+
+    // Needed by app-main to bootstrap Spring Boot
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks.named("bootJar") {
+tasks.named('bootJar') {
     enabled = true
+    archiveFileName = 'library-provider-backend.jar'
 }
 
-test {
+tasks.named('jar') {
+    enabled = false
+}
+
+tasks.named('test') {
     useJUnitPlatform()
 }

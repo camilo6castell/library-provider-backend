@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.2.5'
     id 'io.spring.dependency-management' version '1.1.4'
 }
 
@@ -11,21 +10,27 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
-    //MODULES
-
-    implementation project(':model')
+dependencyManagement {
+    imports {
+        mavenBom 'org.springframework.boot:spring-boot-dependencies:3.2.5'
+    }
 }
 
-tasks.named("jar") {
+dependencies {
+    implementation 'io.projectreactor:reactor-core'
+    implementation 'org.springframework:spring-context'
+
+    implementation project(':model')
+
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('jar') {
     enabled = true
 }
 
-test {
+tasks.named('test') {
     useJUnitPlatform()
 }

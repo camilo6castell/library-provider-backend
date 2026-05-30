@@ -1,17 +1,19 @@
 package com.libraryproviderbackend.user.events;
 
 import com.libraryproviderbackend.generic.DomainEvent;
-import com.libraryproviderbackend.text.values.TextTypeEnum;
-import com.libraryproviderbackend.text.values.Type;
 
+/**
+ * Domain event recording the result of quoting a single text for a user.
+ */
 public class TextQuoted extends DomainEvent {
 
-    public String title;
-    public String textType;
-    public float subtotal;
-    public String discount;
-    public float total;
+    private String title;
+    private String textType;
+    private float subtotal;
+    private String discount;
+    private float total;
 
+    /** Required for Jackson deserialization. */
     public TextQuoted() {
     }
 
@@ -24,44 +26,18 @@ public class TextQuoted extends DomainEvent {
         this.total = total;
     }
 
-    public String getTitle() {
-        return title;
-    }
+    public String getTitle()                      { return title; }
+    public void setTitle(String title)            { this.title = title; }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    public String getTextType()                   { return textType; }
+    public void setTextType(String textType)      { this.textType = textType; }
 
-    public String getTextType() {
-        return textType;
-    }
+    public float getSubtotal()                    { return subtotal; }
+    public void setSubtotal(float subtotal)       { this.subtotal = subtotal; }
 
-    public void setTextType(String textType) {
-        this.textType = textType;
-    }
+    public String getDiscount()                   { return discount; }
+    public void setDiscount(String discount)      { this.discount = discount; }
 
-    public float getSubtotal() {
-        return subtotal;
-    }
-
-    public void setSubtotal(float subtotal) {
-        this.subtotal = subtotal;
-    }
-
-    public String getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(String discount) {
-        this.discount = discount;
-    }
-
-    public float getTotal() {
-        return total;
-    }
-
-    public void setTotal(float total) {
-        this.total = total;
-    }
+    public float getTotal()                       { return total; }
+    public void setTotal(float total)             { this.total = total; }
 }
-

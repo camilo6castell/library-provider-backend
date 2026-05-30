@@ -15,26 +15,28 @@ import com.libraryproviderbackend.user.values.user.Email;
 import com.libraryproviderbackend.user.values.user.EntryDate;
 import com.libraryproviderbackend.user.values.user.Password;
 
+/**
+ * Handles domain event application for the {@link User} aggregate root.
+ * Each subscriber mutates the aggregate state in response to a specific event.
+ */
 public class UserBehavior extends EventChange {
 
-    DiscountsEnum[] discountsEnum = DiscountsEnum.values();
-    TextTypeEnum[] textTypeEnum = TextTypeEnum.values();
-
-    public UserBehavior(User user){
+    public UserBehavior(User user) {
 
         addSubscriber(UserCreated.class, event -> {
-            user.email = Email.of(event.getEmail());
-            user.password = Password.of(event.getPassword());
-            user.entryDate = EntryDate.of(String.valueOf(event.getEntryDate()));
+            user.setEmail(Email.of(event.getEmail()));
+            user.setPassword(Password.of(event.getPassword()));
+            user.setEntryDate(EntryDate.of(String.valueOf(event.getEntryDate())));
         });
 
         addSubscriber(TextQuoted.class, event -> {
-            user.textQuote = new TextQuote();
-            user.textQuote.setTitle(Title.of(event.getTitle()));
-            user.textQuote.setTextType(Type.of(TextTypeEnum.valueOf(event.getTextType())));
-            user.textQuote.setSubtotal(Subtotal.of(event.getSubtotal()));
-            user.textQuote.setDiscount(Discount.of(DiscountsEnum.valueOf(event.getDiscount())));
-            user.textQuote.setTotal(Total.of(event.getTotal()));
+            TextQuote textQuote = new TextQuote();
+            textQuote.setTitle(Title.of(event.getTitle()));
+            textQuote.setTextType(Type.of(TextTypeEnum.valueOf(event.getTextType())));
+            textQuote.setSubtotal(Subtotal.of(event.getSubtotal()));
+            textQuote.setDiscount(Discount.of(DiscountsEnum.valueOf(event.getDiscount())));
+            textQuote.setTotal(Total.of(event.getTotal()));
+            user.setLastTextQuote(textQuote);
         });
     }
 }

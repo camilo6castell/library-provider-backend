@@ -1,30 +1,32 @@
 package com.libraryproviderbackend;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
+import java.util.List;
 
+/**
+ * CORS configuration for the reactive web layer.
+ * Allowed origins are configurable via {@code app.cors.allowed-origins} in application.yaml
+ * so they can differ between local, staging, and production without code changes.
+ */
 @Configuration
 public class CorsConfig {
+
+    @Value("${app.cors.allowed-origins:http://localhost:5173,http://localhost:4200}")
+    private List<String> allowedOrigins;
 
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        // Allowed origins: Netlify + local dev
-        config.setAllowedOrigins(Arrays.asList(
-                "https://library-provider-frontend.netlify.app",
-                "http://localhost:5173",
-                "http://127.0.0.1:5173",
-                "http://localhost:4200",
-                "http://127.0.0.1:4200"
-        ));
+        config.setAllowedOrigins(allowedOrigins);
         config.addAllowedHeader("*");
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

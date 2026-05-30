@@ -3,6 +3,10 @@ package com.libraryproviderbackend.usecase;
 import com.libraryproviderbackend.generic.DomainEvent;
 import com.libraryproviderbackend.text.Text;
 import com.libraryproviderbackend.text.events.TextCreated;
+import com.libraryproviderbackend.text.values.InitialPrice;
+import com.libraryproviderbackend.text.values.TextId;
+import com.libraryproviderbackend.text.values.Title;
+import com.libraryproviderbackend.text.values.Type;
 import com.libraryproviderbackend.usecase.generic.UseCaseForCommandFlux;
 import com.libraryproviderbackend.usecase.generic.gateway.ITextRepository;
 import com.libraryproviderbackend.usecase.generic.gateway.IUserRepository;
@@ -17,6 +21,10 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Calculates which texts can be purchased within a given budget for a specific user.
+ * Applies seniority discounts and maximises the number of items acquired.
+ */
 @Component
 public class QuoteTextsByBudgetUseCase extends UseCaseForCommandFlux<QuoteTextsByBudgetCommand> {
 
@@ -29,48 +37,66 @@ public class QuoteTextsByBudgetUseCase extends UseCaseForCommandFlux<QuoteTextsB
     }
 
     @Override
-    public Flux<DomainEvent> apply(Mono<QuoteTextsByBudgetCommand> quoteTextsByBudgetCommandMono) {
-        return null;
+    public Flux<DomainEvent> apply(Mono<QuoteTextsByBudgetCommand> commandMono) {
+        return commandMono
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("QuoteTextsByBudgetCommand must not be null")))
+                .flatMapMany(command ->
+                        // Rebuild user from event store
+                        userRepository.getEventsByAggregateRootId(command.getUserId())
+                                .collect(Collectors.toList())
+                                .flatMapMany(userEvents -> {
+                                    if (userEvents.isEmpty()) {
+                                        return Flux.error(new IllegalArgumentException(
+                                                "User not found: " + command.getUserId()));
+                                    }
+                                    User user = User.from(command.getUserId(), userEvents);
+
+                                    // Retrieve all available texts
+                                    return textRepository.getEventsByType(
+                                                    "com.libraryproviderbackend.text.events.TextCreated")
+                                            .cast(TextCreated.class)
+                                            .map(this::toText)
+                                            .collect(Collectors.toList())
+                                            .flatMapMany(allTexts -> {
+                                                if (allTexts.isEmpty()) {
+                                                    return Flux.error(new IllegalStateException(
+                                                            "No texts available in the catalogue"));
+                                                }
+
+                                                // Filter texts by the requested indices
+                                                List<Text> selectedTexts = command.getTextsIndices().stream()
+                                                        .filter(idx -> idx >= 0 && idx < allTexts.size())
+                                                        .map(allTexts::get)
+                                                        .collect(Collectors.toList());
+
+                                                if (selectedTexts.isEmpty()) {
+                                                    return Flux.error(new IllegalArgumentException(
+                                                            "No valid text indices provided"));
+                                                }
+
+                                                BatchQuote quote = user.calculateBudgetTextsQuote(
+                                                        selectedTexts, command.getBudget());
+
+                                                BudgetTextsQuoted event = new BudgetTextsQuoted(
+                                                        quote.bookQuoteList,
+                                                        quote.subtotal.value(),
+                                                        quote.discount.value().toString(),
+                                                        quote.total.value(),
+                                                        quote.change.value()
+                                                );
+
+                                                return Flux.just(event);
+                                            });
+                                })
+                );
     }
-//        return quoteTextsByBudgetCommandMono
-//                .switchIfEmpty(Mono.error(new IllegalArgumentException("quoteTextsByBudgetCommand must not be null")))
-//                .flatMapMany(command ->
-//                        userRepository.getEventsByAggregateRootId(command.getUserId())
-//                                .collectList()
-//                                .flatMapMany(userEvents -> {
-//                                    User user = User.from(command.getUserId(), userEvents);
-//
-//                                    return textRepository.getEventsByType("com.reactive.text.events.TextCreated")
-//                                            .collectList()
-//                                            .flatMapMany(events -> {
-//                                                if (events.isEmpty()) {
-//                                                    return Flux.<BudgetTextsQuoted>empty();
-//                                                }
-//
-//                                                // Convert events to Text instances
-//                                                List<Text> allTexts = events.stream().map(event -> Text.).toList();
-//
-//                                                // Filter the Text instances based on indices in the command
-//                                                List<Text> filteredTexts = command.getTextsIndices().stream()
-//                                                        .map(allTexts::get)
-//                                                        .collect(Collectors.toList());
-//
-//                                                // Calculate quote response
-//                                                BatchQuote quoteResponse = user.calculateBudgetTextsQuote(filteredTexts, command.getBudget(), user.entryDate);
-//
-//                                                // Create BudgetTextsQuotedEvent
-//                                                BudgetTextsQuoted event = new BudgetTextsQuoted(
-//                                                        quoteResponse.bookQuoteList,
-//                                                        quoteResponse.getSubtotal().value().floatValue(),
-//                                                        quoteResponse.getDiscount().value().toString(),
-//                                                        quoteResponse.getTotal().value().floatValue(),
-//                                                        quoteResponse.getChange().value()
-//                                                );
-//
-//                                                return Flux.just(event);
-//                                            });
-//                                })
-//                )
-//                .cast(DomainEvent.class);
-//    }
+
+    private Text toText(TextCreated event) {
+        return new Text(
+                TextId.of(event.getAggregateRootId()),
+                Title.of(event.getTitle()),
+                Type.of(event.getTextType()),
+                InitialPrice.of(event.getInitialPrice())
+        );
+    }
 }

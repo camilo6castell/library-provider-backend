@@ -7,6 +7,11 @@ import com.libraryproviderbackend.usecase.SaveAndQuoteTextUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Explicit Spring bean configuration for {@link Handler}.
+ * Keeping this separate from {@link Handler} allows the handler to remain a plain
+ * component with no Spring Boot auto-configuration magic applied to it.
+ */
 @Configuration
 public class HandlerConfig {
 
@@ -15,13 +20,11 @@ public class HandlerConfig {
             CreateUserUseCase createUserUseCase,
             SaveAndQuoteTextUseCase saveAndQuoteTextUseCase,
             QuoteTextsByBudgetUseCase quoteTextsByBudgetUseCase,
-            CreateTextUseCase createTextUseCase
-    ) {
+            CreateTextUseCase createTextUseCase) {
         return new Handler(
                 createUserUseCase,
                 saveAndQuoteTextUseCase,
                 quoteTextsByBudgetUseCase,
-                createTextUseCase
-        );
+                createTextUseCase);
     }
 }

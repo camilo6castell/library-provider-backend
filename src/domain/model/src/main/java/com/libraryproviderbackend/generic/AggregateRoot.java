@@ -4,123 +4,56 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * AggregateRoot is an abstract base class for all aggregate roots in the domain model.
- * It extends the Entity class and provides mechanisms to manage domain events via ChangeEventSubscriber.
+ * Base class for all aggregate roots in the domain model.
+ * Manages the lifecycle of domain events following the Event Sourcing pattern.
  *
  * @param <I> the type of the identifier for the aggregate root.
  */
 public abstract class AggregateRoot<I extends Identity> extends Entity<I> {
 
-    // Subscriber for domain events, used to track and apply events within the aggregate root.
     private final ChangeEventSubscriber changeEventSubscriber;
 
-    /**
-     * Constructor for AggregateRoot.
-     * Initializes the aggregate with an identifier and sets up the ChangeEventSubscriber.
-     *
-     * @param id the identifier for the aggregate root.
-     */
-    public AggregateRoot(I id) {
+    protected AggregateRoot(I id) {
         super(id);
         this.changeEventSubscriber = new ChangeEventSubscriber();
     }
 
     /**
-     * Retrieves all uncommitted domain events.
-     * These are events that have been applied but not yet committed to the event store or database.
-     *
-     * @return a list of uncommitted domain events.
+     * Returns uncommitted domain events (events generated but not yet persisted).
      */
     public List<DomainEvent> getUncommittedChanges() {
         return List.copyOf(changeEventSubscriber.events());
     }
 
     /**
-     * Marks all changes as committed.
-     * This clears the list of uncommitted events, typically after they have been persisted.
+     * Clears the list of uncommitted events, typically called after successful persistence.
      */
     public void markChangesAsCommitted() {
-        changeEventSubscriber.events().clear();
+        changeEventSubscriber.markCommitted();
     }
 
     /**
-     * Subscribes to event changes within the aggregate root.
-     * Allows the aggregate to respond to domain events by applying corresponding changes.
-     *
-     * @param eventChange the event change handler that contains the logic to apply events.
+     * Registers an event handler (behavior) for this aggregate root.
      */
     protected final void subscribe(EventChange eventChange) {
         changeEventSubscriber.subscribe(eventChange);
     }
 
     /**
-     * Applies a domain event to the aggregate root.
-     * This method will invoke any subscribed event handlers to modify the aggregate's state.
-     *
-     * @param domainEvent the domain event to apply.
+     * Replays a domain event onto the aggregate root (used for event sourcing reconstruction).
+     * Does NOT add the event to uncommitted changes.
      */
     protected void applyEvent(DomainEvent domainEvent) {
-        domainEvent.setOccurredOn(LocalDateTime.now()); // Set the timestamp when the event is applied
-        domainEvent.setVersion(domainEvent.initialVersion()); // Set the initial version for the event
         changeEventSubscriber.applyEvent(domainEvent);
     }
 
     /**
-     * Appends a domain event to the list of uncommitted events and applies it.
-     * This method also sets the aggregate root ID in the event.
-     *
-     * @param domainEvent the domain event to append and apply.
-     * @return an instance of IChangeApply that can be used to apply the event.
+     * Appends a new domain event to the aggregate's uncommitted changes.
+     * Sets the aggregateRootId and type before appending.
      */
     protected IChangeApply appendEvent(DomainEvent domainEvent) {
-        String aggregateRootName = this.getClass().getSimpleName().replaceAll("AggregateRoot", "").toLowerCase();
         domainEvent.setAggregateRootId(identity().value());
-        domainEvent.setType(aggregateRootName); // Set the event type based on the aggregate root name
+        domainEvent.setType(this.getClass().getSimpleName().toLowerCase());
         return changeEventSubscriber.appendEvent(domainEvent);
     }
 }
-
-//public abstract class AggregateRoot<I extends Identity> extends Entity<I>{
-//    private final ChangeEventSubscriber changeEventSubscriber;
-//    public AggregateRoot(I id) {
-//        super(id);
-//        changeEventSubscriber = new ChangeEventSubscriber();
-//    }
-//
-//
-//    // TO USE IN USE CASES
-//    // To get all events from changeEventsSubscriber
-//    public List<DomainEvent> getUncommittedChanges(){
-//        return List.copyOf(changeEventSubscriber.events());
-//    }
-//    //
-//
-//    //To clean events
-//    public void markChangesAsCommitted(){
-//        changeEventSubscriber.events().clear();
-//    }
-//    //
-//    //
-//
-//    //Subscribe to eventChangeSubscriber
-//    protected final void subscribe(EventChange eventChange){
-//        changeEventSubscriber.subscribe(eventChange);
-//    }
-//    //
-//    //ApplyEvent
-//    protected void applyEvent(DomainEvent domainEvent){
-//        changeEventSubscriber.applyEvent(domainEvent);
-//    }
-//    //
-//    //Add event to events in changeEventSubscriber
-//    protected IChangeApply appendEvent(DomainEvent domainEvent){
-//        var nameClass = identity().getClass().getSimpleName(); //Larry
-//        //var nameClass = this.getClass().getSimpleName().toLowerCase(); //Jacob
-//        var aggregate = nameClass.replaceAll("Identity|Id|ID", "").toLowerCase();
-//        //domainEvent.setAggregateRootName(nameClass);
-//        //event.setAggregateRootName(aggregate);
-//        domainEvent.setAggregateRootId(identity().value());
-//        return changeEventSubscriber.appendEvent(domainEvent);
-//    }
-////
-

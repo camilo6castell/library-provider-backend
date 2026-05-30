@@ -16,6 +16,15 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Creates a new user and persists the resulting domain events.
+ * Validates that no user with the same email already exists.
+ *
+ * <p><strong>Security note:</strong> In a production system the password should be hashed
+ * (e.g. BCrypt) before being stored in the domain event. This use case expects the
+ * command to carry either a raw password (validated by the {@link Password} value object)
+ * or a pre-hashed value passed from the presentation layer.
+ */
 @Component
 public class CreateUserUseCase extends UseCaseForCommandMono<CreateUserCommand> {
 
@@ -26,36 +35,29 @@ public class CreateUserUseCase extends UseCaseForCommandMono<CreateUserCommand> 
     }
 
     @Override
-    public Mono<DomainEvent> apply(Mono<CreateUserCommand> createUserCommandMono) {
-        return createUserCommandMono
+    public Mono<DomainEvent> apply(Mono<CreateUserCommand> commandMono) {
+        return commandMono
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("CreateUserCommand must not be null")))
                 .flatMap(command ->
-                        repository.findByEmail(command.email)
-                                .flatMap(existingUser -> Mono.<CreateUserCommand>error(
-                                        new IllegalArgumentException("Email already exists")))
-                                .switchIfEmpty(Mono.just(command))  // Si no existe un usuario con ese email, continúa
+                        repository.findByEmail(command.getEmail())
+                                .flatMap(existing -> Mono.<CreateUserCommand>error(
+                                        new IllegalArgumentException("A user with email '" + command.getEmail() + "' already exists")))
+                                .switchIfEmpty(Mono.just(command))
                 )
                 .flatMap(command -> {
-                    // Crear el usuario con los datos del comando
                     User user = new User(
-                            UserId.of(UUID.randomUUID().toString()),  // Crear nuevo ID para el usuario
-                            Email.of(command.email),
-                            Password.of(command.password),
-                            EntryDate.of(command.entryDate)
+                            UserId.of(UUID.randomUUID().toString()),
+                            Email.of(command.getEmail()),
+                            Password.of(command.getPassword()),
+                            EntryDate.of(command.getEntryDate())
                     );
 
-                    // Obtener los eventos generados por el usuario (Uncommitted Changes)
                     List<DomainEvent> events = user.getUncommittedChanges();
 
-                    // Guardar cada evento en la base de datos
                     return Flux.fromIterable(events)
                             .flatMap(repository::saveEvent)
-                            .collectList()
-                            .map(eventsList -> {
-                                if (eventsList.isEmpty()) {
-                                    throw new IllegalStateException("No events generated for user creation");
-                                }
-                                return eventsList.get(0); // Devuelve el primer evento
-                            });
+                            .next()
+                            .switchIfEmpty(Mono.error(new IllegalStateException("No events generated for user creation")));
                 });
     }
 }

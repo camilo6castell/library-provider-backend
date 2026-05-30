@@ -3,19 +3,19 @@ package com.libraryproviderbackend.text;
 import com.libraryproviderbackend.generic.EventChange;
 import com.libraryproviderbackend.text.events.TextCreated;
 import com.libraryproviderbackend.text.values.InitialPrice;
-import com.libraryproviderbackend.text.values.TextTypeEnum;
 import com.libraryproviderbackend.text.values.Title;
 import com.libraryproviderbackend.text.values.Type;
 
+/**
+ * Handles domain event application for the {@link Text} aggregate root.
+ */
 public class TextBehavior extends EventChange {
 
-    TextTypeEnum[] textTypeEnumValues = TextTypeEnum.values();
-
-    public TextBehavior(Text text){
+    public TextBehavior(Text text) {
         addSubscriber(TextCreated.class, event -> {
-            text.title = Title.of(event.getTitle());
-            text.type = Type.of(event.getTextType());
-            text.initialPrice = InitialPrice.of(event.getInitialPrice());
+            text.setTitle(Title.of(event.getTitle()));
+            text.setType(Type.of(event.getTextType()));
+            text.setInitialPrice(InitialPrice.of(event.getInitialPrice()));
         });
     }
 }
