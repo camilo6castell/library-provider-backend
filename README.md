@@ -6,11 +6,11 @@
 
 **Reactive REST API built on Hexagonal Architecture, Domain-Driven Design, and Event Sourcing.**
 
-[![Java](https://img.shields.io/badge/Java_17-ED8B00?style=flat-square&logo=openjdk&logoColor=white)](https://openjdk.org/projects/jdk/17/)
+[![Java](https://img.shields.io/badge/Java_21-ED8B00?style=flat-square&logo=openjdk&logoColor=white)](https://openjdk.org/projects/jdk/21/)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot_3.2-6DB33F?style=flat-square&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![Spring WebFlux](https://img.shields.io/badge/Spring_WebFlux-6DB33F?style=flat-square&logo=spring&logoColor=white)](https://docs.spring.io/spring-framework/reference/web/webflux.html)
 [![MongoDB](https://img.shields.io/badge/MongoDB_Atlas-47A248?style=flat-square&logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas)
-[![Gradle](https://img.shields.io/badge/Gradle-02303A?style=flat-square&logo=gradle&logoColor=white)](https://gradle.org/)
+[![Gradle](https://img.shields.io/badge/Gradle_8-02303A?style=flat-square&logo=gradle&logoColor=white)](https://gradle.org/)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](./LICENSE)
 
@@ -37,43 +37,43 @@
 
 ## 📡 Overview
 
-Library Provider is a backend service for managing a library's catalog and computing text purchase quotes. It is built as a **reactive, non-blocking API** using Spring WebFlux, with an architecture that deliberately separates domain logic from infrastructure concerns through **Hexagonal Architecture** (Ports & Adapters), **Domain-Driven Design**, and a fully custom **Event Sourcing** implementation.
+Library Provider is a backend service for managing a library catalogue and computing text purchase quotes. It is built as a **reactive, non-blocking API** using Spring WebFlux, with an architecture that deliberately separates domain logic from infrastructure concerns through **Hexagonal Architecture** (Ports & Adapters), **Domain-Driven Design**, and a fully custom **Event Sourcing** implementation backed by MongoDB Atlas.
 
-The system models two main domain entities — `User` and `Text` — and exposes use cases for user registration, text cataloging, and pricing with tiered discount logic.
+The system models two main domain entities — `User` and `Text` — and exposes use cases for user registration, text cataloguing, and tiered pricing with seniority and volume discounts.
 
 ---
 
 ## 🏛️ Architecture
 
-The project is organized as a **Gradle multi-module build** with explicit layer boundaries enforced by module-level dependency isolation. No infrastructure code can depend on a use case directly, and the domain model has zero infrastructure dependencies.
+The project is organized as a **Gradle multi-module build** with explicit layer boundaries enforced at the module-dependency level. The domain model has zero external dependencies. Use cases depend only on the domain model. Infrastructure modules implement the ports defined in the use case layer, never the other way around.
 
 ```
-┌────────────────────────────────────────────────────────────────────┐
-│                        REST Client                                 │
-└──────────────────────────────┬─────────────────────────────────────┘
-                               │ HTTP
-┌──────────────────────────────▼─────────────────────────────────────┐
-│               infrastructure/entry-points/reactive-web             │
-│          RouterRest (functional routes) → Handler → Commands       │
-└──────────────────────────────┬─────────────────────────────────────┘
-                               │
-┌──────────────────────────────▼─────────────────────────────────────┐
-│                   application/app-main                             │
-│               UseCaseConfig (Spring DI wiring)                     │
-└──────────┬───────────────────────────────────────────┬─────────────┘
-           │                                           │
-┌──────────▼──────────────────┐   ┌────────────────────▼────────────┐
-│    domain/usecase           │   │  infrastructure/driven-adapters  │
-│  CreateUserUseCase          │   │  MongoRepositoryAdapter          │
-│  SaveAndQuoteTextUseCase    │◄──┤  implements IUserRepository      │
-│  CreateTextUseCase          │   │  implements ITextRepository      │
-│  QuoteTextsByBudgetUseCase  │   └──────────────┬──────────────────┘
-│  QuoteVariousTextsUseCase   │                  │ Reactive Mongo
-│  QuoteBatchQuoteUseCase     │   ┌──────────────▼──────────────────┐
-└──────────┬──────────────────┘   │       MongoDB Atlas             │
-           │ depends on           │   events collection             │
-┌──────────▼──────────────────┐   │   (serialized DomainEvents)     │
-│      domain/model           │   └─────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│                          REST Client                                │
+└───────────────────────────────┬─────────────────────────────────────┘
+                                │ HTTP
+┌───────────────────────────────▼─────────────────────────────────────┐
+│            infrastructure / entry-points / reactive-web             │
+│        RouterRest (functional routes) → Handler → Commands          │
+└───────────────────────────────┬─────────────────────────────────────┘
+                                │
+┌───────────────────────────────▼─────────────────────────────────────┐
+│                    application / app-main                           │
+│                  UseCaseConfig (Spring DI wiring)                   │
+└──────────┬────────────────────────────────────────┬─────────────────┘
+           │                                        │
+┌──────────▼──────────────────┐  ┌──────────────────▼────────────────┐
+│      domain / usecase       │  │  infrastructure / driven-adapters  │
+│  CreateUserUseCase          │  │  MongoRepositoryAdapter            │
+│  SaveAndQuoteTextUseCase    │◄─┤  implements IUserRepository        │
+│  CreateTextUseCase          │  │  implements ITextRepository        │
+│  QuoteTextsByBudgetUseCase  │  └──────────────┬─────────────────────┘
+│  QuoteVariousTextsUseCase   │                 │ Spring Data Reactive
+│  QuoteBatchQuoteUseCase     │  ┌──────────────▼─────────────────────┐
+└──────────┬──────────────────┘  │          MongoDB Atlas             │
+           │ depends on          │      events collection             │
+┌──────────▼──────────────────┐  │   (serialized DomainEvents)        │
+│      domain / model         │  └────────────────────────────────────┘
 │  AggregateRoot, DomainEvent │
 │  User, Text aggregates      │
 │  Entities, Value Objects    │
@@ -86,99 +86,103 @@ The project is organized as a **Gradle multi-module build** with explicit layer 
 | Module | Layer | Responsibility |
 |---|---|---|
 | `:model` | Domain | Aggregates, entities, value objects, domain events, commands |
-| `:usecase` | Domain | Use cases and repository port interfaces |
+| `:usecase` | Domain | Use cases and repository port interfaces (`IUserRepository`, `ITextRepository`) |
 | `:mongo-repository` | Infrastructure | MongoDB event store adapter (implements ports) |
-| `:reactive-web` | Infrastructure | HTTP entry point — router, handler, DTOs |
+| `:reactive-web` | Infrastructure | HTTP entry point — functional router, handler, DTOs |
 | `:serializer` | Infrastructure | JSON serializer/deserializer for domain events |
-| `:app-main` | Application | Spring Boot entry point + DI wiring (`UseCaseConfig`) |
+| `:app-main` | Application | Spring Boot entry point + dependency injection wiring |
 
-The `:model` module has **zero external dependencies**. Use cases depend only on `:model`. Infrastructure modules depend on both, but the domain never depends on infrastructure.
+> Only `:app-main` carries the `org.springframework.boot` plugin and produces an executable JAR. All other modules are plain Java libraries managed by the Spring Boot BOM for consistent dependency versions.
 
 ---
 
 ## 🧩 Domain Model
 
-The domain is designed following **DDD tactical patterns** with a custom generic framework built from scratch.
+The domain is designed following **DDD tactical patterns** with a custom generic framework built from scratch — no external DDD library is used.
 
-### Generic infrastructure (`:model` — `generic` package)
+### Generic framework (`:model` — `generic` package)
 
 | Class | Role |
 |---|---|
-| `AggregateRoot<I>` | Base class for all aggregate roots. Manages uncommitted `DomainEvent` list via `ChangeEventSubscriber`. |
-| `Entity<I>` | Base class for domain entities with typed identity. |
+| `AggregateRoot<I>` | Base for all aggregate roots. Owns the `ChangeEventSubscriber` that buffers uncommitted events. |
+| `Entity<I>` | Base for domain entities with a typed identity. |
 | `DomainEvent` | Abstract base for all events — carries `eventId`, `aggregateRootId`, `type`, `occurredOn`, `version`. |
 | `Identity` | Base for typed identifiers (wraps a `String` UUID). |
 | `IValueObject<T>` | Marker interface for all value objects. |
-| `Command` / `InitialCommand` | Base types for input commands. |
-| `ChangeEventSubscriber` | Internal pub/sub mechanism — subscribes behaviors, applies and buffers events. |
-| `EventChange` | Functional interface — maps a `DomainEvent` subtype to an aggregate state mutation. |
+| `Command` | Base type for input commands. |
+| `ChangeEventSubscriber` | Internal pub/sub mechanism — subscribes behaviors, versions and buffers events. |
+| `EventChange` | Maps a `DomainEvent` subtype to an aggregate state mutation via typed `Consumer`. |
 
 ### Aggregates
 
-**`User`** — aggregate root that models a library client.
+**`User`** — models a library client.
 
-```java
-public class User extends AggregateRoot<UserId> {
-    public Email email;          // value object with format validation
-    public Password password;    // value object: 8–64 chars, upper, lower, digit, special char
-    public EntryDate entryDate;  // value object: ISO date, used for seniority discount calculation
+| Field | Value Object | Invariants |
+|---|---|---|
+| `email` | `Email` | RFC-compliant format |
+| `password` | `Password` | 8–64 chars, requires uppercase, lowercase, digit, special char |
+| `entryDate` | `EntryDate` | ISO date (`yyyy-MM-dd`), used for seniority discount calculation |
 
-    // Reconstructed from event history:
-    public static User from(String userId, List<DomainEvent> domainEvents) { ... }
-}
-```
+**`Text`** — models a catalogued item (book or novel).
 
-**`Text`** — aggregate root that models a catalogued item (book or novel).
+| Field | Value Object | Invariants |
+|---|---|---|
+| `title` | `Title` | Non-blank string |
+| `type` | `Type` | One of `BOOK`, `NOVEL` |
+| `initialPrice` | `InitialPrice` | Positive `Float` |
 
-Value objects enforce invariants at construction time — for example, `Password` validates length, case, digit presence, and special characters before allowing instantiation.
+Value objects enforce their invariants at construction time by throwing `IllegalArgumentException` — invalid state can never be instantiated.
 
 ### Entities
 
 | Entity | Description |
 |---|---|
-| `TextQuote` | A single-item pricing quote. Calculates subtotal, discount, and total based on type and demand multiplier. |
-| `BatchQuote` | A multi-item quote. Supports mixed book/novel batches, wholesale discount threshold, seniority discount, and budget-constrained selection. |
-| `Quote` | Lightweight quote wrapper. |
+| `TextQuote` | Single-item pricing quote. Calculates subtotal, discount, and total based on text type, demand multiplier, and sale mode. |
+| `BatchQuote` | Multi-item quote. Supports mixed book/novel batches, 10-item wholesale threshold, seniority discount, and budget-constrained greedy selection. |
 
 ---
 
 ## 📋 Event Sourcing
 
-The system does **not use a relational table to store current state**. Every state change is recorded as an immutable `DomainEvent` document in MongoDB. State is reconstructed by replaying the event stream for a given aggregate root.
+The system does **not persist aggregate state directly**. Every state change is recorded as an immutable `DomainEvent` document in MongoDB. State is reconstructed on demand by replaying the full event stream for a given `aggregateRootId`.
 
 ### Event store document (`EventSaved`)
 
 ```java
 @Document(collection = "events")
 public class EventSaved {
-    private String aggregateRootId;  // UUID of the owning aggregate
-    private String type;             // event class name (e.g. "UserCreated")
+    private String id;             // MongoDB ObjectId
+    private String aggregateRootId; // UUID of the owning aggregate
+    private String type;           // Fully-qualified event class name
     private LocalDateTime occurredOn;
-    private String body;             // full DomainEvent serialized as JSON
+    private String body;           // DomainEvent serialized as JSON
 }
 ```
 
 ### Write path
 
 ```
-Command received
-  → Use Case instantiates or reconstitutes aggregate
-  → Aggregate calls appendEvent(DomainEvent).apply()
-  → ChangeEventSubscriber buffers the event + triggers state mutation
-  → Use Case iterates getUncommittedChanges()
-  → Each DomainEvent serialized by JSONMapper → saved as EventSaved in MongoDB
-  → markChangesAsCommitted() clears buffer
+Command received by Handler
+  → Use case instantiates or reconstitutes aggregate from event stream
+  → Aggregate calls appendEvent(domainEvent).apply()
+      → ChangeEventSubscriber timestamps and versions the event
+      → Event added to uncommitted changes buffer
+      → State mutation dispatched to registered EventChange handlers
+  → Use case iterates getUncommittedChanges()
+  → JSONMapper serializes each event → saved as EventSaved document
+  → markChangesAsCommitted() clears the buffer
 ```
 
 ### Read path (aggregate reconstitution)
 
 ```java
-// MongoRepositoryAdapter — retrieves event stream reactively
-Flux<DomainEvent> events = getEventsByAggregateRootId(userId);
+// 1. Retrieve ordered event stream reactively
+Flux<DomainEvent> events = repository.getEventsByAggregateRootId(userId);
 
-// Use case reconstitutes aggregate by replaying events
+// 2. Replay events to restore state
 User user = User.from(userId, events.collectList().block());
-// Each DomainEvent is passed to applyEvent() → ChangeEventSubscriber dispatches to UserBehavior
+// Each DomainEvent is passed to applyEvent() →
+// ChangeEventSubscriber dispatches to UserBehavior subscribers
 ```
 
 ### Domain events
@@ -186,57 +190,64 @@ User user = User.from(userId, events.collectList().block());
 | Aggregate | Event | Trigger |
 |---|---|---|
 | `User` | `UserCreated` | User registration |
-| `User` | `TextQuoted` | Single text quote requested |
-| `User` | `BatchTextsQuoted` | Batch quote (books + novels) |
-| `User` | `VariousTextQuotedEvent` | Various-text quote |
+| `User` | `TextQuoted` | Single text quote |
 | `User` | `BudgetTextsQuoted` | Budget-constrained quote |
-| `User` | `TextSavedAndQuoted` | Text saved + quoted in single operation |
-| `Text` | `TextCreated` | Text added to catalog |
+| `User` | `BatchTextsQuoted` | Batch quote (books + novels) |
+| `User` | `VariousTextQuotedEvent` | Mixed-type quote |
+| `User` | `TextSavedAndQuoted` | Text saved and quoted atomically |
+| `Text` | `TextCreated` | Text added to catalogue |
 
 ---
 
 ## 💰 Quoting Engine
 
-The pricing logic is fully encapsulated in the domain model, with no pricing rules in the infrastructure or use case layers.
+All pricing logic lives exclusively in the domain model — no pricing rules appear in use cases or infrastructure layers.
 
 ### Demand multipliers (applied to `initialPrice`)
 
 | Text type | Multiplier |
 |---|---|
-| Book | ×1.33 |
-| Novel | ×2.00 |
+| Book | × 1.33 |
+| Novel | × 2.00 |
 
 ### Sale modifiers
 
-| Sale type | Modifier |
-|---|---|
-| Retail (< 10 items) | subtotal × 1.02 |
-| Wholesale (≥ 10 items) | subtotal × 0.9985 |
+| Sale mode | Applied to | Modifier |
+|---|---|---|
+| Retail (< 10 items) | Subtotal | × 1.02 |
+| Wholesale (≥ 10 items) | Subtotal | × 0.9985 |
 
-### Seniority discount (applied to batch totals)
+### Seniority discount (applied to totals)
 
-| Client seniority | Multiplier |
+| Client tenure | Multiplier |
 |---|---|
 | < 1 year | 1.00 (no discount) |
 | 1–2 years | 0.88 (12% off) |
 | > 2 years | 0.83 (17% off) |
 
-### Budget-constrained quote
+### Budget-constrained quote (`QuoteTextsByBudget`)
 
-When quoting within a budget, the `BatchQuote` entity sorts texts by price descending and applies a greedy selection, including mandatory wholesale discounts for mixed book/novel batches (cheapest of each type gets `WHOLESALE`).
+The `BatchQuote` entity sorts the requested texts by price descending and applies a greedy selection algorithm: items are added one by one until the budget is exhausted. When the list contains at least one book and one novel, the cheapest of each type is discounted at the `WHOLESALE` rate. The response includes the remaining budget (`change`).
 
 ---
 
 ## 📋 API Reference
 
-All endpoints are prefixed with `/api/v1`. The routing uses Spring WebFlux's **functional router** (`RouterFunction`) instead of annotated controllers.
+All endpoints are prefixed with `/api/v1`. Routing uses Spring WebFlux's **functional router** (`RouterFunction`) — there are no annotated controllers.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/api/v1/createUser` | Register a new user |
-| `POST` | `/api/v1/saveAndQuoteText` | Save a text to the catalog and quote it for a user |
+| `POST` | `/api/v1/users` | Register a new user account |
+| `POST` | `/api/v1/texts/quote` | Save a text to the catalogue and quote it for a user |
+| `POST` | `/api/v1/texts/quote-by-budget` | Return the best set of texts within a given budget |
 
-### `POST /api/v1/createUser`
+> A Thunder Client collection with sample requests is available in [`postman-thunder/`](./postman-thunder/).
+
+---
+
+### `POST /api/v1/users`
+
+**Request body**
 
 ```json
 {
@@ -246,7 +257,8 @@ All endpoints are prefixed with `/api/v1`. The routing uses Spring WebFlux's **f
 }
 ```
 
-Response:
+**Response — `200 OK`**
+
 ```json
 {
   "success": true,
@@ -254,20 +266,70 @@ Response:
 }
 ```
 
-### `POST /api/v1/saveAndQuoteText`
+**Response — `400 Bad Request`** (email already registered, invalid password, etc.)
 
 ```json
 {
-  "userID": "550e8400-e29b-41d4-a716-446655440000",
+  "success": false,
+  "aggregateRootId": "A user with email 'user@example.com' already exists"
+}
+```
+
+---
+
+### `POST /api/v1/texts/quote`
+
+**Request body**
+
+```json
+{
+  "userId": "550e8400-e29b-41d4-a716-446655440000",
   "title": "Clean Code",
-  "type": "BOOK",
+  "textType": "BOOK",
   "initialPrice": 100.0
 }
 ```
 
-Response includes the computed `TextQuote` with subtotal, discount type, and final total.
+**Response — `200 OK`**
 
-> A Postman collection with all available requests is available [here](https://drive.google.com/file/d/1-7eZIgGvCbVpv7aqJV1679djr9F5GMnn/view?usp=sharing).
+```json
+{
+  "title": "Clean Code",
+  "textType": "BOOK",
+  "subtotal": 135.46,
+  "discount": "NONE",
+  "total": 135.46
+}
+```
+
+---
+
+### `POST /api/v1/texts/quote-by-budget`
+
+**Request body**
+
+```json
+{
+  "userId": "550e8400-e29b-41d4-a716-446655440000",
+  "textsIndices": [0, 1, 2, 3],
+  "budget": 500.0
+}
+```
+
+**Response — `200 OK`**
+
+```json
+{
+  "change": 42.10,
+  "total": 457.90,
+  "discount": "SENIORITY",
+  "subtotal": 551.69,
+  "texts": [
+    { "title": "Clean Code", "textType": "BOOK", "subtotal": 135.46, "discount": "WHOLESALE", "total": 135.27 },
+    { "title": "The Pragmatic Programmer", "textType": "BOOK", "subtotal": 119.70, "discount": "NONE", "total": 119.70 }
+  ]
+}
+```
 
 ---
 
@@ -275,7 +337,7 @@ Response includes the computed `TextQuote` with subtotal, discount type, and fin
 
 | Layer | Technology | Version |
 |---|---|---|
-| Language | Java | 17 |
+| Language | Java | 21 |
 | Framework | Spring Boot | 3.2.5 |
 | Reactive runtime | Spring WebFlux (Project Reactor) | — |
 | Database | MongoDB Atlas | — |
@@ -290,27 +352,28 @@ Response includes the computed `TextQuote` with subtotal, discount type, and fin
 
 ```
 .
-├── settings.gradle                         # Multi-module declarations
-├── Dockerfile                              # Multi-stage build (JDK build → JRE runtime)
+├── settings.gradle                          # Multi-module declarations
+├── Dockerfile                               # Multi-stage build (JDK 21 build → JRE 21 runtime)
+├── .env.example                             # Required environment variables template
 ├── gradlew / gradlew.bat
 └── src/
     ├── domain/
-    │   ├── model/                          # :model — zero external dependencies
+    │   ├── model/                           # :model — zero external dependencies
     │   │   └── .../com/libraryproviderbackend/
-    │   │       ├── generic/                # AggregateRoot, DomainEvent, Entity, IValueObject...
+    │   │       ├── generic/                 # AggregateRoot, DomainEvent, Entity, IValueObject…
     │   │       ├── user/
-    │   │       │   ├── User.java           # User aggregate root
-    │   │       │   ├── UserBehavior.java   # Event → state mutation handler
-    │   │       │   ├── commands/           # CreateUserCommand, SaveAndQuoteTextCommand...
-    │   │       │   ├── events/             # UserCreated, TextQuoted, BatchTextsQuoted...
-    │   │       │   ├── entity/             # TextQuote, BatchQuote, Quote
-    │   │       │   └── values/             # Email, Password, EntryDate, Total, Discount...
+    │   │       │   ├── User.java            # User aggregate root
+    │   │       │   ├── UserBehavior.java    # Event → state mutation handler
+    │   │       │   ├── commands/            # CreateUserCommand, SaveAndQuoteTextCommand…
+    │   │       │   ├── events/              # UserCreated, TextQuoted, BudgetTextsQuoted…
+    │   │       │   ├── entity/              # TextQuote, BatchQuote
+    │   │       │   └── values/              # Email, Password, EntryDate, Total, Discount…
     │   │       └── text/
-    │   │           ├── Text.java           # Text aggregate root
-    │   │           ├── commands/           # CreateTextCommand
-    │   │           ├── events/             # TextCreated
-    │   │           └── values/             # Title, Type, InitialPrice, TextTypeEnum
-    │   └── usecase/                        # :usecase
+    │   │           ├── Text.java            # Text aggregate root
+    │   │           ├── commands/            # CreateTextCommand
+    │   │           ├── events/              # TextCreated
+    │   │           └── values/              # Title, Type, InitialPrice, TextTypeEnum
+    │   └── usecase/                         # :usecase
     │       └── .../usecase/
     │           ├── CreateUserUseCase.java
     │           ├── SaveAndQuoteTextUseCase.java
@@ -319,38 +382,39 @@ Response includes the computed `TextQuote` with subtotal, discount type, and fin
     │           ├── QuoteVariousTextsUseCase.java
     │           ├── QuoteBatchQuoteUseCase.java
     │           └── generic/
-    │               ├── UseCaseForCommandMono.java   # Base: Command → Mono<DomainEvent>
-    │               ├── UseCaseForCommandFlux.java   # Base: Command → Flux<DomainEvent>
+    │               ├── UseCaseForCommandMono.java    # Command → Mono<DomainEvent>
+    │               ├── UseCaseForCommandFlux.java    # Command → Flux<DomainEvent>
     │               └── gateway/
-    │                   ├── IUserRepository.java     # Port interface
-    │                   └── ITextRepository.java     # Port interface
+    │                   ├── IUserRepository.java      # Port (interface)
+    │                   └── ITextRepository.java      # Port (interface)
     ├── infrastructure/
     │   ├── entry-points/
-    │   │   └── reactive-web/               # :reactive-web
+    │   │   └── reactive-web/                # :reactive-web
     │   │       └── .../
-    │   │           ├── RouterRest.java     # Functional router (RouterFunction)
-    │   │           ├── Handler.java        # Request → Command → Use case delegation
+    │   │           ├── RouterRest.java      # Functional router (RouterFunction)
+    │   │           ├── Handler.java         # Request → Command → use case delegation
     │   │           ├── HandlerConfig.java
     │   │           ├── CorsConfig.java
-    │   │           └── Dtos/               # Request/Response DTOs
+    │   │           └── Dtos/                # Response DTOs per use case
     │   ├── driven-adapters/
-    │   │   └── mongo-repository/           # :mongo-repository
+    │   │   └── mongo-repository/            # :mongo-repository
     │   │       └── .../
-    │   │           ├── MongoRepositoryAdapter.java  # Implements IUserRepository + ITextRepository
-    │   │           ├── data/EventSaved.java          # MongoDB document — event envelope
+    │   │           ├── MongoRepositoryAdapter.java  # Adapter implementing both ports
+    │   │           ├── data/EventSaved.java          # MongoDB event envelope document
     │   │           └── config/
     │   │               ├── IMongoRepository.java    # ReactiveMongoRepository
     │   │               └── ApplicationConfig.java
     │   └── helpers/
-    │       └── serializer/                 # :serializer
+    │       └── serializer/                  # :serializer
     │           └── .../
     │               ├── IJSONMapper.java
-    │               └── JSONMapper.java     # serialize/deserialize DomainEvent ↔ JSON
+    │               ├── JSONMapper.java      # DomainEvent ↔ JSON (Jackson)
+    │               └── SerializationException.java
     └── application/
-        └── app-main/                       # :app-main — Spring Boot entry point
+        └── app-main/                        # :app-main — only bootable module
             └── .../
                 ├── Main.java
-                └── config/UseCaseConfig.java  # Wires use cases with their port implementations
+                └── config/UseCaseConfig.java  # Wires use cases via component scan
 ```
 
 ---
@@ -359,59 +423,80 @@ Response includes the computed `TextQuote` with subtotal, discount type, and fin
 
 ### Prerequisites
 
-- Java 17+
-- Docker (optional, for containerized runs)
-- A MongoDB Atlas cluster (or local MongoDB instance)
+- Java 21+
+- Docker (for the containerized option)
+- A MongoDB Atlas cluster, or a local MongoDB 6+ instance
 
-### Option 1 — Docker (recommended)
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/camilo6castell/library-provider-backend.git
 cd library-provider-backend
+```
 
+### 2. Configure environment variables
+
+```bash
+cp .env.example .env
+# Edit .env and set MONGODB_URI to your connection string
+```
+
+### Option A — Docker (recommended)
+
+```bash
 docker build -t library-provider-backend .
 
 docker run -p 8080:8080 \
-  -e SPRING_DATA_MONGODB_URI="mongodb+srv://<user>:<pass>@cluster.mongodb.net/<db>" \
+  -e MONGODB_URI="mongodb+srv://<user>:<pass>@cluster.mongodb.net/library-provider" \
   library-provider-backend
 ```
 
-### Option 2 — Gradle
+### Option B — Gradle
 
 ```bash
-git clone https://github.com/camilo6castell/library-provider-backend.git
-cd library-provider-backend
-
-# Build the full project (all modules)
+# Build all modules
 ./gradlew build
 
 # Run the application
-./gradlew :app-main:bootRun
+MONGODB_URI="mongodb+srv://<user>:<pass>@cluster.mongodb.net/library-provider" \
+  ./gradlew :app-main:bootRun
 ```
+
+The API will be available at `http://localhost:8080`.
 
 ---
 
 ## ⚙️ Configuration
 
-### MongoDB URI
+All configuration is centralized in `src/application/app-main/src/main/resources/application.yaml`. Values are injected from environment variables with sensible local defaults.
 
-Set the connection string in `src/infrastructure/driven-adapters/mongo-repository/src/main/resources/application.properties`:
+```yaml
+spring:
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/library-provider}
 
-```properties
-spring.data.mongodb.uri=mongodb+srv://<user>:<password>@<cluster>/<database>?retryWrites=true&w=majority
-```
+server:
+  port: ${PORT:8080}
 
-Or override via environment variable when running with Docker:
-
-```bash
--e SPRING_DATA_MONGODB_URI="mongodb+srv://..."
+app:
+  cors:
+    allowed-origins:
+      - ${CORS_ORIGIN_1:http://localhost:5173}
+      - ${CORS_ORIGIN_2:http://localhost:4200}
 ```
 
 ### Environment variables
 
-| Variable | Description |
-|---|---|
-| `SPRING_DATA_MONGODB_URI` | MongoDB Atlas connection string |
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `MONGODB_URI` | Yes | `mongodb://localhost:27017/library-provider` | MongoDB connection string |
+| `PORT` | No | `8080` | HTTP server port |
+| `CORS_ORIGIN_1` | No | `http://localhost:5173` | First allowed CORS origin |
+| `CORS_ORIGIN_2` | No | `http://localhost:4200` | Second allowed CORS origin |
+| `CORS_ORIGIN_3` | No | — | Third allowed CORS origin |
+
+> See `.env.example` for a ready-to-copy template. **Never commit `.env` or any file containing real credentials.**
 
 ---
 
@@ -421,8 +506,19 @@ Contributions are welcome. Please open an issue before submitting a pull request
 
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feat/your-feature`
-3. Commit using [Conventional Commits](https://www.conventionalcommits.org/): `git commit -m 'feat: add your feature'`
-4. Push and open a pull request
+3. Commit using [Conventional Commits](https://www.conventionalcommits.org/): `git commit -m "feat: add your feature"`
+4. Push and open a pull request against `develop`
+
+### Commit conventions
+
+| Prefix | Use for |
+|---|---|
+| `feat:` | New feature |
+| `fix:` | Bug fix |
+| `refactor:` | Code change that is not a fix or feature |
+| `docs:` | Documentation only |
+| `test:` | Adding or updating tests |
+| `chore:` | Build process, dependency updates |
 
 ---
 
